@@ -1,0 +1,1220 @@
+import React, { useState, useEffect, useRef } from 'react';
+import { initializeApp } from 'firebase/app';
+import { 
+  getFirestore, 
+  doc, 
+  setDoc, 
+  getDoc, 
+  collection, 
+  onSnapshot 
+} from 'firebase/firestore';
+import { 
+  getAuth, 
+  signInWithCustomToken, 
+  signInAnonymously, 
+  onAuthStateChanged 
+} from 'firebase/auth';
+
+// --- Minimalist SVG Icons (Feather-Style) ---
+const SparklesIcon = () => (
+  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 21l5.096-.813 10.814-10.814a2.25 2.25 0 00-3.182-3.182L9.813 15.904z" />
+    <path strokeLinecap="round" strokeLinejoin="round" d="M16.25 5.075l3.182 3.182" />
+  </svg>
+);
+
+const TrashIcon = () => (
+  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+  </svg>
+);
+
+const DumbbellIcon = () => (
+  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M15.3 16.2H18a3 3 0 003-3V10.8a3 3 0 00-3-3h-2.7m-6 8.4H6a3 3 0 01-3-3V10.8a3 3 0 013-3h2.7m.6 8.4V7.8m4.8 8.4V7.8m-5.4 4.2h6" />
+  </svg>
+);
+
+const ArrowUpIcon = () => (
+  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l7.5-7.5 7.5 7.5m-15 6l7.5-7.5 7.5 7.5" />
+  </svg>
+);
+
+// --- Audio Feedback Engine (Elegant, non-invasive) ---
+const playSound = (type) => {
+  try {
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContext) return;
+    const ctx = new AudioContext();
+    const now = ctx.currentTime;
+    
+    if (type === 'complete') {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(500, now);
+      osc.frequency.exponentialRampToValueAtTime(250, now + 0.12);
+      gain.gain.setValueAtTime(0.02, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.12);
+    } else if (type === 'levelup') {
+      [350, 450, 550].forEach((freq, idx) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, now + idx * 0.04);
+        gain.gain.setValueAtTime(0.03, now + idx * 0.04);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.04 + 0.25);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now + idx * 0.04);
+        osc.stop(now + idx * 0.04 + 0.25);
+      });
+    } else if (type === 'buy') {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(750, now);
+      gain.gain.setValueAtTime(0.03, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.06);
+    }
+  } catch (e) {
+    // Suppressed audio block errors
+  }
+};
+
+// --- Adi's Weekly Split Workouts ---
+const PRESET_WORKOUTS = {
+  Tuesday: {
+    name: "Back & Biceps",
+    exercises: [
+      { name: "Deadlifts", sets: [{ reps: 5, weight: 225 }, { reps: 5, weight: 245 }, { reps: 5, weight: 265 }] },
+      { name: "Lat Pulldowns", sets: [{ reps: 10, weight: 120 }, { reps: 10, weight: 130 }, { reps: 8, weight: 140 }] },
+      { name: "Barbell Rows", sets: [{ reps: 8, weight: 135 }, { reps: 8, weight: 145 }] },
+      { name: "Hammer Curls", sets: [{ reps: 12, weight: 30 }, { reps: 12, weight: 35 }] }
+    ]
+  },
+  Wednesday: {
+    name: "Chest & Triceps",
+    exercises: [
+      { name: "Flat Bench Press", sets: [{ reps: 8, weight: 135 }, { reps: 8, weight: 185 }, { reps: 6, weight: 205 }] },
+      { name: "Incline Dumbbell Press", sets: [{ reps: 10, weight: 60 }, { reps: 10, weight: 65 }] },
+      { name: "Tricep Rope Pushdowns", sets: [{ reps: 12, weight: 50 }, { reps: 12, weight: 60 }] }
+    ]
+  },
+  Thursday: {
+    name: "Legs Day",
+    exercises: [
+      { name: "Barbell Back Squats", sets: [{ reps: 8, weight: 185 }, { reps: 8, weight: 225 }, { reps: 6, weight: 245 }] },
+      { name: "Romanian Deadlifts", sets: [{ reps: 10, weight: 135 }, { reps: 10, weight: 185 }] },
+      { name: "Calf Raises", sets: [{ reps: 15, weight: 150 }] }
+    ]
+  },
+  Friday: {
+    name: "Shoulders & Abs",
+    exercises: [
+      { name: "Overhead Press (OHP)", sets: [{ reps: 8, weight: 95 }, { reps: 8, weight: 115 }] },
+      { name: "Dumbbell Lateral Raises", sets: [{ reps: 15, weight: 20 }, { reps: 15, weight: 25 }] },
+      { name: "Hanging Leg Raises", sets: [{ reps: 12, weight: 0 }, { reps: 12, weight: 0 }] }
+    ]
+  },
+  Saturday: {
+    name: "Grow Day",
+    exercises: [
+      { name: "Bicep 21s", sets: [{ reps: 21, weight: 45 }, { reps: 21, weight: 45 }] },
+      { name: "Lateral Raises (Giant Set)", sets: [{ reps: 20, weight: 15 }, { reps: 15, weight: 20 }] }
+    ]
+  }
+};
+
+export default function App() {
+  const [activeTab, setActiveTab] = useState('dashboard');
+  const [user, setUser] = useState(null);
+  const [cloudSync, setCloudSync] = useState(false);
+  
+  // --- IN-MEMORY & LOCAL STORAGE STATES ---
+  const [hero, setHero] = useState(() => {
+    const saved = localStorage.getItem('lq_hero_adi_v3');
+    return saved ? JSON.parse(saved) : {
+      name: "Adi",
+      class: "Tech Lead",
+      level: 1,
+      xp: 45,
+      nextLevelXp: 300,
+      gold: 120,
+      streak: 8,
+      statPoints: 0,
+      stats: {
+        strength: 15,
+        intelligence: 18,
+        willpower: 14,
+        stamina: 15
+      }
+    };
+  });
+
+  const [quests, setQuests] = useState(() => {
+    const saved = localStorage.getItem('lq_quests_adi_v3');
+    return saved ? JSON.parse(saved) : [
+      { id: 1, text: "Perform 8 Hours of meaningful coding", type: "day", completed: false, difficulty: "hard", attribute: "intelligence", xp: 80, gold: 40 },
+      { id: 2, text: "Read book for 30 minutes (Instead of scrolling)", type: "day", completed: false, difficulty: "medium", attribute: "willpower", xp: 40, gold: 20 },
+      { id: 3, text: "Hit today's custom Gym Split", type: "day", completed: false, difficulty: "medium", attribute: "strength", xp: 40, gold: 20 },
+      { id: 4, text: "Secure 8 Hours of deep sleep", type: "day", completed: true, difficulty: "easy", attribute: "stamina", xp: 20, gold: 10 },
+      { id: 5, text: "DSA: Solve 2 new questions", type: "day", completed: false, difficulty: "medium", attribute: "intelligence", xp: 35, gold: 15 },
+      { id: 6, text: "DSA: Review 1 previous question", type: "day", completed: false, difficulty: "easy", attribute: "intelligence", xp: 15, gold: 5 }
+    ];
+  });
+
+  const [gymLogs, setGymLogs] = useState(() => {
+    const saved = localStorage.getItem('lq_gymlogs_adi_v3');
+    return saved ? JSON.parse(saved) : [
+      {
+        id: 1,
+        date: "2026-05-18",
+        workoutName: "Back & Biceps",
+        exercises: [{ name: "Deadlifts", sets: [{ reps: 5, weight: 225 }, { reps: 5, weight: 245 }] }]
+      }
+    ];
+  });
+
+  const [rewards, setRewards] = useState(() => {
+    const saved = localStorage.getItem('lq_rewards_adi_v3');
+    return saved ? JSON.parse(saved) : [
+      { id: 1, text: "Watch 1 episode of anime/show guilt-free", cost: 30, icon: "📺" },
+      { id: 2, text: "Indulge in a clean cheat meal", cost: 60, icon: "🍕" },
+      { id: 3, text: "Unlock personal luxury / hobby purchase", cost: 150, icon: "🎮" }
+    ];
+  });
+
+  // --- TRANSITIONAL STATES ---
+  const [aiInputPrompt, setAiInputPrompt] = useState("");
+  const [isAiGenerating, setIsAiGenerating] = useState(false);
+  const [isVisionParsing, setIsVisionParsing] = useState(false);
+  const fileInputRef = useRef(null);
+
+  const [newQuestText, setNewQuestText] = useState("");
+  const [newQuestType, setNewQuestType] = useState("day");
+  const [newQuestDifficulty, setNewQuestDifficulty] = useState("medium");
+  const [newQuestAttr, setNewQuestAttr] = useState("intelligence");
+
+  const [customRewardName, setCustomRewardName] = useState("");
+  const [customRewardCost, setCustomRewardCost] = useState(40);
+
+  const [toastMsg, setToastMsg] = useState("");
+  const [levelUpModal, setLevelUpModal] = useState(false);
+
+  // --- FIREBASE FIRESTORE SYNC LOGIC (RULES 1, 2, 3) ---
+  const appId = typeof __app_id !== 'undefined' ? __app_id : 'lifequest-adi-pro';
+  let db, auth;
+  try {
+    if (typeof __firebase_config !== 'undefined' && __firebase_config) {
+      const firebaseConfig = JSON.parse(__firebase_config);
+      const app = initializeApp(firebaseConfig);
+      auth = getAuth(app);
+      db = getFirestore(app);
+    }
+  } catch (e) {
+    console.warn("Firebase not loaded: fallback to Offline mode.");
+  }
+
+  useEffect(() => {
+    if (!auth) return;
+    
+    const initAuthAndSync = async () => {
+      try {
+        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+          await signInWithCustomToken(auth, __initial_auth_token);
+        } else {
+          await signInAnonymously(auth);
+        }
+      } catch (err) {
+        console.error("Auth error:", err);
+      }
+    };
+    
+    initAuthAndSync();
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      if (firebaseUser) {
+        setUser(firebaseUser);
+        setCloudSync(true);
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  // Sync to Firestore on Auth
+  useEffect(() => {
+    if (!user || !db) return;
+
+    // RULE 1: STRICT PATHS
+    // Fetch profile and details
+    const userDocRef = doc(db, 'artifacts', appId, 'users', user.uid, 'profile', 'data');
+    const unsubProfile = onSnapshot(userDocRef, (docSnap) => {
+      if (docSnap.exists()) {
+        const d = docSnap.data();
+        if (d.hero) setHero(d.hero);
+        if (d.quests) setQuests(d.quests);
+        if (d.gymLogs) setGymLogs(d.gymLogs);
+        if (d.rewards) setRewards(d.rewards);
+      }
+    }, (error) => {
+      console.warn("Firestore collection sync err:", error);
+    });
+
+    return () => unsubProfile();
+  }, [user]);
+
+  // General Backup helper
+  const triggerCloudBackup = async (updatedHero, updatedQuests, updatedGym, updatedStore) => {
+    localStorage.setItem('lq_hero_adi_v3', JSON.stringify(updatedHero || hero));
+    localStorage.setItem('lq_quests_adi_v3', JSON.stringify(updatedQuests || quests));
+    localStorage.setItem('lq_gymlogs_adi_v3', JSON.stringify(updatedGym || gymLogs));
+    localStorage.setItem('lq_rewards_adi_v3', JSON.stringify(updatedStore || rewards));
+
+    if (user && db) {
+      const userDocRef = doc(db, 'artifacts', appId, 'users', user.uid, 'profile', 'data');
+      await setDoc(userDocRef, {
+        hero: updatedHero || hero,
+        quests: updatedQuests || quests,
+        gymLogs: updatedGym || gymLogs,
+        rewards: updatedStore || rewards,
+        lastSynced: new Date().toISOString()
+      }, { merge: true });
+    }
+  };
+
+  // --- INTERACTION LOGICS ---
+  const triggerToast = (msg) => {
+    setToastMsg(msg);
+    setTimeout(() => setToastMsg(""), 4000);
+  };
+
+  const handleQuestToggle = (id) => {
+    playSound('complete');
+    
+    const newQuestsList = quests.map(q => {
+      if (q.id === id) {
+        const completing = !q.completed;
+        const xpChange = completing ? q.xp : -q.xp;
+        const goldChange = completing ? q.gold : -q.gold;
+
+        let nextXp, nextGold, nextLevel, nextTargetXp, levelUpOccurred = false;
+
+        setHero(h => {
+          nextXp = h.xp + xpChange;
+          nextGold = Math.max(0, h.gold + goldChange);
+          nextLevel = h.level;
+          nextTargetXp = h.nextLevelXp;
+
+          if (nextXp >= nextTargetXp) {
+            nextXp -= nextTargetXp;
+            nextLevel += 1;
+            nextTargetXp = nextLevel * 300;
+            levelUpOccurred = true;
+            playSound('levelup');
+            setLevelUpModal(true);
+          } else if (nextXp < 0) {
+            nextXp = 0;
+          }
+
+          const upStats = { ...h.stats };
+          if (completing && q.attribute) {
+            upStats[q.attribute] = (upStats[q.attribute] || 10) + (q.difficulty === 'hard' ? 1.0 : q.difficulty === 'medium' ? 0.5 : 0.2);
+          }
+
+          const freshHero = {
+            ...h,
+            xp: Math.round(nextXp),
+            gold: nextGold,
+            level: nextLevel,
+            nextLevelXp: nextTargetXp,
+            stats: upStats,
+            statPoints: levelUpOccurred ? h.statPoints + 3 : h.statPoints
+          };
+
+          // Backup immediately
+          triggerCloudBackup(freshHero, newQuestsList, null, null);
+          return freshHero;
+        });
+
+        if (completing) {
+          triggerToast(`Completed task: +${q.xp} XP | +${q.gold}g`);
+        }
+        return { ...q, completed: completing };
+      }
+      return q;
+    });
+
+    setQuests(newQuestsList);
+  };
+
+  const handleManualQuestAdd = (e) => {
+    e.preventDefault();
+    if (!newQuestText.trim()) return;
+
+    const baseMul = newQuestType === 'day' ? 1 : 3;
+    const diffMul = newQuestDifficulty === 'easy' ? 15 : newQuestDifficulty === 'medium' ? 30 : 60;
+    const calcXp = diffMul * baseMul;
+    const calcGold = Math.round(calcXp * 0.4);
+
+    const q = {
+      id: Date.now(),
+      text: newQuestText,
+      type: newQuestType,
+      completed: false,
+      difficulty: newQuestDifficulty,
+      attribute: newQuestAttr,
+      xp: calcXp,
+      gold: calcGold
+    };
+
+    const nextQuests = [q, ...quests];
+    setQuests(nextQuests);
+    setNewQuestText("");
+    triggerCloudBackup(null, nextQuests, null, null);
+    triggerToast("Quest added.");
+  };
+
+  const deleteQuest = (id) => {
+    const nextQuests = quests.filter(q => q.id !== id);
+    setQuests(nextQuests);
+    triggerCloudBackup(null, nextQuests, null, null);
+    triggerToast("Quest deleted.");
+  };
+
+  const triggerPresetWorkoutLog = (dayName) => {
+    const workoutPreset = PRESET_WORKOUTS[dayName];
+    if (!workoutPreset) return;
+
+    const newLog = {
+      id: Date.now(),
+      date: new Date().toISOString().split('T')[0],
+      workoutName: `${workoutPreset.name} (${dayName})`,
+      exercises: workoutPreset.exercises
+    };
+
+    const updatedGymLogs = [newLog, ...gymLogs];
+    setGymLogs(updatedGymLogs);
+
+    setHero(h => {
+      let newXp = h.xp + 60;
+      let newGold = h.gold + 20;
+      let newLevel = h.level;
+      let targetXp = h.nextLevelXp;
+      let lvlUp = false;
+
+      if (newXp >= targetXp) {
+        newXp -= targetXp;
+        newLevel += 1;
+        targetXp = newLevel * 300;
+        lvlUp = true;
+        playSound('levelup');
+        setLevelUpModal(true);
+      }
+
+      const copyStats = { ...h.stats };
+      copyStats.strength = (copyStats.strength || 10) + 0.5;
+      copyStats.stamina = (copyStats.stamina || 10) + 0.5;
+
+      const freshHero = {
+        ...h,
+        xp: Math.round(newXp),
+        gold: newGold,
+        level: newLevel,
+        nextLevelXp: targetXp,
+        stats: copyStats,
+        statPoints: lvlUp ? h.statPoints + 3 : h.statPoints
+      };
+
+      triggerCloudBackup(freshHero, null, updatedGymLogs, null);
+      return freshHero;
+    });
+
+    playSound('complete');
+    triggerToast(`Logged workout: ${workoutPreset.name}`);
+  };
+
+  const handleStatBoost = (statName) => {
+    if (hero.statPoints <= 0) return;
+    playSound('complete');
+    setHero(h => {
+      const freshHero = {
+        ...h,
+        statPoints: h.statPoints - 1,
+        stats: {
+          ...h.stats,
+          [statName]: (h.stats[statName] || 10) + 1
+        }
+      };
+      triggerCloudBackup(freshHero, null, null, null);
+      return freshHero;
+    });
+  };
+
+  const purchaseReward = (id, cost, title) => {
+    if (hero.gold < cost) {
+      triggerToast("Insufficient gold balance.");
+      return;
+    }
+    playSound('buy');
+    setHero(h => {
+      const freshHero = { ...h, gold: h.gold - cost };
+      triggerCloudBackup(freshHero, null, null, null);
+      return freshHero;
+    });
+    triggerToast(`Redeemed: ${title}`);
+  };
+
+  const handleAddReward = (e) => {
+    e.preventDefault();
+    if (!customRewardName.trim()) return;
+    const newItem = {
+      id: Date.now(),
+      text: customRewardName,
+      cost: Number(customRewardCost),
+      icon: "🎁"
+    };
+    const nextRewards = [newItem, ...rewards];
+    setRewards(nextRewards);
+    setCustomRewardName("");
+    triggerCloudBackup(null, null, null, nextRewards);
+    triggerToast("Reward added to Merchant.");
+  };
+
+  // --- ARCHIVING COMPLETED DAILY QUESTS MANUAL ACTION (PROMPT SPECIFIED FLEXIBILITY) ---
+  const archiveCompletedDailies = () => {
+    const uncompleted = quests.filter(q => !q.completed);
+    if (quests.length === uncompleted.length) {
+      triggerToast("No completed quests to archive.");
+      return;
+    }
+    setQuests(uncompleted);
+    triggerCloudBackup(null, uncompleted, null, null);
+    triggerToast("Archived completed items. Clean workspace secured!");
+  };
+
+  const marrowCleanReset = () => {
+    if (window.confirm("Perform Marrow Reset? All custom tasks and logs will be permanently deleted.")) {
+      localStorage.clear();
+      window.location.reload();
+    }
+  };
+
+  // --- GEMINI API INTEGRATIONS ---
+  const callAiAgentQuestGenerator = async () => {
+    if (!aiInputPrompt.trim()) return;
+    setIsAiGenerating(true);
+
+    const apiKey = ""; 
+    const apiEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+
+    const promptText = `
+      You are Adi's highly responsive productivity assistant. Adi wants to complete the following schedule or goal: "${aiInputPrompt}".
+      Decompose this completely flexibly based strictly on his plan. Do not enforce rigid templates. 
+      Generate exactly 2 to 4 actionable, highly realistic sub-quests to complete today.
+      
+      Output a valid JSON object matching this schema:
+      {
+        "quests": [
+          {
+            "text": "Specific mini task description",
+            "type": "day",
+            "difficulty": "easy" or "medium" or "hard",
+            "attribute": "intelligence" or "willpower" or "stamina" or "strength",
+            "xp": 30,
+            "gold": 12
+          }
+        ]
+      }
+      Assign xp (15-50) and gold (5-20) dynamic values depending on difficulty. Respond with ONLY the raw JSON. No markdown backticks.
+    `;
+
+    try {
+      const payload = {
+        contents: [{ parts: [{ text: promptText }] }],
+        generationConfig: { responseMimeType: "application/json" }
+      };
+
+      const response = await fetch(apiEndpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) throw new Error();
+      const result = await response.json();
+      const generatedText = result.candidates?.[0]?.content?.parts?.[0]?.text;
+
+      if (generatedText) {
+        const data = JSON.parse(generatedText);
+        if (data.quests) {
+          const processed = data.quests.map((q, idx) => ({
+            ...q,
+            id: Date.now() + idx,
+            completed: false
+          }));
+          const updatedQuests = [...processed, ...quests];
+          setQuests(updatedQuests);
+          triggerCloudBackup(null, updatedQuests, null, null);
+          triggerToast(`AI generated ${processed.length} flexible tasks!`);
+          setAiInputPrompt("");
+        }
+      }
+    } catch (e) {
+      triggerToast("AI Service timed out. Please retry!");
+    } finally {
+      setIsAiGenerating(false);
+    }
+  };
+
+  const handleHevyScreenshotUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsVisionParsing(true);
+    triggerToast("Processing Hevy app summary...");
+
+    const reader = new FileReader();
+    reader.onloadend = async () => {
+      const base64Data = reader.result.split(',')[1];
+      const mimeType = file.type;
+
+      const apiKey = "";
+      const apiEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+
+      const visionPrompt = `
+        Read this screenshot image from the workout tracking app Hevy. 
+        Extract the workout name/focus and set lists.
+        
+        Generate a valid JSON object matching this schema:
+        {
+          "workoutName": "Extracted Focus Area Name",
+          "date": "2026-05-19",
+          "exercises": [
+            {
+              "name": "Exercise name",
+              "sets": [
+                { "reps": 8, "weight": 140 }
+              ]
+            }
+          ]
+        }
+        Respond with ONLY the raw JSON object. No markdown wraps.
+      `;
+
+      const payload = {
+        contents: [
+          {
+            role: "user",
+            parts: [
+              { text: visionPrompt },
+              { inlineData: { mimeType: mimeType, data: base64Data } }
+            ]
+          }
+        ],
+        generationConfig: { responseMimeType: "application/json" }
+      };
+
+      try {
+        const response = await fetch(apiEndpoint, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) throw new Error();
+        const result = await response.json();
+        const jsonText = result.candidates?.[0]?.content?.parts?.[0]?.text;
+
+        if (jsonText) {
+          const parsed = JSON.parse(jsonText);
+          const newWorkoutLog = {
+            id: Date.now(),
+            date: parsed.date || new Date().toISOString().split('T')[0],
+            workoutName: `${parsed.workoutName} (Hevy Sync)`,
+            exercises: parsed.exercises || []
+          };
+
+          const updatedGymLogs = [newWorkoutLog, ...gymLogs];
+          setGymLogs(updatedGymLogs);
+
+          setHero(h => {
+            let nXp = h.xp + 85;
+            let nGold = h.gold + 30;
+            let nLvl = h.level;
+            let tXp = h.nextLevelXp;
+            let reachedNewLvl = false;
+
+            if (nXp >= tXp) {
+              nXp -= tXp;
+              nLvl += 1;
+              tXp = nLvl * 300;
+              reachedNewLvl = true;
+              playSound('levelup');
+              setLevelUpModal(true);
+            }
+
+            const activeStats = { ...h.stats };
+            activeStats.strength = (activeStats.strength || 10) + 1.0;
+            activeStats.stamina = (activeStats.stamina || 10) + 1.0;
+
+            const freshHero = {
+              ...h,
+              xp: Math.round(nXp),
+              gold: nGold,
+              level: nLvl,
+              nextLevelXp: tXp,
+              stats: activeStats,
+              statPoints: reachedNewLvl ? h.statPoints + 3 : h.statPoints
+            };
+
+            triggerCloudBackup(freshHero, null, updatedGymLogs, null);
+            return freshHero;
+          });
+
+          playSound('complete');
+          triggerToast("Hevy workout parsed successfully!");
+        }
+      } catch (err) {
+        triggerToast("OCR parsing failed. Try logging with splits!");
+      } finally {
+        setIsVisionParsing(false);
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const codingQuest = quests.find(q => q.text.includes("8 Hours")) || {};
+  const readQuest = quests.find(q => q.text.includes("Read book")) || {};
+  const sleepQuest = quests.find(q => q.text.includes("sleep")) || {};
+
+  return (
+    <div className="min-h-screen bg-zinc-950 text-zinc-100 font-sans flex flex-col antialiased">
+      
+      {/* --- MINIMALIST ROW HEADER (TOP BAR EXCLUSIVE) --- */}
+      <header className="border-b border-zinc-900 bg-zinc-950 px-6 py-4 sticky top-0 z-40">
+        <div className="max-w-5xl mx-auto flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-indigo-500"></span>
+              <span className="text-xs font-semibold tracking-widest text-zinc-100 font-mono">ADI // LIFEQUEST</span>
+            </div>
+            
+            <div className="flex sm:hidden items-center gap-2.5">
+              <span className="text-xs font-mono text-zinc-500">{hero.gold}g</span>
+              {cloudSync && <span className="text-[10px] font-mono text-zinc-600 bg-zinc-900 px-1.5 rounded">Sync</span>}
+            </div>
+          </div>
+
+          {/* Quick Stats Overview */}
+          <div className="flex items-center gap-4 text-[11px] font-mono text-zinc-400 justify-between sm:justify-end">
+            <div className="flex items-center gap-1.5">
+              <span>LVL {hero.level}</span>
+              <div className="w-14 bg-zinc-900 h-1 rounded-full overflow-hidden">
+                <div className="bg-zinc-400 h-full transition-all" style={{ width: `${(hero.xp / hero.nextLevelXp) * 100}%` }}></div>
+              </div>
+            </div>
+
+            <div className="h-3 w-[1px] bg-zinc-800"></div>
+
+            <div>{hero.gold}g</div>
+
+            <div className="h-3 w-[1px] bg-zinc-800"></div>
+
+            <div className="flex items-center gap-1 text-zinc-300">
+              <span>{hero.streak}d streak</span>
+            </div>
+          </div>
+
+        </div>
+
+        {/* Navigation Tabs (Top Bar Centered) */}
+        <div className="max-w-5xl mx-auto border-t border-zinc-900/50 mt-3 pt-3 flex items-center gap-1 overflow-x-auto">
+          <button 
+            onClick={() => setActiveTab('dashboard')} 
+            className={`px-3.5 py-1.5 rounded-md text-[11px] font-mono transition ${activeTab === 'dashboard' ? 'bg-zinc-900 text-zinc-100' : 'text-zinc-500 hover:text-zinc-300'}`}>
+            Overview
+          </button>
+          <button 
+            onClick={() => setActiveTab('quests')} 
+            className={`px-3.5 py-1.5 rounded-md text-[11px] font-mono transition ${activeTab === 'quests' ? 'bg-zinc-900 text-zinc-100' : 'text-zinc-500 hover:text-zinc-300'}`}>
+            Quests Board
+          </button>
+          <button 
+            onClick={() => setActiveTab('gym')} 
+            className={`px-3.5 py-1.5 rounded-md text-[11px] font-mono transition ${activeTab === 'gym' ? 'bg-zinc-900 text-zinc-100' : 'text-zinc-500 hover:text-zinc-300'}`}>
+            Iron Temple
+          </button>
+          <button 
+            onClick={() => setActiveTab('shop')} 
+            className={`px-3.5 py-1.5 rounded-md text-[11px] font-mono transition ${activeTab === 'shop' ? 'bg-zinc-900 text-zinc-100' : 'text-zinc-500 hover:text-zinc-300'}`}>
+            Loot Store
+          </button>
+          <button 
+            onClick={() => setActiveTab('hero')} 
+            className={`px-3.5 py-1.5 rounded-md text-[11px] font-mono transition ${activeTab === 'hero' ? 'bg-zinc-900 text-zinc-100' : 'text-zinc-500 hover:text-zinc-300'}`}>
+            Specs
+            {hero.statPoints > 0 && <span className="ml-1.5 text-xs text-indigo-400 font-bold">●</span>}
+          </button>
+        </div>
+      </header>
+
+      {/* --- NOTIFICATION TOAST --- */}
+      {toastMsg && (
+        <div className="fixed bottom-6 right-6 z-50 bg-zinc-900 border border-zinc-800 text-zinc-200 px-4 py-3 rounded-lg shadow-xl text-xs font-mono flex items-center gap-2 animate-slide-in">
+          <span className="text-indigo-400">■</span>
+          <span>{toastMsg}</span>
+        </div>
+      )}
+
+      {/* --- CENTRAL MAIN AREA --- */}
+      <main className="max-w-5xl mx-auto px-6 py-6 w-full flex-grow">
+
+        {/* --- TABS CONTEXTS --- */}
+
+        {/* 1. OVERVIEW DASHBOARD */}
+        {activeTab === 'dashboard' && (
+          <div className="space-y-8 animate-fade-in">
+            
+            {/* Header profile intro */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-900 pb-5">
+              <div>
+                <h2 className="text-base font-bold text-zinc-100">Welcome, Aditya</h2>
+                <p className="text-xs text-zinc-500 mt-1">Sleek overview of your metrics & active habits.</p>
+              </div>
+
+              <div className="flex items-center gap-4 text-xs font-mono text-zinc-400">
+                <div>STR <span className="text-zinc-200 font-bold">{Math.floor(hero.stats.strength)}</span></div>
+                <div>INT <span className="text-zinc-200 font-bold">{Math.floor(hero.stats.intelligence)}</span></div>
+                <div>WIL <span className="text-zinc-200 font-bold">{Math.floor(hero.stats.willpower)}</span></div>
+                <div>STA <span className="text-zinc-200 font-bold">{Math.floor(hero.stats.stamina)}</span></div>
+              </div>
+            </div>
+
+            {/* AI Decomposer command strip */}
+            <div className="space-y-2.5">
+              <label className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">Intelligent Task Splitter</label>
+              <div className="flex gap-2">
+                <input 
+                  type="text" 
+                  value={aiInputPrompt}
+                  onChange={(e) => setAiInputPrompt(e.target.value)}
+                  placeholder="Enter plan (e.g., 'ML backprop models', 'DSA array stack')"
+                  className="flex-grow bg-zinc-900/60 border border-zinc-800 rounded-lg px-4 py-2.5 text-xs text-zinc-200 placeholder-zinc-600 focus:outline-none focus:border-zinc-700 font-mono"
+                />
+                <button 
+                  onClick={callAiAgentQuestGenerator}
+                  disabled={isAiGenerating}
+                  className="bg-zinc-100 hover:bg-zinc-200 text-zinc-950 text-xs font-mono px-4 rounded-lg transition disabled:opacity-50"
+                >
+                  {isAiGenerating ? 'Splitting...' : 'Decompose'}
+                </button>
+              </div>
+            </div>
+
+            {/* Habits Matrix Grid */}
+            <div className="space-y-3">
+              <p className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">Core Habit Status</p>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                
+                <div className="bg-zinc-900/40 border border-zinc-900 p-4 rounded-xl flex flex-col justify-between h-24">
+                  <span className="text-xs text-zinc-400">💻 8 Hours Coding</span>
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-mono font-bold text-zinc-300">{codingQuest.completed ? 'Achieved' : 'Incomplete'}</span>
+                    <span className="text-[10px] text-zinc-500 font-mono">{codingQuest.completed ? '+80 XP' : '0/1'}</span>
+                  </div>
+                </div>
+
+                <div className="bg-zinc-900/40 border border-zinc-900 p-4 rounded-xl flex flex-col justify-between h-24">
+                  <span className="text-xs text-zinc-400">📚 Books over Scrolling</span>
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-mono font-bold text-zinc-300">{readQuest.completed ? 'Achieved' : 'Incomplete'}</span>
+                    <span className="text-[10px] text-zinc-500 font-mono">{readQuest.completed ? '+40 XP' : '0/1'}</span>
+                  </div>
+                </div>
+
+                <div className="bg-zinc-900/40 border border-zinc-900 p-4 rounded-xl flex flex-col justify-between h-24">
+                  <span className="text-xs text-zinc-400">🌙 Deep Sleep Rest</span>
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-mono font-bold text-zinc-300">{sleepQuest.completed ? 'Rested' : 'Incomplete'}</span>
+                    <span className="text-[10px] text-zinc-500 font-mono">{sleepQuest.completed ? '+20 XP' : '1/1'}</span>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            {/* Daily Quests View */}
+            <div className="space-y-3">
+              <div className="flex justify-between items-center">
+                <p className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">Daily Quest list</p>
+                <button 
+                  onClick={archiveCompletedDailies}
+                  className="text-[10px] font-mono text-indigo-400 hover:text-indigo-300 transition"
+                >
+                  Archive Completed Quests
+                </button>
+              </div>
+
+              <div className="space-y-2">
+                {quests.map(quest => (
+                  <div 
+                    key={quest.id} 
+                    onClick={() => handleQuestToggle(quest.id)}
+                    className={`group flex items-center justify-between p-3.5 rounded-xl border transition cursor-pointer ${quest.completed ? 'bg-zinc-900/20 border-zinc-900 opacity-55' : 'bg-zinc-950 border-zinc-900 hover:border-zinc-800'}`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className={`w-4.5 h-4.5 rounded border flex items-center justify-center transition ${quest.completed ? 'bg-zinc-800 border-zinc-700 text-zinc-400' : 'border-zinc-800'}`}>
+                        {quest.completed && "✓"}
+                      </div>
+                      <span className={`text-xs font-mono ${quest.completed ? 'line-through text-zinc-600' : 'text-zinc-200'}`}>{quest.text}</span>
+                    </div>
+
+                    <div className="flex items-center gap-3 font-mono text-xs">
+                      <span className="text-[10px] text-zinc-500 uppercase">{quest.attribute}</span>
+                      <span className="text-zinc-400">+{quest.xp}xp</span>
+                    </div>
+                  </div>
+                ))}
+                {quests.length === 0 && (
+                  <p className="text-xs text-zinc-600 py-2 font-mono">No active quests found. Split a goal using the AI Decomposer!</p>
+                )}
+              </div>
+            </div>
+
+          </div>
+        )}
+
+        {/* 2. QUEST BOARD (DETAILED VIEW) */}
+        {activeTab === 'quests' && (
+          <div className="space-y-8 animate-fade-in">
+            
+            <div className="bg-zinc-900/30 border border-zinc-900 p-5 rounded-xl space-y-4">
+              <p className="text-xs font-mono text-zinc-400 uppercase">Forge Quest Manually</p>
+              
+              <form onSubmit={handleManualQuestAdd} className="space-y-3">
+                <input 
+                  type="text" 
+                  value={newQuestText}
+                  onChange={(e) => setNewQuestText(e.target.value)}
+                  placeholder="Task name or target..." 
+                  className="w-full bg-zinc-950 border border-zinc-900 rounded-lg px-4 py-2.5 text-xs text-zinc-200 focus:outline-none focus:border-zinc-800"
+                />
+                
+                <div className="grid grid-cols-3 gap-3">
+                  <select 
+                    value={newQuestType}
+                    onChange={(e) => setNewQuestType(e.target.value)}
+                    className="bg-zinc-950 border border-zinc-900 rounded-lg px-3 py-2 text-xs text-zinc-400">
+                    <option value="day">Daily</option>
+                    <option value="week">Weekly</option>
+                  </select>
+
+                  <select 
+                    value={newQuestDifficulty}
+                    onChange={(e) => setNewQuestDifficulty(e.target.value)}
+                    className="bg-zinc-950 border border-zinc-900 rounded-lg px-3 py-2 text-xs text-zinc-400">
+                    <option value="easy">Easy</option>
+                    <option value="medium">Medium</option>
+                    <option value="hard">Hard</option>
+                  </select>
+
+                  <select 
+                    value={newQuestAttr}
+                    onChange={(e) => setNewQuestAttr(e.target.value)}
+                    className="bg-zinc-950 border border-zinc-900 rounded-lg px-3 py-2 text-xs text-zinc-400">
+                    <option value="intelligence">Intellect</option>
+                    <option value="strength">Strength</option>
+                    <option value="willpower">Willpower</option>
+                    <option value="stamina">Stamina</option>
+                  </select>
+                </div>
+
+                <button 
+                  type="submit" 
+                  className="w-full bg-zinc-100 hover:bg-zinc-200 text-zinc-950 text-xs font-mono py-2.5 rounded-lg transition"
+                >
+                  Create Quest
+                </button>
+              </form>
+            </div>
+
+            {/* List */}
+            <div className="space-y-3">
+              <p className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">Active Board</p>
+              
+              <div className="space-y-2">
+                {quests.map(q => (
+                  <div 
+                    key={q.id} 
+                    className={`flex items-center justify-between p-3.5 rounded-xl border transition ${q.completed ? 'border-zinc-900 bg-zinc-950/40 opacity-55' : 'border-zinc-900 bg-zinc-950'}`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <button 
+                        onClick={() => handleQuestToggle(q.id)}
+                        className={`w-4 h-4 rounded border flex items-center justify-center ${q.completed ? 'bg-zinc-800 border-zinc-700 text-zinc-400' : 'border-zinc-800'}`}>
+                        {q.completed && "✓"}
+                      </button>
+                      <span className={`text-xs font-mono ${q.completed ? 'line-through text-zinc-600' : 'text-zinc-200'}`}>{q.text}</span>
+                    </div>
+
+                    <div className="flex items-center gap-4 font-mono text-xs">
+                      <span className="text-[9px] text-zinc-500 uppercase">{q.attribute}</span>
+                      <span className="text-zinc-400">+{q.xp} XP</span>
+                      <button onClick={() => deleteQuest(q.id)} className="text-zinc-600 hover:text-zinc-400 transition">
+                        <TrashIcon />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+          </div>
+        )}
+
+        {/* 3. IRON TEMPLE (GYM TRACKER) */}
+        {activeTab === 'gym' && (
+          <div className="space-y-8 animate-fade-in">
+            
+            {/* Adi's Splits Presets */}
+            <div className="space-y-3">
+              <p className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">Adi's Custom Splits</p>
+              
+              <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+                {Object.keys(PRESET_WORKOUTS).map(day => (
+                  <button 
+                    key={day}
+                    onClick={() => triggerPresetWorkoutLog(day)}
+                    className="bg-zinc-950 hover:bg-zinc-900 border border-zinc-900 p-4 rounded-xl transition text-left space-y-2"
+                  >
+                    <span className="text-[9px] font-mono text-zinc-600 uppercase">{day}</span>
+                    <p className="text-xs font-bold text-zinc-200 leading-tight">{PRESET_WORKOUTS[day].name}</p>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Hevy App Image upload sync */}
+            <div className="border border-dashed border-zinc-850 bg-zinc-950/20 rounded-xl p-6 text-center space-y-3">
+              <div>
+                <p className="text-xs font-mono text-zinc-300">Hevy OCR Image Sync</p>
+                <p className="text-[11px] text-zinc-600 mt-1">Upload an image of your workout summary. The Vision Agent will log exercises automatically.</p>
+              </div>
+
+              <button 
+                onClick={() => fileInputRef.current.click()}
+                disabled={isVisionParsing}
+                className="bg-zinc-900 hover:bg-zinc-850 text-zinc-300 text-xs font-mono px-4 py-2 rounded-lg transition"
+              >
+                {isVisionParsing ? "Scanning with Vision AI..." : "Upload Screenshot"}
+              </button>
+
+              <input 
+                type="file" 
+                accept="image/*"
+                ref={fileInputRef}
+                onChange={handleHevyScreenshotUpload}
+                className="hidden" 
+              />
+            </div>
+
+            {/* Historical Workout Lists */}
+            <div className="space-y-3">
+              <p className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">Training History</p>
+              
+              <div className="space-y-3">
+                {gymLogs.map(log => (
+                  <div key={log.id} className="bg-zinc-950 border border-zinc-900 rounded-xl p-4 space-y-2.5">
+                    <div className="flex justify-between items-center text-xs font-mono border-b border-zinc-900 pb-2">
+                      <span className="text-zinc-300 font-bold">{log.workoutName}</span>
+                      <span className="text-zinc-600">{log.date}</span>
+                    </div>
+
+                    <div className="space-y-1.5">
+                      {log.exercises.map((ex, idx) => (
+                        <div key={idx} className="text-[11px] text-zinc-500 font-mono">
+                          {ex.name} — <span className="text-zinc-400">{ex.sets.map(s => `${s.reps}x${s.weight}lbs`).join(', ')}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+          </div>
+        )}
+
+        {/* 4. LOOT SHOP */}
+        {activeTab === 'shop' && (
+          <div className="space-y-8 animate-fade-in">
+            
+            <div className="bg-zinc-900/30 border border-zinc-900 p-4 rounded-xl">
+              <p className="text-xs font-mono text-zinc-400 uppercase mb-3">Add Custom Reward Item</p>
+              
+              <form onSubmit={handleAddReward} className="flex gap-2">
+                <input 
+                  type="text" 
+                  value={customRewardName}
+                  onChange={(e) => setCustomRewardName(e.target.value)}
+                  placeholder="e.g. 1 hour playing Halo..." 
+                  className="flex-grow bg-zinc-950 border border-zinc-900 rounded-lg px-3 py-2 text-xs text-zinc-200 focus:outline-none focus:border-zinc-800 font-mono"
+                />
+                
+                <input 
+                  type="number" 
+                  value={customRewardCost}
+                  onChange={(e) => setCustomRewardCost(e.target.value)}
+                  className="w-20 bg-zinc-950 border border-zinc-900 rounded-lg px-3 py-2 text-xs text-zinc-200 focus:outline-none"
+                />
+
+                <button type="submit" className="bg-zinc-100 hover:bg-zinc-200 text-zinc-950 font-mono px-4 rounded-lg text-xs transition">
+                  Store
+                </button>
+              </form>
+            </div>
+
+            {/* Merchant listings */}
+            <div className="space-y-3">
+              <p className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">Merchant Store</p>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {rewards.map(r => (
+                  <div key={r.id} className="bg-zinc-950 border border-zinc-900 p-4 rounded-xl flex items-center justify-between">
+                    <div>
+                      <p className="text-xs font-mono text-zinc-200">{r.text}</p>
+                      <p className="text-[10px] text-zinc-600 mt-0.5">Spend gold to redeem</p>
+                    </div>
+
+                    <button 
+                      onClick={() => purchaseReward(r.id, r.cost, r.text)}
+                      className="bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-300 font-mono px-3 py-1.5 rounded-lg text-xs transition"
+                    >
+                      Redeem {r.cost}g
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+          </div>
+        )}
+
+        {/* 5. HERO IDENTITY SPECS */}
+        {activeTab === 'hero' && (
+          <div className="space-y-8 animate-fade-in">
+            
+            <div className="bg-zinc-900/30 border border-zinc-900 p-5 rounded-xl space-y-4">
+              <p className="text-xs font-mono text-zinc-400 uppercase">Profile Settings</p>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-[10px] font-mono text-zinc-600 uppercase mb-1">Name</label>
+                  <input 
+                    type="text" 
+                    value={hero.name}
+                    onChange={(e) => setHero({ ...hero, name: e.target.value })}
+                    className="w-full bg-zinc-950 border border-zinc-900 rounded-lg px-3 py-2 text-xs text-zinc-200 font-mono"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-mono text-zinc-600 uppercase mb-1">Combat Class Specialty</label>
+                  <input 
+                    type="text" 
+                    value={hero.class}
+                    onChange={(e) => setHero({ ...hero, class: e.target.value })}
+                    className="w-full bg-zinc-950 border border-zinc-900 rounded-lg px-3 py-2 text-xs text-zinc-200 font-mono"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Matrix distribution */}
+            <div className="space-y-3">
+              <div className="flex justify-between items-center">
+                <p className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">Character Attribute Matrix</p>
+                {hero.statPoints > 0 && (
+                  <span className="text-[10px] font-mono text-indigo-400">{hero.statPoints} points available</span>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                {Object.keys(hero.stats).map((stat) => (
+                  <div key={stat} className="flex justify-between items-center bg-zinc-950 border border-zinc-900 p-4 rounded-xl">
+                    <div>
+                      <span className="text-xs font-mono text-zinc-200 capitalize">{stat}</span>
+                      <p className="text-[10px] text-zinc-600 mt-0.5">
+                        {stat === 'strength' && 'Boosted by split routines & Hevy uploads.'}
+                        {stat === 'intelligence' && 'Cultivated by coding & technical work.'}
+                        {stat === 'willpower' && 'Grown by avoiding social media scrolling.'}
+                        {stat === 'stamina' && 'Fueled by rest routines & 8h sleep.'}
+                      </p>
+                    </div>
+
+                    <div className="flex items-center gap-3 font-mono text-xs">
+                      <span className="text-zinc-400">{Math.floor(hero.stats[stat])}</span>
+                      {hero.statPoints > 0 && (
+                        <button 
+                          onClick={() => handleStatBoost(stat)}
+                          className="bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-300 text-[10px] px-2.5 py-1 rounded"
+                        >
+                          Boost
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Danger Zone */}
+            <div className="border border-red-950/20 bg-red-950/5 rounded-xl p-5 space-y-3">
+              <p className="text-xs font-mono text-red-400">System Options</p>
+              <button 
+                onClick={marrowCleanReset}
+                className="bg-zinc-950 border border-zinc-900 text-zinc-400 hover:text-red-400 text-xs font-mono px-4 py-2 rounded-lg transition"
+              >
+                Perform System Marrow Clean Reset
+              </button>
+            </div>
+
+          </div>
+        )}
+
+      </main>
+
+      {/* --- LEVEL UP MODAL SUCCESS CELEBRATION --- */}
+      {levelUpModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-950/85 backdrop-blur-sm p-4 animate-fade-in">
+          <div className="bg-zinc-900 border border-zinc-800 p-6 rounded-2xl max-w-sm w-full text-center space-y-4 shadow-2xl">
+            <h3 className="text-sm font-bold tracking-wider text-zinc-100 font-mono uppercase">Level Up Reached</h3>
+            <p className="text-xs text-zinc-400 leading-relaxed leading-5">
+              Congratulations, Aditya! You are now Level {hero.level}. You have been awarded <span className="text-zinc-200 font-bold">3 attribute points</span> to allocate in your profile configuration block.
+            </p>
+            <button 
+              onClick={() => {
+                setLevelUpModal(false);
+                setActiveTab('hero');
+              }}
+              className="w-full bg-zinc-100 hover:bg-zinc-200 text-zinc-950 font-mono py-2 rounded-lg text-xs transition"
+            >
+              Allocate Attributes
+            </button>
+          </div>
+        </div>
+      )}
+
+    </div>
+  );
+}
