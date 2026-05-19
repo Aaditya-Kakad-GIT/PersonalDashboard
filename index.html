@@ -278,11 +278,11 @@
 
         setIsAiGenerating(true);
         try {
-          const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+          const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              contents: [{ parts: [{ text: `Decompose this goal cleanly into 2-4 specific JSON daily micro-quests matching Adi's schedule workflow: "${aiInputPrompt}". Schema layout expected: {"quests": [{"text": "Task description details", "type": "day", "difficulty": "medium", "attribute": "intelligence", "xp": 30, "gold": 12}]}. Respond with raw JSON string only, absolutely no markdown markdown backticks block formatting.` }] }],
+              contents: [{ parts: [{ text: `Decompose this goal cleanly into 2-4 specific JSON daily micro-quests matching Adi's schedule workflow: "${aiInputPrompt}". Schema layout expected: {"quests": [{"text": "Task description details", "type": "day", "difficulty": "medium", "attribute": "intelligence", "xp": 30, "gold": 12}]}. Respond with raw JSON string only, absolutely no markdown block formatting.` }] }],
               generationConfig: { responseMimeType: "application/json" }
             })
           });
@@ -322,7 +322,7 @@
         reader.onloadend = async () => {
           try {
             const base64Data = reader.result.split(',')[1];
-            const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+            const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({
