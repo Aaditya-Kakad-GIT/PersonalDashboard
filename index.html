@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>LifeQuest OS // Adi</title>
   
-  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -22,26 +21,20 @@
     }
   </script>
 
-  <!-- React & Babel Standalone CDNs for complete local runtime execution -->
   <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Geist+Mono:wght@300;400;500;700&family=Geist:wght@300;400;600;800&display=swap');
-    body {
-      font-family: 'Geist', sans-serif;
-    }
-    .font-mono {
-      font-family: 'Geist Mono', monospace;
-    }
+    body { font-family: 'Geist', sans-serif; }
+    .font-mono { font-family: 'Geist Mono', monospace; }
   </style>
 </head>
 <body class="bg-zinc-950 text-zinc-100 min-h-screen selection:bg-zinc-800">
 
   <div id="root"></div>
 
-  <!-- Main React Application Script Block -->
   <script type="text/babel">
     const { useState, useEffect, useRef } = React;
 
@@ -134,7 +127,6 @@
     function App() {
       const [activeTab, setActiveTab] = useState('dashboard');
       
-      // Hero character properties
       const [hero, setHero] = useState(() => {
         const saved = localStorage.getItem('lq_hero_adi_v4');
         return saved ? JSON.parse(saved) : {
@@ -143,7 +135,6 @@
         };
       });
 
-      // Core Habits and Task items
       const [quests, setQuests] = useState(() => {
         const saved = localStorage.getItem('lq_quests_adi_v4');
         return saved ? JSON.parse(saved) : [
@@ -168,7 +159,6 @@
       const [toastMsg, setToastMsg] = useState("");
       const [levelUpModal, setLevelUpModal] = useState(false);
 
-      // Manual addition parameters
       const [newQuestText, setNewQuestText] = useState("");
       const [newQuestType, setNewQuestType] = useState("day");
       const [newQuestDifficulty, setNewQuestDifficulty] = useState("medium");
@@ -183,7 +173,7 @@
         localStorage.setItem('lq_rewards_adi_v4', JSON.stringify(rewards));
       }, [hero, quests, gymLogs, rewards]);
 
-      const triggerToast = (msg) => { setToastMsg(msg); setTimeout(() => setToastMsg(""), 3500); };
+      const triggerToast = (msg) => { setToastMsg(msg); setTimeout(() => setToastMsg(""), 5000); };
 
       const handleQuestToggle = (id) => {
         playSound('complete');
@@ -227,28 +217,16 @@
       const handleManualQuestAdd = (e) => {
         e.preventDefault();
         if (!newQuestText.trim()) return;
-        
-        // FIX: Replaced compiled "new遊QuestDifficulty" typo with standard "newQuestDifficulty"
         const calcXp = newQuestDifficulty === 'easy' ? 20 : newQuestDifficulty === 'medium' ? 40 : 80;
-        const q = { 
-          id: Date.now(), 
-          text: newQuestText, 
-          type: newQuestType, 
-          completed: false, 
-          difficulty: newQuestDifficulty, 
-          attribute: newQuestAttr, 
-          xp: calcXp, 
-          gold: Math.round(calcXp * 0.4) 
-        };
+        const q = { id: Date.now(), text: newQuestText, type: newQuestType, completed: false, difficulty: newQuestDifficulty, attribute: newQuestAttr, xp: calcXp, gold: Math.round(calcXp * 0.4) };
         setQuests([q, ...quests]);
         setNewQuestText("");
         triggerToast("Custom quest successfully forged.");
       };
 
-      // FIX: Added missing deleteQuest engine inside the React App component 
       const deleteQuest = (id) => {
         setQuests(prev => prev.filter(q => q.id !== id));
-        triggerToast("Quest deleted from active roster.");
+        triggerToast("Quest permanently deleted.");
       };
 
       const triggerPresetWorkoutLog = (dayName) => {
@@ -284,14 +262,13 @@
         triggerToast("Workspace cleared.");
       };
 
-      // --- CLIENT SIDE SAFE GEMINI SECURE CALL ENGINE ---
       const loadApiKeySecurely = () => {
         let key = localStorage.getItem("adi_gemini_key");
-        if (!key) {
-          key = prompt("Please provide your free Gemini API key to authorize request encryption (Stored safely inside your device browser local storage):");
-          if (key) localStorage.setItem("adi_gemini_key", key);
+        if (!key || key.trim() === "") {
+          key = prompt("Please provide your Gemini API key:");
+          if (key) localStorage.setItem("adi_gemini_key", key.trim());
         }
-        return key;
+        return key ? key.trim() : null;
       };
 
       const callAiAgentQuestGenerator = async () => {
@@ -301,14 +278,22 @@
 
         setIsAiGenerating(true);
         try {
-          const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+          const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              contents: [{ parts: [{ text: `Decompose this goal cleanly into 2-4 highly specific JSON daily micro-quests matching Adi's schedule workflow layout: "${aiInputPrompt}". Schema structure expected: {"quests": [{"text": "Task details description", "type": "day", "difficulty": "medium", "attribute": "intelligence", "xp": 30, "gold": 12}]}. Respond with raw JSON string only, no markdown markdown blocks formatting.` }] }],
+              contents: [{ parts: [{ text: `Decompose this goal cleanly into 2-4 specific JSON daily micro-quests matching Adi's schedule workflow: "${aiInputPrompt}". Schema layout expected: {"quests": [{"text": "Task description details", "type": "day", "difficulty": "medium", "attribute": "intelligence", "xp": 30, "gold": 12}]}. Respond with raw JSON string only, absolutely no markdown markdown backticks block formatting.` }] }],
               generationConfig: { responseMimeType: "application/json" }
             })
           });
+
+          if (!res.ok) {
+            const errData = await res.json();
+            triggerToast(`Google API Rejection: ${errData.error?.message || res.statusText}`);
+            setIsAiGenerating(false);
+            return;
+          }
+
           const result = await res.json();
           const rawText = result.candidates[0].content.parts[0].text;
           const data = JSON.parse(rawText);
@@ -317,8 +302,11 @@
             setAiInputPrompt("");
             triggerToast("AI split your target into micro-quests!");
           }
-        } catch (e) { triggerToast("AI parsing failed. Verify API configuration key."); }
-        finally { setIsAiGenerating(false); }
+        } catch (e) { 
+          triggerToast(`Internal Client Crash: ${e.message}. Try resetting your key in the Specs panel if it is invalid.`); 
+        } finally { 
+          setIsAiGenerating(false); 
+        }
       };
 
       const handleHevyScreenshotUpload = async (e) => {
@@ -334,7 +322,7 @@
         reader.onloadend = async () => {
           try {
             const base64Data = reader.result.split(',')[1];
-            const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+            const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({
@@ -348,6 +336,14 @@
                 generationConfig: { responseMimeType: "application/json" }
               })
             });
+
+            if (!res.ok) {
+              const errData = await res.json();
+              triggerToast(`Vision API Error: ${errData.error?.message || res.statusText}`);
+              setIsVisionParsing(false);
+              return;
+            }
+
             const result = await res.json();
             const rawText = result.candidates[0].content.parts[0].text;
             const parsed = JSON.parse(rawText);
@@ -356,10 +352,15 @@
             setGymLogs([newLog, ...gymLogs]);
             setHero(h => ({ ...h, xp: h.xp + 85, gold: h.gold + 35 }));
             triggerToast("Hevy snapshot parsed & cataloged.");
-          } catch (err) { triggerToast("Vision module error parsing file."); }
+          } catch (err) { triggerToast(`Vision module parsing failed: ${err.message}`); }
           finally { setIsVisionParsing(false); }
         };
         reader.readAsDataURL(file);
+      };
+
+      const clearSavedApiKey = () => {
+        localStorage.removeItem("adi_gemini_key");
+        triggerToast("Saved API key purged from browser local cache memory.");
       };
 
       const codingQuest = quests.find(q => q.text.includes("8 Hours")) || {};
@@ -368,7 +369,6 @@
       return (
         <div className="min-h-screen bg-zinc-950 text-zinc-100 flex flex-col font-sans">
           
-          {/* --- HORIZONTAL NAVIGATION CONSOLE (TOP BAR ONLY) --- */}
           <header className="border-b border-zinc-900 bg-zinc-950 px-6 py-4 sticky top-0 z-40">
             <div className="max-w-5xl mx-auto flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex items-center gap-2">
@@ -394,7 +394,7 @@
           </header>
 
           <main className="max-w-5xl mx-auto px-6 py-6 w-full flex-grow">
-            {toastMsg && <div className="bg-zinc-900 border border-zinc-800 text-xs text-zinc-300 p-3.5 rounded-xl mb-6 font-mono">{toastMsg}</div>}
+            {toastMsg && <div className="bg-zinc-900 border border-zinc-800 text-xs text-zinc-300 p-3.5 rounded-xl mb-6 font-mono whitespace-pre-wrap">{toastMsg}</div>}
 
             {/* --- TAB: OVERVIEW --- */}
             {activeTab === 'dashboard' && (
@@ -437,9 +437,12 @@
                   </div>
                   <div className="space-y-2">
                     {quests.map(q => (
-                      <div key={q.id} onClick={() => handleQuestToggle(q.id)} className={`p-3.5 rounded-xl border flex justify-between items-center cursor-pointer transition ${q.completed ? 'border-zinc-900 bg-zinc-950/40 opacity-40' : 'border-zinc-900 bg-zinc-900/30 hover:border-zinc-850'}`}>
-                        <span className={`text-xs font-mono ${q.completed ? 'line-through text-zinc-600' : 'text-zinc-200'}`}>{q.text}</span>
-                        <span className="text-xs font-mono text-zinc-500">+{q.xp}xp</span>
+                      <div key={q.id} className={`p-3.5 rounded-xl border flex justify-between items-center transition font-mono text-xs ${q.completed ? 'border-zinc-900 bg-zinc-950/40 opacity-40' : 'border-zinc-900 bg-zinc-900/30'}`}>
+                        <div className="flex items-center gap-3">
+                          <button onClick={() => handleQuestToggle(q.id)} className="w-4 h-4 rounded border border-zinc-800 text-[10px] flex items-center justify-center">{q.completed && "✓"}</button>
+                          <span className={q.completed ? 'line-through text-zinc-600' : 'text-zinc-200'}>{q.text}</span>
+                        </div>
+                        <span className="text-zinc-500">+{q.xp}xp</span>
                       </div>
                     ))}
                   </div>
@@ -539,7 +542,7 @@
               </div>
             )}
 
-            {/* --- TAB: SPEC MATRIX SPECS --- */}
+            {/* --- TAB: SPEC MATRIX --- */}
             {activeTab === 'hero' && (
               <div className="space-y-6 animate-fade-in">
                 <div className="bg-zinc-900/30 border border-zinc-900 p-4 rounded-xl font-mono text-xs space-y-2 text-zinc-400">
@@ -559,15 +562,22 @@
                     </div>
                   ))}
                 </div>
+
+                <div className="border border-zinc-900 p-4 rounded-xl space-y-2">
+                  <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider">Developer API Adjustments</p>
+                  <button onClick={clearSavedApiKey} className="bg-zinc-900 hover:bg-zinc-850 text-red-400 text-xs font-mono px-3 py-1.5 rounded border border-zinc-800 transition">
+                    Purge Cached API Key Token
+                  </button>
+                </div>
               </div>
             )}
           </main>
 
-          {/* Level Up alert overlay window */}
+          {/* Level Up Overlay Window */}
           {levelUpModal && (
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-950/80 backdrop-blur-sm p-4 animate-fade-in">
               <div className="bg-zinc-900 border border-zinc-800 p-6 rounded-2xl max-w-sm w-full text-center space-y-4 shadow-2xl">
-                <h3 className="text-xs font-bold tracking-wider text-zinc-100 font-mono uppercase">Level Up Reached</h3>
+                <h3 className="text-sm font-bold tracking-wider text-zinc-100 font-mono uppercase">Level Up Reached</h3>
                 <p className="text-xs text-zinc-400 leading-relaxed font-mono">You are now Level {hero.level}. You have earned 3 matrix attribute points.</p>
                 <button onClick={() => { setLevelUpModal(false); setActiveTab('hero'); }} className="w-full bg-zinc-100 text-zinc-950 font-mono py-2 rounded-lg text-xs font-bold transition">Open Matrix</button>
               </div>
