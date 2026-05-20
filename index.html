@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>LifeQuest OS // Adi</title>
-  
+
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -12,9 +12,36 @@
       theme: {
         extend: {
           colors: {
-            zinc: {
-              950: '#09090b',
+            zinc: { 950: '#09090b', 925: '#0d0d10', 875: '#18181f' },
+            violet: { 550: '#8b5cf6' }
+          },
+          fontFamily: {
+            sans: ['Geist', 'sans-serif'],
+            mono: ['Geist Mono', 'monospace'],
+          },
+          keyframes: {
+            fadeSlideIn: {
+              '0%': { opacity: '0', transform: 'translateY(6px)' },
+              '100%': { opacity: '1', transform: 'translateY(0)' },
+            },
+            pulseGlow: {
+              '0%, 100%': { boxShadow: '0 0 0px rgba(139,92,246,0)' },
+              '50%': { boxShadow: '0 0 12px rgba(139,92,246,0.25)' },
+            },
+            shimmer: {
+              '0%': { backgroundPosition: '-200% 0' },
+              '100%': { backgroundPosition: '200% 0' },
+            },
+            scaleIn: {
+              '0%': { opacity: '0', transform: 'scale(0.95)' },
+              '100%': { opacity: '1', transform: 'scale(1)' },
             }
+          },
+          animation: {
+            fadeSlideIn: 'fadeSlideIn 0.25s ease-out both',
+            pulseGlow: 'pulseGlow 2.5s ease-in-out infinite',
+            shimmer: 'shimmer 2s linear infinite',
+            scaleIn: 'scaleIn 0.2s ease-out both',
           }
         }
       }
@@ -25,34 +52,308 @@
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@300;400;500;600;700&family=Geist:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Geist+Mono:wght@300;400;500;700&family=Geist:wght@300;400;600;800&display=swap');
-    body { font-family: 'Geist', sans-serif; }
+    *, *::before, *::after { box-sizing: border-box; }
+
+    body {
+      font-family: 'Geist', sans-serif;
+      background: #09090b;
+      color: #f4f4f5;
+      min-height: 100vh;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    ::-webkit-scrollbar { width: 3px; height: 3px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #27272a; border-radius: 99px; }
+
+    ::selection { background: rgba(139, 92, 246, 0.2); color: #e4e4e7; }
+
     .font-mono { font-family: 'Geist Mono', monospace; }
+
+    /* Noise texture overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.4;
+    }
+
+    /* Grid dot background */
+    .bg-grid {
+      background-image: radial-gradient(circle, #27272a 1px, transparent 1px);
+      background-size: 28px 28px;
+    }
+
+    /* Glass card */
+    .glass {
+      background: rgba(24, 24, 27, 0.6);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
+    /* Glow border */
+    .glow-border {
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      box-shadow: 0 0 20px rgba(139, 92, 246, 0.06), inset 0 1px 0 rgba(139, 92, 246, 0.08);
+    }
+
+    /* Subtle separator line */
+    .sep { border-color: rgba(39, 39, 42, 0.8); }
+
+    /* XP Bar shimmer */
+    .xp-bar-fill {
+      background: linear-gradient(90deg, #6d28d9, #7c3aed, #8b5cf6, #7c3aed, #6d28d9);
+      background-size: 200% 100%;
+      animation: shimmer 3s linear infinite;
+    }
+
+    /* Checkbox custom */
+    .quest-check {
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border: 1px solid #3f3f46;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      position: relative;
+      flex-shrink: 0;
+    }
+    .quest-check:checked {
+      background: #7c3aed;
+      border-color: #7c3aed;
+    }
+    .quest-check:checked::after {
+      content: '';
+      position: absolute;
+      left: 4px;
+      top: 1.5px;
+      width: 5px;
+      height: 9px;
+      border: 1.5px solid white;
+      border-left: none;
+      border-top: none;
+      transform: rotate(45deg);
+    }
+    .quest-check:hover:not(:checked) {
+      border-color: #7c3aed;
+      background: rgba(124, 58, 237, 0.1);
+    }
+
+    /* Tab indicator */
+    .tab-active {
+      color: #e4e4e7;
+      background: rgba(39,39,42,0.8);
+      border: 1px solid rgba(63,63,70,0.6);
+    }
+    .tab-inactive {
+      color: #52525b;
+      border: 1px solid transparent;
+    }
+    .tab-inactive:hover { color: #a1a1aa; }
+
+    /* Stat bar */
+    .stat-bar-bg {
+      height: 3px;
+      background: #27272a;
+      border-radius: 99px;
+      overflow: hidden;
+    }
+    .stat-bar-fill {
+      height: 100%;
+      border-radius: 99px;
+      transition: width 0.4s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    /* Card hover lift */
+    .card-lift {
+      transition: transform 0.18s ease, border-color 0.18s ease;
+    }
+    .card-lift:hover {
+      transform: translateY(-1px);
+      border-color: rgba(63,63,70,0.9);
+    }
+
+    /* Input focus ring */
+    .input-field {
+      background: rgba(9,9,11,0.8);
+      border: 1px solid rgba(39,39,42,0.9);
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+    .input-field:focus {
+      outline: none;
+      border-color: rgba(124, 58, 237, 0.5);
+      box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.08);
+    }
+
+    /* Primary button */
+    .btn-primary {
+      background: #f4f4f5;
+      color: #09090b;
+      font-weight: 700;
+      transition: all 0.15s ease;
+    }
+    .btn-primary:hover {
+      background: #ffffff;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    }
+    .btn-primary:active { transform: translateY(0); }
+    .btn-primary:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Ghost button */
+    .btn-ghost {
+      background: rgba(24,24,27,0.6);
+      border: 1px solid rgba(39,39,42,0.8);
+      color: #a1a1aa;
+      transition: all 0.15s ease;
+    }
+    .btn-ghost:hover {
+      background: rgba(39,39,42,0.8);
+      color: #e4e4e7;
+      border-color: rgba(63,63,70,0.8);
+    }
+
+    /* Danger button */
+    .btn-danger {
+      background: rgba(127,29,29,0.15);
+      border: 1px solid rgba(185,28,28,0.2);
+      color: #f87171;
+      transition: all 0.15s ease;
+    }
+    .btn-danger:hover {
+      background: rgba(127,29,29,0.25);
+      border-color: rgba(185,28,28,0.4);
+    }
+
+    /* Section fade in */
+    .tab-section { animation: fadeSlideIn 0.22s ease-out both; }
+
+    /* Gold badge glow */
+    .gold-badge { color: #fbbf24; text-shadow: 0 0 8px rgba(251,191,36,0.3); }
+
+    /* Level badge */
+    .level-badge {
+      background: linear-gradient(135deg, rgba(124,58,237,0.15), rgba(139,92,246,0.08));
+      border: 1px solid rgba(124,58,237,0.25);
+      color: #a78bfa;
+    }
+
+    /* Empty state */
+    .empty-state {
+      border: 1px dashed rgba(39,39,42,0.6);
+      background: rgba(9,9,11,0.3);
+    }
+
+    /* Difficulty badge */
+    .diff-easy { color: #4ade80; background: rgba(74,222,128,0.08); border: 1px solid rgba(74,222,128,0.15); }
+    .diff-medium { color: #fbbf24; background: rgba(251,191,36,0.08); border: 1px solid rgba(251,191,36,0.15); }
+    .diff-hard { color: #f87171; background: rgba(248,113,113,0.08); border: 1px solid rgba(248,113,113,0.15); }
+
+    /* Attribute badge */
+    .attr-intel { color: #60a5fa; background: rgba(96,165,250,0.08); border: 1px solid rgba(96,165,250,0.15); }
+    .attr-str { color: #f97316; background: rgba(249,115,22,0.08); border: 1px solid rgba(249,115,22,0.15); }
+    .attr-wil { color: #c084fc; background: rgba(192,132,252,0.08); border: 1px solid rgba(192,132,252,0.15); }
+    .attr-sta { color: #34d399; background: rgba(52,211,153,0.08); border: 1px solid rgba(52,211,153,0.15); }
+
+    /* Workout day card */
+    .day-card {
+      background: rgba(9,9,11,0.7);
+      border: 1px solid rgba(39,39,42,0.7);
+      transition: all 0.18s ease;
+    }
+    .day-card:hover {
+      background: rgba(24,24,27,0.9);
+      border-color: rgba(124,58,237,0.35);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.3), 0 0 20px rgba(124,58,237,0.06);
+    }
+
+    /* Header glass */
+    .header-glass {
+      background: rgba(9,9,11,0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(39,39,42,0.6);
+    }
+
+    /* Reward card */
+    .reward-card {
+      background: rgba(9,9,11,0.6);
+      border: 1px solid rgba(39,39,42,0.7);
+      transition: all 0.18s ease;
+    }
+    .reward-card:hover {
+      border-color: rgba(251,191,36,0.2);
+      box-shadow: 0 0 20px rgba(251,191,36,0.04);
+    }
+
+    /* Scrollable area */
+    .scroll-area { overflow-y: auto; max-height: 400px; }
+
+    /* Neon dot indicator */
+    .neon-dot {
+      width: 6px; height: 6px;
+      background: #7c3aed;
+      border-radius: 50%;
+      box-shadow: 0 0 6px rgba(124,58,237,0.8), 0 0 12px rgba(124,58,237,0.4);
+    }
+    .neon-dot-green {
+      width: 6px; height: 6px;
+      background: #4ade80;
+      border-radius: 50%;
+      box-shadow: 0 0 6px rgba(74,222,128,0.8), 0 0 12px rgba(74,222,128,0.4);
+    }
   </style>
 </head>
-<body class="bg-zinc-950 text-zinc-100 min-h-screen selection:bg-zinc-800">
+<body class="bg-zinc-950 min-h-screen">
 
   <div id="root"></div>
 
   <script type="text/babel">
     const { useState, useEffect, useRef } = React;
 
-    // --- Minimalist SVG System Icons ---
+    /* ─── ICONS ─────────────────────────────────────────────── */
+    const Icon = ({ d, cls = "w-4 h-4", stroke = 1.6 }) => (
+      <svg className={cls} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={stroke}>
+        <path strokeLinecap="round" strokeLinejoin="round" d={d} />
+      </svg>
+    );
+
     const TrashIcon = () => (
-      <svg className="w-3.5 h-3.5 text-zinc-500 hover:text-red-400 transition" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+      <svg className="w-3.5 h-3.5 transition-colors duration-150" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}
+        style={{ color: '#52525b' }}
+        onMouseEnter={e => e.currentTarget.style.color = '#f87171'}
+        onMouseLeave={e => e.currentTarget.style.color = '#52525b'}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
       </svg>
     );
 
-    // --- Soft Sound Generator via Web Audio API ---
+    const BoltIcon = () => (
+      <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+      </svg>
+    );
+
+    /* ─── SOUND ─────────────────────────────────────────────── */
     const playSound = (type) => {
       try {
         const AudioContext = window.AudioContext || window.webkitAudioContext;
         if (!AudioContext) return;
         const ctx = new AudioContext();
         const now = ctx.currentTime;
-        
         if (type === 'complete') {
           const osc = ctx.createOscillator();
           const gain = ctx.createGain();
@@ -82,52 +383,63 @@
       } catch (e) {}
     };
 
-    // --- Adi's Explicit Weekly Split Presets ---
+    /* ─── PRESETS ────────────────────────────────────────────── */
     const PRESET_WORKOUTS = {
-      Tuesday: {
-        name: "Back & Biceps",
-        exercises: [
-          { name: "Deadlifts", sets: [{ reps: 5, weight: 225 }, { reps: 5, weight: 245 }, { reps: 5, weight: 265 }] },
-          { name: "Lat Pulldowns", sets: [{ reps: 10, weight: 120 }, { reps: 10, weight: 130 }] },
-          { name: "Hammer Curls", sets: [{ reps: 12, weight: 30 }, { reps: 12, weight: 35 }] }
-        ]
-      },
-      Wednesday: {
-        name: "Chest & Triceps",
-        exercises: [
-          { name: "Flat Bench Press", sets: [{ reps: 8, weight: 135 }, { reps: 8, weight: 185 }, { reps: 6, weight: 205 }] },
-          { name: "Incline Dumbbell Press", sets: [{ reps: 10, weight: 60 }, { reps: 10, weight: 65 }] },
-          { name: "Tricep Pushdowns", sets: [{ reps: 12, weight: 50 }] }
-        ]
-      },
-      Thursday: {
-        name: "Legs Day",
-        exercises: [
-          { name: "Barbell Back Squats", sets: [{ reps: 8, weight: 185 }, { reps: 8, weight: 225 }, { reps: 6, weight: 245 }] },
-          { name: "Romanian Deadlifts", sets: [{ reps: 10, weight: 135 }, { reps: 10, weight: 185 }] }
-        ]
-      },
-      Friday: {
-        name: "Shoulders & Abs",
-        exercises: [
-          { name: "Overhead Press (OHP)", sets: [{ reps: 8, weight: 95 }, { reps: 8, weight: 115 }] },
-          { name: "Dumbbell Lateral Raises", sets: [{ reps: 15, weight: 20 }, { reps: 15, weight: 25 }] },
-          { name: "Hanging Leg Raises", sets: [{ reps: 12, weight: 0 }, { reps: 12, weight: 0 }] }
-        ]
-      },
-      Saturday: {
-        name: "Grow Day",
-        exercises: [
-          { name: "Bicep 21s", sets: [{ reps: 21, weight: 45 }] },
-          { name: "Lateral Raises (Giant Set)", sets: [{ reps: 20, weight: 15 }, { reps: 15, weight: 20 }] }
-        ]
-      }
+      Tuesday:   { name: "Back & Biceps",     emoji: "🏋️", exercises: [ { name: "Deadlifts", sets: [{ reps: 5, weight: 225 }, { reps: 5, weight: 245 }, { reps: 5, weight: 265 }] }, { name: "Lat Pulldowns", sets: [{ reps: 10, weight: 120 }, { reps: 10, weight: 130 }] }, { name: "Hammer Curls", sets: [{ reps: 12, weight: 30 }, { reps: 12, weight: 35 }] } ] },
+      Wednesday: { name: "Chest & Triceps",   emoji: "💪", exercises: [ { name: "Flat Bench Press", sets: [{ reps: 8, weight: 135 }, { reps: 8, weight: 185 }, { reps: 6, weight: 205 }] }, { name: "Incline Dumbbell Press", sets: [{ reps: 10, weight: 60 }, { reps: 10, weight: 65 }] }, { name: "Tricep Pushdowns", sets: [{ reps: 12, weight: 50 }] } ] },
+      Thursday:  { name: "Legs Day",          emoji: "🦵", exercises: [ { name: "Barbell Back Squats", sets: [{ reps: 8, weight: 185 }, { reps: 8, weight: 225 }, { reps: 6, weight: 245 }] }, { name: "Romanian Deadlifts", sets: [{ reps: 10, weight: 135 }, { reps: 10, weight: 185 }] } ] },
+      Friday:    { name: "Shoulders & Abs",   emoji: "⚡", exercises: [ { name: "Overhead Press (OHP)", sets: [{ reps: 8, weight: 95 }, { reps: 8, weight: 115 }] }, { name: "Dumbbell Lateral Raises", sets: [{ reps: 15, weight: 20 }, { reps: 15, weight: 25 }] }, { name: "Hanging Leg Raises", sets: [{ reps: 12, weight: 0 }, { reps: 12, weight: 0 }] } ] },
+      Saturday:  { name: "Grow Day",          emoji: "🌱", exercises: [ { name: "Bicep 21s", sets: [{ reps: 21, weight: 45 }] }, { name: "Lateral Raises (Giant Set)", sets: [{ reps: 20, weight: 15 }, { reps: 15, weight: 20 }] } ] },
     };
 
+    /* ─── HELPERS ────────────────────────────────────────────── */
+    const diffClass  = d => d === 'easy' ? 'diff-easy' : d === 'medium' ? 'diff-medium' : 'diff-hard';
+    const attrClass  = a => a === 'intelligence' ? 'attr-intel' : a === 'strength' ? 'attr-str' : a === 'willpower' ? 'attr-wil' : 'attr-sta';
+    const attrLabel  = a => a === 'intelligence' ? 'INT' : a === 'strength' ? 'STR' : a === 'willpower' ? 'WIL' : 'STA';
+    const statColor  = s => s === 'intelligence' ? '#60a5fa' : s === 'strength' ? '#f97316' : s === 'willpower' ? '#c084fc' : '#34d399';
+
+    /* ─── SUBCOMPONENTS ──────────────────────────────────────── */
+    const SectionLabel = ({ children }) => (
+      <p className="text-[10px] font-mono font-semibold uppercase tracking-[0.18em] text-zinc-600 mb-3">{children}</p>
+    );
+
+    const Card = ({ children, className = '', glow = false }) => (
+      <div className={`rounded-xl border border-zinc-900/80 ${glow ? 'glow-border' : ''} ${className}`}
+           style={{ background: 'rgba(18,18,20,0.7)' }}>
+        {children}
+      </div>
+    );
+
+    const EmptyState = ({ icon, title, sub }) => (
+      <div className="empty-state rounded-xl p-10 flex flex-col items-center justify-center gap-2 text-center">
+        <div className="text-2xl opacity-30 mb-1">{icon}</div>
+        <p className="text-xs font-mono font-semibold text-zinc-500">{title}</p>
+        {sub && <p className="text-[11px] text-zinc-600">{sub}</p>}
+      </div>
+    );
+
+    const XpBar = ({ xp, max }) => {
+      const pct = Math.min(100, (xp / max) * 100);
+      return (
+        <div className="stat-bar-bg w-full">
+          <div className="xp-bar-fill stat-bar-fill" style={{ width: `${pct}%` }} />
+        </div>
+      );
+    };
+
+    const StatBar = ({ value, color }) => {
+      const pct = Math.min(100, ((value - 10) / 40) * 100);
+      return (
+        <div className="stat-bar-bg flex-1">
+          <div className="stat-bar-fill" style={{ width: `${Math.max(4, pct)}%`, background: color }} />
+        </div>
+      );
+    };
+
+    /* ─── MAIN APP ───────────────────────────────────────────── */
     function App() {
       const [activeTab, setActiveTab] = useState('dashboard');
-      
-      // Fixed default fallback state values to true zero-baselines
+
       const [hero, setHero] = useState(() => {
         const saved = localStorage.getItem('lq_hero_adi_v4');
         return saved ? JSON.parse(saved) : {
@@ -139,82 +451,76 @@
       const [quests, setQuests] = useState(() => {
         const saved = localStorage.getItem('lq_quests_adi_v4');
         return saved ? JSON.parse(saved) : [
-          { id: 1, text: "Perform 8 Hours of meaningful coding", type: "day", completed: false, difficulty: "hard", attribute: "intelligence", xp: 80, gold: 40 },
+          { id: 1, text: "Perform 8 Hours of meaningful coding", type: "day", completed: false, difficulty: "hard",   attribute: "intelligence", xp: 80, gold: 40 },
           { id: 2, text: "Read book for 30 minutes (Instead of scrolling)", type: "day", completed: false, difficulty: "medium", attribute: "willpower", xp: 40, gold: 20 },
-          { id: 3, text: "Hit today's custom Gym Split", type: "day", completed: false, difficulty: "medium", attribute: "strength", xp: 40, gold: 20 },
-          { id: 4, text: "Secure 8 Hours of deep sleep", type: "day", completed: false, difficulty: "easy", attribute: "stamina", xp: 20, gold: 10 }
+          { id: 3, text: "Hit today's custom Gym Split", type: "day", completed: false, difficulty: "medium", attribute: "strength",     xp: 40, gold: 20 },
+          { id: 4, text: "Secure 8 Hours of deep sleep", type: "day", completed: false, difficulty: "easy",   attribute: "stamina",      xp: 20, gold: 10 }
         ];
       });
 
-      const [gymLogs, setGymLogs] = useState(() => JSON.parse(localStorage.getItem('lq_gymlogs_adi_v4')) || []);
-      const [rewards, setRewards] = useState(() => JSON.parse(localStorage.getItem('lq_rewards_adi_v4')) || [
-        { id: 1, text: "Watch 1 episode of anime/show guilt-free", cost: 30 },
-        { id: 2, text: "Indulge in a clean cheat meal", cost: 60 },
-        { id: 3, text: "Unlock personal luxury hobby item", cost: 140 }
+      const [gymLogs,  setGymLogs]  = useState(() => JSON.parse(localStorage.getItem('lq_gymlogs_adi_v4'))  || []);
+      const [rewards,  setRewards]  = useState(() => JSON.parse(localStorage.getItem('lq_rewards_adi_v4'))  || [
+        { id: 1, text: "Watch 1 episode of anime/show guilt-free",  cost: 30  },
+        { id: 2, text: "Indulge in a clean cheat meal",             cost: 60  },
+        { id: 3, text: "Unlock personal luxury hobby item",         cost: 140 }
       ]);
 
-      const [aiInputPrompt, setAiInputPrompt] = useState("");
-      const [isAiGenerating, setIsAiGenerating] = useState(false);
+      const [aiInputPrompt,   setAiInputPrompt]   = useState("");
+      const [isAiGenerating,  setIsAiGenerating]  = useState(false);
       const [isVisionParsing, setIsVisionParsing] = useState(false);
       const fileInputRef = useRef(null);
-      const [toastMsg, setToastMsg] = useState("");
-      const [levelUpModal, setLevelUpModal] = useState(false);
+      const [toastMsg,      setToastMsg]      = useState("");
+      const [levelUpModal,  setLevelUpModal]  = useState(false);
 
-      const [newQuestText, setNewQuestText] = useState("");
-      const [newQuestType, setNewQuestType] = useState("day");
+      const [newQuestText,       setNewQuestText]       = useState("");
+      const [newQuestType,       setNewQuestType]       = useState("day");
       const [newQuestDifficulty, setNewQuestDifficulty] = useState("medium");
-      const [newQuestAttr, setNewQuestAttr] = useState("intelligence");
-      const [customRewardName, setCustomRewardName] = useState("");
-      const [customRewardCost, setCustomRewardCost] = useState(40);
+      const [newQuestAttr,       setNewQuestAttr]       = useState("intelligence");
+      const [customRewardName,   setCustomRewardName]   = useState("");
+      const [customRewardCost,   setCustomRewardCost]   = useState(40);
 
       useEffect(() => {
-        localStorage.setItem('lq_hero_adi_v4', JSON.stringify(hero));
-        localStorage.setItem('lq_quests_adi_v4', JSON.stringify(quests));
+        localStorage.setItem('lq_hero_adi_v4',    JSON.stringify(hero));
+        localStorage.setItem('lq_quests_adi_v4',  JSON.stringify(quests));
         localStorage.setItem('lq_gymlogs_adi_v4', JSON.stringify(gymLogs));
         localStorage.setItem('lq_rewards_adi_v4', JSON.stringify(rewards));
       }, [hero, quests, gymLogs, rewards]);
 
-      const triggerToast = (msg) => { setToastMsg(msg); setTimeout(() => setToastMsg(""), 5000); };
+      const triggerToast = (msg) => { setToastMsg(msg); setTimeout(() => setToastMsg(""), 4500); };
 
+      /* Quest toggle */
       const handleQuestToggle = (id) => {
         playSound('complete');
         setQuests(prev => prev.map(q => {
           if (q.id === id) {
             const completing = !q.completed;
-            const xpChange = completing ? q.xp : -q.xp;
-            const goldChange = completing ? q.gold : -q.gold;
-
+            const xpChange   = completing ? q.xp   : -q.xp;
+            const goldChange = completing ? q.gold  : -q.gold;
             setHero(h => {
-              let nXp = h.xp + xpChange;
+              let nXp   = h.xp + xpChange;
               let nGold = Math.max(0, h.gold + goldChange);
-              let nLvl = h.level;
-              let tXp = h.nextLevelXp;
+              let nLvl  = h.level;
+              let tXp   = h.nextLevelXp;
               let rolledLvl = false;
-
               if (nXp >= tXp) {
-                nXp -= tXp;
-                nLvl += 1;
-                tXp = nLvl * 300;
-                rolledLvl = true;
+                nXp -= tXp; nLvl += 1; tXp = nLvl * 300; rolledLvl = true;
                 playSound('levelup');
                 setLevelUpModal(true);
               } else if (nXp < 0) { nXp = 0; }
-
               const nextStats = { ...h.stats };
               if (completing && q.attribute) {
                 nextStats[q.attribute] = (nextStats[q.attribute] || 10) + (q.difficulty === 'hard' ? 1.0 : 0.4);
               }
-
               return { ...h, xp: Math.round(nXp), gold: nGold, level: nLvl, nextLevelXp: tXp, stats: nextStats, statPoints: rolledLvl ? h.statPoints + 3 : h.statPoints };
             });
-
-            if (completing) triggerToast(`Completed task. Allocated rewards!`);
+            if (completing) triggerToast(`Quest completed — +${q.xp} XP · +${q.gold}g`);
             return { ...q, completed: completing };
           }
           return q;
         }));
       };
 
+      /* Manual quest add */
       const handleManualQuestAdd = (e) => {
         e.preventDefault();
         if (!newQuestText.trim()) return;
@@ -222,21 +528,19 @@
         const q = { id: Date.now(), text: newQuestText, type: newQuestType, completed: false, difficulty: newQuestDifficulty, attribute: newQuestAttr, xp: calcXp, gold: Math.round(calcXp * 0.4) };
         setQuests([q, ...quests]);
         setNewQuestText("");
-        triggerToast("Custom quest successfully forged.");
+        triggerToast("Quest forged and added to the board.");
       };
 
-      const deleteQuest = (id) => {
-        setQuests(prev => prev.filter(q => q.id !== id));
-        triggerToast("Quest permanently deleted.");
-      };
+      const deleteQuest = (id) => { setQuests(prev => prev.filter(q => q.id !== id)); };
 
+      /* Preset gym log */
       const triggerPresetWorkoutLog = (dayName) => {
         const preset = PRESET_WORKOUTS[dayName];
         if (!preset) return;
         const newLog = { id: Date.now(), date: new Date().toISOString().split('T')[0], workoutName: `${preset.name} (${dayName})`, exercises: preset.exercises };
         setGymLogs([newLog, ...gymLogs]);
         setHero(h => ({ ...h, xp: h.xp + 60, gold: h.gold + 20 }));
-        triggerToast(`Logged split: ${preset.name}`);
+        triggerToast(`Split logged: ${preset.name} — +60 XP · +20g`);
       };
 
       const handleStatBoost = (statName) => {
@@ -255,18 +559,18 @@
         if (!customRewardName.trim()) return;
         setRewards([{ id: Date.now(), text: customRewardName, cost: Number(customRewardCost) }, ...rewards]);
         setCustomRewardName("");
-        triggerToast("Merchant stocked.");
+        triggerToast("Reward stocked in the merchant store.");
       };
 
       const archiveCompletedDailies = () => {
         setQuests(quests.filter(q => !q.completed));
-        triggerToast("Workspace cleared.");
+        triggerToast("Completed quests archived.");
       };
 
       const loadApiKeySecurely = () => {
         let key = localStorage.getItem("adi_gemini_key");
         if (!key || key.trim() === "") {
-          key = prompt("Please provide your Gemini API key:");
+          key = prompt("Enter your Gemini API key:");
           if (key) localStorage.setItem("adi_gemini_key", key.trim());
         }
         return key ? key.trim() : null;
@@ -276,38 +580,26 @@
         if (!aiInputPrompt.trim()) return;
         const apiKey = loadApiKeySecurely();
         if (!apiKey) return;
-
         setIsAiGenerating(true);
         try {
           const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
+            method: "POST", headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               contents: [{ parts: [{ text: `Decompose this goal cleanly into 2-4 highly specific JSON daily sub-quests matching Adi's schedule timeline layout workflows: "${aiInputPrompt}". Expected schema outline syntax format required: {"quests": [{"text": "Task specific micro description", "type": "day", "difficulty": "medium", "attribute": "intelligence", "xp": 30, "gold": 12}]}. Output strict raw JSON structure contents only, skip markdown text block tags.` }] }],
               generationConfig: { responseMimeType: "application/json" }
             })
           });
-
-          if (!res.ok) {
-            const errData = await res.json();
-            triggerToast(`Google API Rejection: ${errData.error?.message || res.statusText}`);
-            setIsAiGenerating(false);
-            return;
-          }
-
+          if (!res.ok) { const errData = await res.json(); triggerToast(`API Error: ${errData.error?.message || res.statusText}`); setIsAiGenerating(false); return; }
           const result = await res.json();
           const rawText = result.candidates[0].content.parts[0].text;
           const data = JSON.parse(rawText);
           if (data.quests) {
             setQuests([...data.quests.map((q, i) => ({ ...q, id: Date.now() + i, completed: false })), ...quests]);
             setAiInputPrompt("");
-            triggerToast("AI split your target into micro-quests!");
+            triggerToast(`AI decomposed your goal into ${data.quests.length} micro-quests.`);
           }
-        } catch (e) { 
-          triggerToast(`Internal Client Crash: ${e.message}`); 
-        } finally { 
-          setIsAiGenerating(false); 
-        }
+        } catch (e) { triggerToast(`Error: ${e.message}`); }
+        finally { setIsAiGenerating(false); }
       };
 
       const handleHevyScreenshotUpload = async (e) => {
@@ -315,288 +607,553 @@
         if (!file) return;
         const apiKey = loadApiKeySecurely();
         if (!apiKey) return;
-
         setIsVisionParsing(true);
-        triggerToast("Parsing summary metrics via Vision AI...");
-
+        triggerToast("Parsing workout via Vision AI...");
         const reader = new FileReader();
         reader.onloadend = async () => {
           try {
             const base64Data = reader.result.split(',')[1];
             const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
+              method: "POST", headers: { "Content-Type": "application/json" },
               body: JSON.stringify({
-                contents: [{
-                  role: "user",
-                  parts: [
-                    { text: `Read this workout snapshot metric from the Hevy application interface. Parse the exercises, sets list, weights configuration, and repetitions. Respond with ONLY a valid raw JSON matching this schema format: {"workoutName": "Focus Area title", "date": "2026-05-19", "exercises": [{"name": "Exercise Name Title", "sets": [{"reps": 10, "weight": 135}]}]}` },
-                    { inlineData: { mimeType: file.type, data: base64Data } }
-                  ]
-                }],
+                contents: [{ role: "user", parts: [
+                  { text: `Read this workout snapshot metric from the Hevy application interface. Parse the exercises, sets list, weights configuration, and repetitions. Respond with ONLY a valid raw JSON matching this schema format: {"workoutName": "Focus Area title", "date": "2026-05-19", "exercises": [{"name": "Exercise Name Title", "sets": [{"reps": 10, "weight": 135}]}]}` },
+                  { inlineData: { mimeType: file.type, data: base64Data } }
+                ]}],
                 generationConfig: { responseMimeType: "application/json" }
               })
             });
-
-            if (!res.ok) {
-              const errData = await res.json();
-              triggerToast(`Vision API Error: ${errData.error?.message || res.statusText}`);
-              setIsVisionParsing(false);
-              return;
-            }
-
+            if (!res.ok) { const errData = await res.json(); triggerToast(`Vision API Error: ${errData.error?.message || res.statusText}`); setIsVisionParsing(false); return; }
             const result = await res.json();
             const rawText = result.candidates[0].content.parts[0].text;
             const parsed = JSON.parse(rawText);
-
             const newLog = { id: Date.now(), date: parsed.date || new Date().toISOString().split('T')[0], workoutName: `${parsed.workoutName} (Hevy Sync)`, exercises: parsed.exercises || [] };
             setGymLogs([newLog, ...gymLogs]);
             setHero(h => ({ ...h, xp: h.xp + 85, gold: h.gold + 35 }));
-            triggerToast("Hevy snapshot parsed & cataloged.");
-          } catch (err) { triggerToast(`Vision module parsing failed: ${err.message}`); }
+            triggerToast("Hevy workout parsed and cataloged — +85 XP · +35g");
+          } catch (err) { triggerToast(`Vision parsing failed: ${err.message}`); }
           finally { setIsVisionParsing(false); }
         };
         reader.readAsDataURL(file);
       };
 
-      const clearSavedApiKey = () => {
-        localStorage.removeItem("adi_gemini_key");
-        triggerToast("Saved API key purged from browser local cache memory.");
-      };
+      const clearSavedApiKey = () => { localStorage.removeItem("adi_gemini_key"); triggerToast("API key purged from local cache."); };
 
       const triggerTotalSystemReset = () => {
-        if(confirm("Are you absolutely certain you want to nuke all records? This will clear metrics back to absolute base settings.")) {
+        if (confirm("Nuke all data? This resets everything back to baseline.")) {
           localStorage.clear();
           window.location.reload();
         }
       };
 
       const codingQuest = quests.find(q => q.text.includes("8 Hours")) || {};
-      const readQuest = quests.find(q => q.text.includes("Read book")) || {};
+      const readQuest   = quests.find(q => q.text.includes("Read book")) || {};
+      const completedCount = quests.filter(q => q.completed).length;
+      const xpPct = Math.min(100, Math.round((hero.xp / hero.nextLevelXp) * 100));
 
+      const tabs = [
+        { id: 'dashboard', label: 'Overview' },
+        { id: 'quests',    label: 'Quests'   },
+        { id: 'gym',       label: 'Temple'   },
+        { id: 'shop',      label: 'Store'    },
+        { id: 'hero',      label: 'Matrix'   },
+      ];
+
+      /* ─── RENDER ──────────────────────────────────────────── */
       return (
-        <div className="min-h-screen bg-zinc-950 text-zinc-100 flex flex-col font-sans">
-          
-          <header className="border-b border-zinc-900 bg-zinc-950 px-6 py-4 sticky top-0 z-40">
-            <div className="max-w-5xl mx-auto flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <div className="flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-indigo-500"></span>
-                <span className="text-xs font-semibold tracking-widest text-zinc-100 font-mono">ADI // LIFEQUEST OS</span>
-              </div>
-              <div className="flex items-center gap-4 text-[11px] font-mono text-zinc-400 justify-between sm:justify-end">
-                <div>LVL {hero.level}</div>
-                <div className="h-3 w-[1px] bg-zinc-800"></div>
-                <div>{hero.gold}g</div>
-                <div className="h-3 w-[1px] bg-zinc-800"></div>
-                <div>{hero.streak}d streak</div>
-              </div>
-            </div>
+        <div className="min-h-screen flex flex-col relative" style={{ zIndex: 1 }}>
 
-            <div className="max-w-5xl mx-auto border-t border-zinc-900/50 mt-3 pt-3 flex gap-1 overflow-x-auto text-[11px] font-mono">
-              <button onClick={() => setActiveTab('dashboard')} className={`px-3.5 py-1.5 rounded-md transition ${activeTab === 'dashboard' ? 'bg-zinc-900 text-zinc-100 font-bold' : 'text-zinc-500'}`}>Overview</button>
-              <button onClick={() => setActiveTab('quests')} className={`px-3.5 py-1.5 rounded-md transition ${activeTab === 'quests' ? 'bg-zinc-900 text-zinc-100 font-bold' : 'text-zinc-500'}`}>Quests</button>
-              <button onClick={() => setActiveTab('gym')} className={`px-3.5 py-1.5 rounded-md transition ${activeTab === 'gym' ? 'bg-zinc-900 text-zinc-100 font-bold' : 'text-zinc-500'}`}>Iron Temple</button>
-              <button onClick={() => setActiveTab('shop')} className={`px-3.5 py-1.5 rounded-md transition ${activeTab === 'shop' ? 'bg-zinc-900 text-zinc-100 font-bold' : 'text-zinc-500'}`}>Store</button>
-              <button onClick={() => setActiveTab('hero')} className={`px-3.5 py-1.5 rounded-md transition ${activeTab === 'hero' ? 'bg-zinc-900 text-zinc-100 font-bold' : 'text-zinc-500'}`}>Specs {hero.statPoints > 0 && "●"}</button>
+          {/* ── HEADER ─────────────────────────────────────── */}
+          <header className="header-glass sticky top-0 z-40">
+            <div className="max-w-4xl mx-auto px-5 py-3.5">
+
+              {/* Top row */}
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2.5">
+                  <div className="neon-dot"></div>
+                  <span className="text-[11px] font-mono font-semibold tracking-[0.2em] text-zinc-200">ADI // LIFEQUEST OS</span>
+                </div>
+
+                <div className="flex items-center gap-3 text-[11px] font-mono">
+                  {/* Level badge */}
+                  <span className="level-badge px-2 py-0.5 rounded-md font-semibold">LVL {hero.level}</span>
+                  <div className="h-3.5 w-px bg-zinc-800"></div>
+                  <span className="gold-badge font-semibold">{hero.gold}<span className="text-zinc-600 font-normal">g</span></span>
+                  <div className="h-3.5 w-px bg-zinc-800"></div>
+                  <span className="text-zinc-500">{hero.streak}<span className="text-zinc-700">d</span></span>
+                  {hero.statPoints > 0 && (
+                    <span className="ml-1 flex items-center gap-1 text-violet-400 font-semibold animate-pulse">
+                      <BoltIcon />{hero.statPoints}
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {/* XP bar row */}
+              <div className="flex items-center gap-3 mb-3">
+                <div className="flex-1">
+                  <XpBar xp={hero.xp} max={hero.nextLevelXp} />
+                </div>
+                <span className="text-[10px] font-mono text-zinc-600 whitespace-nowrap">{hero.xp} / {hero.nextLevelXp} XP</span>
+              </div>
+
+              {/* Tab nav */}
+              <div className="flex gap-1">
+                {tabs.map(t => (
+                  <button key={t.id} onClick={() => setActiveTab(t.id)}
+                    className={`px-3 py-1.5 rounded-lg text-[11px] font-mono font-medium transition-all duration-150 ${activeTab === t.id ? 'tab-active' : 'tab-inactive'}`}>
+                    {t.label}
+                    {t.id === 'hero' && hero.statPoints > 0 && <span className="ml-1 text-violet-400">·</span>}
+                  </button>
+                ))}
+              </div>
             </div>
           </header>
 
-          <main className="max-w-5xl mx-auto px-6 py-6 w-full flex-grow">
-            {toastMsg && <div className="bg-zinc-900 border border-zinc-800 text-xs text-zinc-300 p-3.5 rounded-xl mb-6 font-mono whitespace-pre-wrap">{toastMsg}</div>}
+          {/* ── TOAST ──────────────────────────────────────── */}
+          {toastMsg && (
+            <div className="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 max-w-sm w-full px-4" style={{ animation: 'fadeSlideIn 0.2s ease-out both' }}>
+              <div className="glass rounded-xl border border-zinc-800/80 px-4 py-3 flex items-center gap-2.5 shadow-2xl">
+                <div className="neon-dot-green flex-shrink-0"></div>
+                <span className="text-xs font-mono text-zinc-300">{toastMsg}</span>
+              </div>
+            </div>
+          )}
 
-            {/* --- TAB: OVERVIEW --- */}
+          {/* ── MAIN CONTENT ───────────────────────────────── */}
+          <main className="max-w-4xl mx-auto px-5 py-7 w-full flex-grow">
+
+            {/* ══ OVERVIEW TAB ════════════════════════════ */}
             {activeTab === 'dashboard' && (
-              <div className="space-y-8 animate-fade-in">
-                <div className="flex justify-between items-center border-b border-zinc-900 pb-4">
-                  <div>
-                    <h2 className="text-base font-bold text-zinc-200">Adi</h2>
-                    <p className="text-xs text-zinc-500 font-mono mt-0.5">Console Command Matrix Workspace</p>
-                  </div>
-                  <div className="flex items-center gap-4 text-xs font-mono text-zinc-500">
-                    <div>INT <span className="text-zinc-300 font-bold">{Math.floor(hero.stats.intelligence)}</span></div>
-                    <div>STR <span className="text-zinc-300 font-bold">{Math.floor(hero.stats.strength)}</span></div>
-                    <div>WIL <span className="text-zinc-300 font-bold">{Math.floor(hero.stats.willpower)}</span></div>
-                  </div>
-                </div>
+              <div className="tab-section space-y-7">
 
-                <div className="space-y-2">
-                  <label className="text-[10px] font-mono uppercase text-zinc-500 tracking-wider">AI Goal Decomposer Engine</label>
-                  <div className="flex gap-2">
-                    <input type="text" value={aiInputPrompt} onChange={(e) => setAiInputPrompt(e.target.value)} placeholder="Enter plan (e.g., 'DSA tree array', 'ML project weights script')" className="flex-grow bg-zinc-900/50 border border-zinc-850 rounded-lg px-3 py-2.5 text-xs font-mono text-zinc-100 focus:outline-none" />
-                    <button onClick={callAiAgentQuestGenerator} disabled={isAiGenerating} className="bg-zinc-100 text-zinc-950 px-5 text-xs font-mono font-bold rounded-lg">{isAiGenerating ? 'Processing...' : 'Split'}</button>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="bg-zinc-900/30 border border-zinc-900 p-4 rounded-xl flex justify-between items-center">
-                    <span className="text-xs text-zinc-400">💻 8 Hours Intent Coding</span>
-                    <span className="text-xs font-mono text-zinc-500 font-bold">{codingQuest.completed ? 'Achieved' : 'Pending'}</span>
-                  </div>
-                  <div className="bg-zinc-900/30 border border-zinc-900 p-4 rounded-xl flex justify-between items-center">
-                    <span className="text-xs text-zinc-400">📚 Books over Scrolling</span>
-                    <span className="text-xs font-mono text-zinc-500 font-bold">{readQuest.completed ? 'Achieved' : 'Pending'}</span>
-                  </div>
-                </div>
-
-                <div className="space-y-3 pt-2">
-                  <div className="flex justify-between items-center border-b border-zinc-900 pb-1">
-                    <span className="text-[10px] font-mono uppercase text-zinc-500">Active Daily Ledger</span>
-                    <button onClick={archiveCompletedDailies} className="text-[10px] text-zinc-500 hover:text-zinc-300 font-mono underline">Archive Cleaned</button>
-                  </div>
-                  <div className="space-y-2">
-                    {quests.map(q => (
-                      <div key={q.id} className={`p-3.5 rounded-xl border flex justify-between items-center transition font-mono text-xs ${q.completed ? 'border-zinc-900 bg-zinc-950/40 opacity-40' : 'border-zinc-900 bg-zinc-900/30'}`}>
-                        <div className="flex items-center gap-3">
-                          <button onClick={() => handleQuestToggle(q.id)} className="w-4 h-4 rounded border border-zinc-800 text-[10px] flex items-center justify-center">{q.completed && "✓"}</button>
-                          <span className={q.completed ? 'line-through text-zinc-600' : 'text-zinc-200'}>{q.text}</span>
-                        </div>
-                        <span className="text-zinc-500">+{q.xp}xp</span>
+                {/* Hero identity + stats */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  {/* Identity card */}
+                  <Card className="sm:col-span-1 p-5 flex flex-col justify-between gap-4" glow>
+                    <div>
+                      <p className="text-[10px] font-mono text-zinc-600 uppercase tracking-widest mb-1">Active Hero</p>
+                      <h2 className="text-xl font-bold text-zinc-100 tracking-tight">{hero.name}</h2>
+                      <p className="text-xs text-zinc-500 font-mono">{hero.class}</p>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="flex justify-between items-center">
+                        <span className="text-[10px] font-mono text-zinc-600">Progress</span>
+                        <span className="text-[10px] font-mono text-zinc-500">{xpPct}%</span>
                       </div>
+                      <XpBar xp={hero.xp} max={hero.nextLevelXp} />
+                    </div>
+                  </Card>
+
+                  {/* Quick stat grid */}
+                  <div className="sm:col-span-2 grid grid-cols-2 gap-3">
+                    {Object.entries(hero.stats).map(([k, v]) => (
+                      <Card key={k} className="p-4 flex flex-col gap-2.5">
+                        <div className="flex justify-between items-start">
+                          <span className="text-[10px] font-mono uppercase tracking-widest text-zinc-600">{k}</span>
+                          <span className="text-sm font-bold font-mono" style={{ color: statColor(k) }}>{Math.floor(v)}</span>
+                        </div>
+                        <StatBar value={v} color={statColor(k)} />
+                      </Card>
                     ))}
                   </div>
                 </div>
+
+                {/* AI Goal Decomposer */}
+                <Card className="p-5">
+                  <SectionLabel>AI Goal Decomposer</SectionLabel>
+                  <div className="flex gap-2.5">
+                    <input
+                      type="text"
+                      value={aiInputPrompt}
+                      onChange={e => setAiInputPrompt(e.target.value)}
+                      onKeyDown={e => e.key === 'Enter' && callAiAgentQuestGenerator()}
+                      placeholder="Enter a goal — e.g. 'Build a REST API', 'DSA tree problems'…"
+                      className="input-field flex-grow rounded-lg px-3.5 py-2.5 text-xs font-mono text-zinc-200 placeholder-zinc-700"
+                    />
+                    <button onClick={callAiAgentQuestGenerator} disabled={isAiGenerating}
+                      className="btn-primary rounded-lg px-5 text-xs font-mono whitespace-nowrap">
+                      {isAiGenerating ? (
+                        <span className="flex items-center gap-1.5">
+                          <svg className="animate-spin w-3 h-3" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+                          </svg>
+                          Parsing…
+                        </span>
+                      ) : 'Split Goal'}
+                    </button>
+                  </div>
+                  <p className="text-[10px] text-zinc-700 font-mono mt-2">Powered by Gemini · Requires API key on first use</p>
+                </Card>
+
+                {/* Quick status cards */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <Card className="p-4 flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <span className="text-base">💻</span>
+                      <span className="text-xs font-mono text-zinc-400">8 Hours Intent Coding</span>
+                    </div>
+                    <span className={`text-[10px] font-mono font-semibold px-2 py-0.5 rounded-md ${codingQuest.completed ? 'text-green-400 bg-green-400/8 border border-green-400/15' : 'text-zinc-600 bg-zinc-900 border border-zinc-800'}`}>
+                      {codingQuest.completed ? '✓ Done' : 'Pending'}
+                    </span>
+                  </Card>
+                  <Card className="p-4 flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <span className="text-base">📚</span>
+                      <span className="text-xs font-mono text-zinc-400">Books over Scrolling</span>
+                    </div>
+                    <span className={`text-[10px] font-mono font-semibold px-2 py-0.5 rounded-md ${readQuest.completed ? 'text-green-400 bg-green-400/8 border border-green-400/15' : 'text-zinc-600 bg-zinc-900 border border-zinc-800'}`}>
+                      {readQuest.completed ? '✓ Done' : 'Pending'}
+                    </span>
+                  </Card>
+                </div>
+
+                {/* Daily Ledger */}
+                <div>
+                  <div className="flex justify-between items-center mb-3">
+                    <SectionLabel>Daily Ledger — {completedCount}/{quests.length} complete</SectionLabel>
+                    <button onClick={archiveCompletedDailies}
+                      className="text-[10px] font-mono text-zinc-600 hover:text-zinc-400 transition-colors duration-150 underline underline-offset-2">
+                      Archive done
+                    </button>
+                  </div>
+
+                  {quests.length === 0 ? (
+                    <EmptyState icon="📋" title="No active quests" sub="Add some from the Quests tab or use the AI decomposer above." />
+                  ) : (
+                    <div className="space-y-2">
+                      {quests.map(q => (
+                        <div key={q.id}
+                          className={`rounded-xl border transition-all duration-200 ${q.completed
+                            ? 'border-zinc-900/40 opacity-40'
+                            : 'border-zinc-900/80 hover:border-zinc-800 card-lift'}`}
+                          style={{ background: q.completed ? 'rgba(9,9,11,0.3)' : 'rgba(18,18,20,0.7)' }}>
+                          <div className="px-4 py-3.5 flex items-center gap-3.5">
+                            <input
+                              type="checkbox"
+                              className="quest-check"
+                              checked={q.completed}
+                              onChange={() => handleQuestToggle(q.id)}
+                            />
+                            <span className={`text-xs font-mono flex-1 leading-relaxed ${q.completed ? 'line-through text-zinc-600' : 'text-zinc-300'}`}>
+                              {q.text}
+                            </span>
+                            <div className="flex items-center gap-2 flex-shrink-0">
+                              <span className={`text-[9px] font-mono font-semibold px-1.5 py-0.5 rounded ${diffClass(q.difficulty)}`}>
+                                {q.difficulty.toUpperCase()}
+                              </span>
+                              <span className="text-[10px] font-mono text-zinc-600">+{q.xp}xp</span>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
             )}
 
-            {/* --- TAB: QUESTS BOARD --- */}
+            {/* ══ QUESTS TAB ══════════════════════════════ */}
             {activeTab === 'quests' && (
-              <div className="space-y-6 animate-fade-in">
-                <div className="bg-zinc-900/30 border border-zinc-900 p-5 rounded-xl space-y-4">
-                  <p className="text-xs font-mono text-zinc-400 uppercase">Forge Custom Entry</p>
-                  <form onSubmit={handleManualQuestAdd} className="space-y-3">
-                    <input type="text" value={newQuestText} onChange={(e) => setNewQuestText(e.target.value)} placeholder="Quest item details text..." className="w-full bg-zinc-950 border border-zinc-900 rounded-lg px-3.5 py-2 text-xs text-zinc-200 focus:outline-none" />
-                    <div className="grid grid-cols-3 gap-3">
-                      <select value={newQuestType} onChange={(e) => setNewQuestType(e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-2 text-xs text-zinc-500"><option value="day">Daily</option><option value="week">Weekly</option></select>
-                      <select value={newQuestDifficulty} onChange={(e) => setNewQuestDifficulty(e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-2 text-xs text-zinc-500"><option value="easy">Easy</option><option value="medium">Medium</option><option value="hard">Hard</option></select>
-                      <select value={newQuestAttr} onChange={(e) => setNewQuestAttr(e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-2 text-xs text-zinc-500"><option value="intelligence">Intellect</option><option value="strength">Strength</option><option value="willpower">Willpower</option></select>
-                    </div>
-                    <button type="submit" className="w-full bg-zinc-100 text-zinc-950 text-xs font-mono py-2.5 rounded-lg font-bold">Add Item</button>
-                  </form>
-                </div>
+              <div className="tab-section space-y-6">
 
-                <div className="space-y-2">
-                  <p className="text-[10px] font-mono uppercase text-zinc-500">Active Board List</p>
-                  {quests.map(q => (
-                    <div key={q.id} className={`p-3.5 rounded-xl border flex justify-between items-center ${q.completed ? 'border-zinc-900 bg-zinc-950/40 opacity-40' : 'border-zinc-900 bg-zinc-950'}`}>
-                      <div className="flex items-center gap-3">
-                        <button onClick={() => handleQuestToggle(q.id)} className="w-4 h-4 rounded border border-zinc-800 text-[10px] flex items-center justify-center">{q.completed && "✓"}</button>
-                        <span className="text-xs font-mono text-zinc-300">{q.text}</span>
-                      </div>
-                      <div className="flex items-center gap-3 font-mono text-xs text-zinc-500">
-                        <span className="text-[10px] uppercase">{q.attribute}</span>
-                        <button onClick={() => deleteQuest(q.id)}><TrashIcon /></button>
-                      </div>
+                {/* Forge card */}
+                <Card className="p-5" glow>
+                  <SectionLabel>Forge Custom Quest</SectionLabel>
+                  <form onSubmit={handleManualQuestAdd} className="space-y-3.5">
+                    <input
+                      type="text" value={newQuestText} onChange={e => setNewQuestText(e.target.value)}
+                      placeholder="Describe the quest objective…"
+                      className="input-field w-full rounded-lg px-3.5 py-2.5 text-xs font-mono text-zinc-200 placeholder-zinc-700"
+                    />
+                    <div className="grid grid-cols-3 gap-3">
+                      {[
+                        { val: newQuestType, set: setNewQuestType, opts: [['day','Daily'],['week','Weekly']] },
+                        { val: newQuestDifficulty, set: setNewQuestDifficulty, opts: [['easy','Easy'],['medium','Medium'],['hard','Hard']] },
+                        { val: newQuestAttr, set: setNewQuestAttr, opts: [['intelligence','Intellect'],['strength','Strength'],['willpower','Willpower'],['stamina','Stamina']] },
+                      ].map((sel, i) => (
+                        <select key={i} value={sel.val} onChange={e => sel.set(e.target.value)}
+                          className="input-field rounded-lg px-3 py-2 text-xs font-mono text-zinc-400 cursor-pointer">
+                          {sel.opts.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
+                        </select>
+                      ))}
                     </div>
-                  ))}
+                    <button type="submit" className="btn-primary w-full rounded-lg py-2.5 text-xs font-mono">
+                      Add to Board
+                    </button>
+                  </form>
+                </Card>
+
+                {/* Active board */}
+                <div>
+                  <SectionLabel>Active Board — {quests.length} quests</SectionLabel>
+                  {quests.length === 0 ? (
+                    <EmptyState icon="⚔️" title="The board is empty" sub="Forge your first quest above or use the AI decomposer." />
+                  ) : (
+                    <div className="space-y-2">
+                      {quests.map(q => (
+                        <div key={q.id}
+                          className={`rounded-xl border transition-all duration-200 ${q.completed ? 'border-zinc-900/40 opacity-40' : 'border-zinc-900/80 hover:border-zinc-800'}`}
+                          style={{ background: 'rgba(18,18,20,0.7)' }}>
+                          <div className="px-4 py-3.5 flex items-center gap-3.5">
+                            <input type="checkbox" className="quest-check" checked={q.completed} onChange={() => handleQuestToggle(q.id)} />
+                            <span className={`text-xs font-mono flex-1 leading-relaxed ${q.completed ? 'line-through text-zinc-600' : 'text-zinc-300'}`}>
+                              {q.text}
+                            </span>
+                            <div className="flex items-center gap-2 flex-shrink-0">
+                              <span className={`text-[9px] font-mono font-semibold px-1.5 py-0.5 rounded ${attrClass(q.attribute)}`}>
+                                {attrLabel(q.attribute)}
+                              </span>
+                              <span className={`text-[9px] font-mono font-semibold px-1.5 py-0.5 rounded ${diffClass(q.difficulty)}`}>
+                                {q.difficulty.charAt(0).toUpperCase()}
+                              </span>
+                              <span className="text-[10px] font-mono text-zinc-600">+{q.xp}</span>
+                              <button onClick={() => deleteQuest(q.id)} className="ml-1 p-1 rounded hover:bg-zinc-900 transition-colors">
+                                <TrashIcon />
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
             )}
 
-            {/* --- TAB: IRON TEMPLE (GYM) --- */}
+            {/* ══ GYM TAB ═════════════════════════════════ */}
             {activeTab === 'gym' && (
-              <div className="space-y-8 animate-fade-in">
-                <div className="space-y-3">
-                  <p className="text-[10px] font-mono uppercase text-zinc-500">Custom Split Trackers</p>
+              <div className="tab-section space-y-7">
+
+                {/* Weekly Split */}
+                <div>
+                  <SectionLabel>Weekly Split — Tap to Log</SectionLabel>
                   <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
-                    {Object.keys(PRESET_WORKOUTS).map(day => (
-                      <button key={day} onClick={() => triggerPresetWorkoutLog(day)} className="bg-zinc-950 hover:bg-zinc-900 border border-zinc-900 p-4 rounded-xl transition text-left space-y-1.5">
-                        <span className="text-[9px] font-mono text-zinc-600 uppercase">{day}</span>
-                        <p className="text-xs font-bold text-zinc-300 leading-tight">{PRESET_WORKOUTS[day].name}</p>
+                    {Object.entries(PRESET_WORKOUTS).map(([day, data]) => (
+                      <button key={day} onClick={() => triggerPresetWorkoutLog(day)}
+                        className="day-card rounded-xl p-4 text-left space-y-2 group">
+                        <div className="flex justify-between items-center">
+                          <span className="text-[9px] font-mono text-zinc-700 uppercase tracking-widest">{day}</span>
+                          <span className="text-base opacity-60 group-hover:opacity-100 transition-opacity">{data.emoji}</span>
+                        </div>
+                        <p className="text-xs font-semibold text-zinc-300 leading-snug">{data.name}</p>
+                        <p className="text-[10px] font-mono text-zinc-600">{data.exercises.length} exercises</p>
                       </button>
                     ))}
                   </div>
                 </div>
 
-                <div className="border border-dashed border-zinc-850 bg-zinc-950/20 rounded-xl p-6 text-center space-y-3">
-                  <p className="text-xs font-mono text-zinc-300">Hevy OCR Screenshot Engine</p>
-                  <button onClick={() => fileInputRef.current.click()} disabled={isVisionParsing} className="bg-zinc-900 hover:bg-zinc-850 border border-zinc-800 text-zinc-300 text-xs font-mono px-4 py-2 rounded-lg transition">
-                    {isVisionParsing ? "Scanning file..." : "Upload Screenshot"}
+                {/* Hevy OCR */}
+                <Card className="p-6 text-center space-y-4">
+                  <div className="space-y-1">
+                    <p className="text-sm font-semibold text-zinc-200">Hevy Screenshot Parser</p>
+                    <p className="text-xs text-zinc-600 font-mono">Vision AI reads your Hevy workout summary and auto-catalogs it</p>
+                  </div>
+                  <button onClick={() => fileInputRef.current.click()} disabled={isVisionParsing}
+                    className="btn-ghost rounded-lg px-5 py-2.5 text-xs font-mono inline-flex items-center gap-2">
+                    {isVisionParsing ? (
+                      <>
+                        <svg className="animate-spin w-3.5 h-3.5" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+                        </svg>
+                        Scanning…
+                      </>
+                    ) : (
+                      <>
+                        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
+                        </svg>
+                        Upload Screenshot
+                      </>
+                    )}
                   </button>
                   <input type="file" accept="image/*" ref={fileInputRef} onChange={handleHevyScreenshotUpload} className="hidden" />
-                </div>
+                  <p className="text-[10px] font-mono text-zinc-700">Earns +85 XP · +35g per successful parse</p>
+                </Card>
 
-                <div className="space-y-3">
-                  <p className="text-[10px] font-mono uppercase text-zinc-500">Logs History Ledger</p>
-                  {gymLogs.map(log => (
-                    <div key={log.id} className="bg-zinc-900/30 border border-zinc-900 p-4 rounded-xl font-mono text-xs space-y-2">
-                      <div className="flex justify-between text-zinc-400 border-b border-zinc-900 pb-1.5"><span>{log.workoutName}</span><span>{log.date}</span></div>
-                      {log.exercises.map((ex, i) => <div key={i} className="text-[11px] text-zinc-500">{ex.name} — <span className="text-zinc-400">{ex.sets.map(s => `${s.reps}x${s.weight}lbs`).join(', ')}</span></div>)}
+                {/* Logs */}
+                <div>
+                  <SectionLabel>Workout Log History — {gymLogs.length} sessions</SectionLabel>
+                  {gymLogs.length === 0 ? (
+                    <EmptyState icon="🏛️" title="No sessions logged yet" sub="Tap a split above or upload a Hevy screenshot to begin." />
+                  ) : (
+                    <div className="space-y-3">
+                      {gymLogs.map(log => (
+                        <Card key={log.id} className="p-4 space-y-3">
+                          <div className="flex justify-between items-start border-b border-zinc-900/60 pb-2.5">
+                            <span className="text-xs font-semibold text-zinc-300">{log.workoutName}</span>
+                            <span className="text-[10px] font-mono text-zinc-600">{log.date}</span>
+                          </div>
+                          <div className="space-y-1.5">
+                            {log.exercises.map((ex, i) => (
+                              <div key={i} className="flex justify-between items-center">
+                                <span className="text-[11px] font-mono text-zinc-500">{ex.name}</span>
+                                <span className="text-[10px] font-mono text-zinc-600">
+                                  {ex.sets.map(s => `${s.reps}×${s.weight}lbs`).join('  ')}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                        </Card>
+                      ))}
                     </div>
-                  ))}
+                  )}
                 </div>
               </div>
             )}
 
-            {/* --- TAB: MERCHANT LOOT SHOP --- */}
+            {/* ══ STORE TAB ═══════════════════════════════ */}
             {activeTab === 'shop' && (
-              <div className="space-y-6 animate-fade-in">
-                <div className="bg-zinc-900/30 border border-zinc-900 p-4 rounded-xl">
-                  <p className="text-xs font-mono text-zinc-400 uppercase mb-3">Stock Reward</p>
-                  <form onSubmit={handleAddReward} className="flex gap-2">
-                    <input type="text" value={customRewardName} onChange={(e) => setCustomRewardName(e.target.value)} placeholder="Reward description name details..." className="flex-grow bg-zinc-950 border border-zinc-900 rounded-lg px-3 py-2 text-xs font-mono text-zinc-100" />
-                    <input type="number" value={customRewardCost} onChange={(e) => setCustomRewardCost(e.target.value)} className="w-20 bg-zinc-950 border border-zinc-900 rounded-lg px-2 text-xs font-mono" />
-                    <button type="submit" className="bg-zinc-100 text-zinc-950 font-mono px-4 rounded-lg text-xs font-bold">Add</button>
-                  </form>
-                </div>
+              <div className="tab-section space-y-6">
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {rewards.map(r => (
-                    <div key={r.id} className="bg-zinc-950 border border-zinc-900 p-4 rounded-xl flex items-center justify-between">
-                      <span className="text-xs font-mono text-zinc-300">{r.text}</span>
-                      <button onClick={() => purchaseReward(r.id, r.cost, r.text)} className="bg-zinc-900 hover:bg-zinc-850 border border-zinc-800 text-zinc-400 font-mono px-3 py-1 text-xs rounded transition">Claim {r.cost}g</button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* --- TAB: SPEC MATRIX --- */}
-            {activeTab === 'hero' && (
-              <div className="space-y-6 animate-fade-in">
-                <div className="bg-zinc-900/30 border border-zinc-900 p-4 rounded-xl font-mono text-xs space-y-2 text-zinc-400">
-                  <p className="text-zinc-200 font-bold uppercase">Adi Matrix Node Setup</p>
-                  <p>Level point shards allocate dynamically during milestone completion. Use points below to balance parameters manually.</p>
-                  {hero.statPoints > 0 && <p className="text-indigo-400 font-bold">Unallocated Matrix Shards available: {hero.statPoints}</p>}
-                </div>
-
-                <div className="space-y-2">
-                  {Object.keys(hero.stats).map(stat => (
-                    <div key={stat} className="bg-zinc-950 border border-zinc-900 p-4 rounded-xl flex justify-between items-center font-mono text-xs">
-                      <span className="capitalize text-zinc-300 font-bold">{stat}</span>
-                      <div className="flex items-center gap-4">
-                        <span className="text-zinc-500">{hero.stats[stat]}</span>
-                        {hero.statPoints > 0 && <button onClick={() => handleStatBoost(stat)} className="bg-zinc-900 text-zinc-300 px-2 py-0.5 rounded border border-zinc-800">Allocate</button>}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="border border-zinc-900 p-4 rounded-xl space-y-4">
+                {/* Balance */}
+                <Card className="p-5 flex items-center justify-between" glow>
                   <div>
-                    <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider">Developer API Adjustments</p>
-                    <button onClick={clearSavedApiKey} className="bg-zinc-900 hover:bg-zinc-850 text-zinc-300 text-xs font-mono px-3 py-1.5 rounded border border-zinc-800 transition mt-1.5">
-                      Purge Cached API Key Token
-                    </button>
+                    <p className="text-[10px] font-mono text-zinc-600 uppercase tracking-widest mb-1">Gold Balance</p>
+                    <p className="text-2xl font-bold gold-badge font-mono">{hero.gold}<span className="text-sm font-normal text-zinc-600 ml-1">g</span></p>
                   </div>
-                  
-                  <div className="border-t border-zinc-900 pt-3">
-                    <p className="text-[10px] font-mono text-red-500/70 uppercase tracking-wider">System Factory Diagnostics</p>
-                    <button onClick={triggerTotalSystemReset} className="bg-red-950/20 hover:bg-red-950/40 border border-red-900/30 text-red-400 text-xs font-mono px-3 py-1.5 rounded transition mt-1.5">
-                      Hard Reset All Application Data
-                    </button>
+                  <div className="text-right">
+                    <p className="text-[10px] font-mono text-zinc-600 uppercase tracking-widest mb-1">Earned Today</p>
+                    <p className="text-xs font-mono text-zinc-500">{quests.filter(q=>q.completed).reduce((a,q)=>a+q.gold,0)}g from quests</p>
                   </div>
+                </Card>
+
+                {/* Stock reward form */}
+                <Card className="p-5">
+                  <SectionLabel>Stock New Reward</SectionLabel>
+                  <form onSubmit={handleAddReward} className="flex gap-2.5">
+                    <input type="text" value={customRewardName} onChange={e => setCustomRewardName(e.target.value)}
+                      placeholder="Reward description…"
+                      className="input-field flex-grow rounded-lg px-3.5 py-2.5 text-xs font-mono text-zinc-200 placeholder-zinc-700" />
+                    <input type="number" value={customRewardCost} onChange={e => setCustomRewardCost(e.target.value)}
+                      className="input-field w-20 rounded-lg px-3 text-xs font-mono text-zinc-400 text-center" />
+                    <button type="submit" className="btn-primary rounded-lg px-4 text-xs font-mono whitespace-nowrap">Add</button>
+                  </form>
+                </Card>
+
+                {/* Rewards grid */}
+                <div>
+                  <SectionLabel>Merchant Inventory</SectionLabel>
+                  {rewards.length === 0 ? (
+                    <EmptyState icon="🏪" title="Store is empty" sub="Stock some rewards above to motivate your grind." />
+                  ) : (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      {rewards.map(r => (
+                        <div key={r.id} className="reward-card rounded-xl p-4 flex items-center justify-between gap-3">
+                          <span className="text-xs font-mono text-zinc-300 leading-relaxed">{r.text}</span>
+                          <button onClick={() => purchaseReward(r.id, r.cost, r.text)}
+                            className={`flex-shrink-0 rounded-lg px-3 py-1.5 text-[11px] font-mono font-semibold transition-all duration-150 ${
+                              hero.gold >= r.cost
+                                ? 'gold-badge bg-yellow-400/8 border border-yellow-400/20 hover:bg-yellow-400/15 cursor-pointer'
+                                : 'text-zinc-700 bg-zinc-900 border border-zinc-800 cursor-not-allowed opacity-50'
+                            }`}>
+                            {r.cost}g
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
             )}
+
+            {/* ══ HERO / MATRIX TAB ═══════════════════════ */}
+            {activeTab === 'hero' && (
+              <div className="tab-section space-y-6">
+
+                {/* Header */}
+                <Card className="p-5" glow>
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <p className="text-[10px] font-mono text-zinc-600 uppercase tracking-widest mb-1">Character Matrix</p>
+                      <h2 className="text-lg font-bold text-zinc-100">Adi <span className="text-zinc-600 text-sm font-normal">— {hero.class}</span></h2>
+                    </div>
+                    <div className="level-badge px-3 py-1.5 rounded-lg text-right">
+                      <p className="text-[10px] font-mono text-violet-500 uppercase tracking-widest">Level</p>
+                      <p className="text-xl font-bold text-violet-300 font-mono leading-tight">{hero.level}</p>
+                    </div>
+                  </div>
+                  {hero.statPoints > 0 && (
+                    <div className="mt-4 flex items-center gap-2 p-3 rounded-lg" style={{ background: 'rgba(124,58,237,0.08)', border: '1px solid rgba(124,58,237,0.2)' }}>
+                      <BoltIcon />
+                      <span className="text-xs font-mono text-violet-300 font-semibold">
+                        {hero.statPoints} unallocated matrix shard{hero.statPoints > 1 ? 's' : ''} available
+                      </span>
+                    </div>
+                  )}
+                </Card>
+
+                {/* Stat allocation */}
+                <div>
+                  <SectionLabel>Attribute Matrix</SectionLabel>
+                  <div className="space-y-2.5">
+                    {Object.entries(hero.stats).map(([stat, val]) => (
+                      <Card key={stat} className="px-5 py-4 flex items-center gap-5">
+                        <div className="w-20 flex-shrink-0">
+                          <span className="text-xs font-mono font-semibold capitalize" style={{ color: statColor(stat) }}>{stat}</span>
+                        </div>
+                        <StatBar value={val} color={statColor(stat)} />
+                        <div className="flex items-center gap-3 flex-shrink-0">
+                          <span className="text-sm font-bold font-mono w-8 text-right" style={{ color: statColor(stat) }}>{Math.floor(val)}</span>
+                          {hero.statPoints > 0 && (
+                            <button onClick={() => handleStatBoost(stat)}
+                              className="text-[10px] font-mono font-semibold px-2.5 py-1 rounded-lg transition-all duration-150"
+                              style={{ background: 'rgba(124,58,237,0.1)', border: '1px solid rgba(124,58,237,0.25)', color: '#a78bfa' }}
+                              onMouseEnter={e => { e.currentTarget.style.background='rgba(124,58,237,0.2)'; }}
+                              onMouseLeave={e => { e.currentTarget.style.background='rgba(124,58,237,0.1)'; }}>
+                              +1
+                            </button>
+                          )}
+                        </div>
+                      </Card>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Developer controls */}
+                <Card className="p-5 space-y-5">
+                  <div>
+                    <SectionLabel>API Configuration</SectionLabel>
+                    <button onClick={clearSavedApiKey} className="btn-ghost rounded-lg px-4 py-2 text-xs font-mono">
+                      Purge Cached API Key
+                    </button>
+                  </div>
+                  <div className="border-t border-zinc-900/60 pt-4">
+                    <p className="text-[10px] font-mono text-red-500/60 uppercase tracking-widest mb-2">Danger Zone</p>
+                    <button onClick={triggerTotalSystemReset} className="btn-danger rounded-lg px-4 py-2 text-xs font-mono">
+                      Hard Reset All Data
+                    </button>
+                    <p className="text-[10px] text-zinc-700 font-mono mt-2">This will wipe all quests, logs, rewards, and hero data.</p>
+                  </div>
+                </Card>
+              </div>
+            )}
+
           </main>
 
-          {/* Level Up Overlay Window */}
+          {/* ── LEVEL UP MODAL ─────────────────────────── */}
           {levelUpModal && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-950/80 backdrop-blur-sm p-4 animate-fade-in">
-              <div className="bg-zinc-900 border border-zinc-800 p-6 rounded-2xl max-w-sm w-full text-center space-y-4 shadow-2xl">
-                <h3 className="text-sm font-bold tracking-wider text-zinc-100 font-mono uppercase">Level Up Reached</h3>
-                <p className="text-xs text-zinc-400 leading-relaxed font-mono">You are now Level {hero.level}. You have earned 3 matrix attribute points.</p>
-                <button onClick={() => { setLevelUpModal(false); setActiveTab('hero'); }} className="w-full bg-zinc-100 text-zinc-950 font-mono py-2 rounded-lg text-xs font-bold transition">Open Matrix</button>
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: 'rgba(9,9,11,0.85)', backdropFilter: 'blur(16px)' }}>
+              <div className="max-w-sm w-full rounded-2xl p-7 text-center space-y-5 glow-border"
+                style={{ background: 'rgba(18,18,20,0.95)', animation: 'scaleIn 0.25s ease-out both' }}>
+                {/* Glow ring */}
+                <div className="mx-auto w-16 h-16 rounded-full flex items-center justify-center mb-1"
+                  style={{ background: 'radial-gradient(circle, rgba(124,58,237,0.2) 0%, transparent 70%)', border: '1px solid rgba(124,58,237,0.3)' }}>
+                  <span className="text-2xl">⚡</span>
+                </div>
+                <div>
+                  <p className="text-[10px] font-mono text-violet-500 uppercase tracking-widest mb-1">Matrix Upgrade</p>
+                  <h3 className="text-xl font-bold text-zinc-100">Level {hero.level} Reached</h3>
+                  <p className="text-xs text-zinc-500 font-mono mt-2 leading-relaxed">
+                    3 attribute shards earned. Allocate them in the Matrix tab to sharpen your stats.
+                  </p>
+                </div>
+                <button onClick={() => { setLevelUpModal(false); setActiveTab('hero'); }}
+                  className="btn-primary w-full rounded-xl py-3 text-sm font-mono">
+                  Open Matrix
+                </button>
               </div>
             </div>
           )}
