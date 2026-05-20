@@ -363,6 +363,13 @@
         triggerToast("Saved API key purged from browser local cache memory.");
       };
 
+      const triggerTotalSystemReset = () => {
+        if(confirm("Are you absolutely sure you want to nuke all metrics, custom quests, split logs, and streaks? This cannot be undone.")) {
+          localStorage.clear();
+          window.location.reload();
+        }
+      };
+
       const codingQuest = quests.find(q => q.text.includes("8 Hours")) || {};
       const readQuest = quests.find(q => q.text.includes("Read book")) || {};
 
@@ -563,11 +570,20 @@
                   ))}
                 </div>
 
-                <div className="border border-zinc-900 p-4 rounded-xl space-y-2">
-                  <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider">Developer API Adjustments</p>
-                  <button onClick={clearSavedApiKey} className="bg-zinc-900 hover:bg-zinc-850 text-red-400 text-xs font-mono px-3 py-1.5 rounded border border-zinc-800 transition">
-                    Purge Cached API Key Token
-                  </button>
+                <div className="border border-zinc-900 p-4 rounded-xl space-y-4">
+                  <div>
+                    <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider">Developer API Adjustments</p>
+                    <button onClick={clearSavedApiKey} className="bg-zinc-900 hover:bg-zinc-850 text-zinc-300 text-xs font-mono px-3 py-1.5 rounded border border-zinc-800 transition mt-1.5">
+                      Purge Cached API Key Token
+                    </button>
+                  </div>
+                  
+                  <div className="border-t border-zinc-900 pt-3">
+                    <p className="text-[10px] font-mono text-red-500/70 uppercase tracking-wider">System Factory Diagnostics</p>
+                    <button onClick={triggerTotalSystemReset} className="bg-red-950/20 hover:bg-red-950/40 border border-red-900/30 text-red-400 text-xs font-mono px-3 py-1.5 rounded transition mt-1.5">
+                      Hard Reset All Application Data
+                    </button>
+                  </div>
                 </div>
               </div>
             )}
