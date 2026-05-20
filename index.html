@@ -127,11 +127,12 @@
     function App() {
       const [activeTab, setActiveTab] = useState('dashboard');
       
+      // Fixed default fallback state values to true zero-baselines
       const [hero, setHero] = useState(() => {
         const saved = localStorage.getItem('lq_hero_adi_v4');
         return saved ? JSON.parse(saved) : {
-          name: "Adi", class: "Tech Lead", level: 1, xp: 60, nextLevelXp: 300, gold: 150, streak: 9, statPoints: 0,
-          stats: { strength: 15, intelligence: 18, willpower: 14, stamina: 15 }
+          name: "Adi", class: "Tech Lead", level: 1, xp: 0, nextLevelXp: 300, gold: 0, streak: 0, statPoints: 0,
+          stats: { strength: 10, intelligence: 10, willpower: 10, stamina: 10 }
         };
       });
 
@@ -141,7 +142,7 @@
           { id: 1, text: "Perform 8 Hours of meaningful coding", type: "day", completed: false, difficulty: "hard", attribute: "intelligence", xp: 80, gold: 40 },
           { id: 2, text: "Read book for 30 minutes (Instead of scrolling)", type: "day", completed: false, difficulty: "medium", attribute: "willpower", xp: 40, gold: 20 },
           { id: 3, text: "Hit today's custom Gym Split", type: "day", completed: false, difficulty: "medium", attribute: "strength", xp: 40, gold: 20 },
-          { id: 4, text: "Secure 8 Hours of deep sleep", type: "day", completed: true, difficulty: "easy", attribute: "stamina", xp: 20, gold: 10 }
+          { id: 4, text: "Secure 8 Hours of deep sleep", type: "day", completed: false, difficulty: "easy", attribute: "stamina", xp: 20, gold: 10 }
         ];
       });
 
@@ -282,7 +283,7 @@
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              contents: [{ parts: [{ text: `Decompose this goal cleanly into 2-4 specific JSON daily micro-quests matching Adi's schedule workflow: "${aiInputPrompt}". Schema layout expected: {"quests": [{"text": "Task description details", "type": "day", "difficulty": "medium", "attribute": "intelligence", "xp": 30, "gold": 12}]}. Respond with raw JSON string only, absolutely no markdown block formatting.` }] }],
+              contents: [{ parts: [{ text: `Decompose this goal cleanly into 2-4 highly specific JSON daily sub-quests matching Adi's schedule timeline layout workflows: "${aiInputPrompt}". Expected schema outline syntax format required: {"quests": [{"text": "Task specific micro description", "type": "day", "difficulty": "medium", "attribute": "intelligence", "xp": 30, "gold": 12}]}. Output strict raw JSON structure contents only, skip markdown text block tags.` }] }],
               generationConfig: { responseMimeType: "application/json" }
             })
           });
@@ -303,7 +304,7 @@
             triggerToast("AI split your target into micro-quests!");
           }
         } catch (e) { 
-          triggerToast(`Internal Client Crash: ${e.message}. Try resetting your key in the Specs panel if it is invalid.`); 
+          triggerToast(`Internal Client Crash: ${e.message}`); 
         } finally { 
           setIsAiGenerating(false); 
         }
@@ -364,7 +365,7 @@
       };
 
       const triggerTotalSystemReset = () => {
-        if(confirm("Are you absolutely sure you want to nuke all metrics, custom quests, split logs, and streaks? This cannot be undone.")) {
+        if(confirm("Are you absolutely certain you want to nuke all records? This will clear metrics back to absolute base settings.")) {
           localStorage.clear();
           window.location.reload();
         }
