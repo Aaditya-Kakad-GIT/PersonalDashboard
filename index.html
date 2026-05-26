@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- LifeQuest OS v2 — Premium UI + Midnight Reset -->
+<!-- LifeQuest OS v3 — Streak + PR Tracker + Weekly Quests -->
 <html lang="en" class="dark">
 <head>
   <meta charset="UTF-8">
@@ -76,7 +76,6 @@
 
     .font-mono { font-family: 'Geist Mono', monospace; }
 
-    /* Noise texture overlay */
     body::before {
       content: '';
       position: fixed;
@@ -87,36 +86,37 @@
       opacity: 0.4;
     }
 
-    /* Grid dot background */
     .bg-grid {
       background-image: radial-gradient(circle, #27272a 1px, transparent 1px);
       background-size: 28px 28px;
     }
 
-    /* Glass card */
     .glass {
       background: rgba(24, 24, 27, 0.6);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
     }
 
-    /* Glow border */
     .glow-border {
       border: 1px solid rgba(139, 92, 246, 0.3);
       box-shadow: 0 0 20px rgba(139, 92, 246, 0.06), inset 0 1px 0 rgba(139, 92, 246, 0.08);
     }
 
-    /* Subtle separator line */
     .sep { border-color: rgba(39, 39, 42, 0.8); }
 
-    /* XP Bar shimmer */
     .xp-bar-fill {
       background: linear-gradient(90deg, #6d28d9, #7c3aed, #8b5cf6, #7c3aed, #6d28d9);
       background-size: 200% 100%;
       animation: shimmer 3s linear infinite;
     }
 
-    /* Checkbox custom */
+    /* Streak bar — fire gradient */
+    .streak-bar-fill {
+      background: linear-gradient(90deg, #b45309, #d97706, #f59e0b, #fbbf24, #f59e0b);
+      background-size: 200% 100%;
+      animation: shimmer 2s linear infinite;
+    }
+
     .quest-check {
       appearance: none;
       width: 16px;
@@ -149,7 +149,6 @@
       background: rgba(124, 58, 237, 0.1);
     }
 
-    /* Tab indicator */
     .tab-active {
       color: #e4e4e7;
       background: rgba(39,39,42,0.8);
@@ -161,7 +160,6 @@
     }
     .tab-inactive:hover { color: #a1a1aa; }
 
-    /* Stat bar */
     .stat-bar-bg {
       height: 3px;
       background: #27272a;
@@ -174,7 +172,6 @@
       transition: width 0.4s cubic-bezier(0.4,0,0.2,1);
     }
 
-    /* Card hover lift */
     .card-lift {
       transition: transform 0.18s ease, border-color 0.18s ease;
     }
@@ -183,7 +180,6 @@
       border-color: rgba(63,63,70,0.9);
     }
 
-    /* Input focus ring */
     .input-field {
       background: rgba(9,9,11,0.8);
       border: 1px solid rgba(39,39,42,0.9);
@@ -195,7 +191,6 @@
       box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.08);
     }
 
-    /* Primary button */
     .btn-primary {
       background: #f4f4f5;
       color: #09090b;
@@ -214,7 +209,6 @@
       transform: none;
     }
 
-    /* Ghost button */
     .btn-ghost {
       background: rgba(24,24,27,0.6);
       border: 1px solid rgba(39,39,42,0.8);
@@ -227,7 +221,6 @@
       border-color: rgba(63,63,70,0.8);
     }
 
-    /* Danger button */
     .btn-danger {
       background: rgba(127,29,29,0.15);
       border: 1px solid rgba(185,28,28,0.2);
@@ -239,37 +232,39 @@
       border-color: rgba(185,28,28,0.4);
     }
 
-    /* Section fade in */
     .tab-section { animation: fadeSlideIn 0.22s ease-out both; }
 
-    /* Gold badge glow */
     .gold-badge { color: #fbbf24; text-shadow: 0 0 8px rgba(251,191,36,0.3); }
 
-    /* Level badge */
     .level-badge {
       background: linear-gradient(135deg, rgba(124,58,237,0.15), rgba(139,92,246,0.08));
       border: 1px solid rgba(124,58,237,0.25);
       color: #a78bfa;
     }
 
-    /* Empty state */
     .empty-state {
       border: 1px dashed rgba(39,39,42,0.6);
       background: rgba(9,9,11,0.3);
     }
 
-    /* Difficulty badge */
-    .diff-easy { color: #4ade80; background: rgba(74,222,128,0.08); border: 1px solid rgba(74,222,128,0.15); }
-    .diff-medium { color: #fbbf24; background: rgba(251,191,36,0.08); border: 1px solid rgba(251,191,36,0.15); }
-    .diff-hard { color: #f87171; background: rgba(248,113,113,0.08); border: 1px solid rgba(248,113,113,0.15); }
+    .diff-easy   { color: #4ade80; background: rgba(74,222,128,0.08);  border: 1px solid rgba(74,222,128,0.15);  }
+    .diff-medium { color: #fbbf24; background: rgba(251,191,36,0.08);  border: 1px solid rgba(251,191,36,0.15);  }
+    .diff-hard   { color: #f87171; background: rgba(248,113,113,0.08); border: 1px solid rgba(248,113,113,0.15); }
 
-    /* Attribute badge */
-    .attr-intel { color: #60a5fa; background: rgba(96,165,250,0.08); border: 1px solid rgba(96,165,250,0.15); }
-    .attr-str { color: #f97316; background: rgba(249,115,22,0.08); border: 1px solid rgba(249,115,22,0.15); }
-    .attr-wil { color: #c084fc; background: rgba(192,132,252,0.08); border: 1px solid rgba(192,132,252,0.15); }
-    .attr-sta { color: #34d399; background: rgba(52,211,153,0.08); border: 1px solid rgba(52,211,153,0.15); }
+    .attr-intel { color: #60a5fa; background: rgba(96,165,250,0.08);  border: 1px solid rgba(96,165,250,0.15);  }
+    .attr-str   { color: #f97316; background: rgba(249,115,22,0.08);  border: 1px solid rgba(249,115,22,0.15);  }
+    .attr-wil   { color: #c084fc; background: rgba(192,132,252,0.08); border: 1px solid rgba(192,132,252,0.15); }
+    .attr-sta   { color: #34d399; background: rgba(52,211,153,0.08);  border: 1px solid rgba(52,211,153,0.15);  }
 
-    /* Workout day card */
+    /* Weekly quest badge */
+    .badge-weekly { color: #818cf8; background: rgba(129,140,248,0.08); border: 1px solid rgba(129,140,248,0.15); }
+
+    /* PR badge */
+    .badge-pr { color: #fbbf24; background: rgba(251,191,36,0.1); border: 1px solid rgba(251,191,36,0.25); }
+
+    /* Streak flame badge */
+    .badge-streak { color: #fb923c; background: rgba(251,146,60,0.08); border: 1px solid rgba(251,146,60,0.2); }
+
     .day-card {
       background: rgba(9,9,11,0.7);
       border: 1px solid rgba(39,39,42,0.7);
@@ -282,7 +277,6 @@
       box-shadow: 0 8px 24px rgba(0,0,0,0.3), 0 0 20px rgba(124,58,237,0.06);
     }
 
-    /* Header glass */
     .header-glass {
       background: rgba(9,9,11,0.85);
       backdrop-filter: blur(20px);
@@ -290,7 +284,6 @@
       border-bottom: 1px solid rgba(39,39,42,0.6);
     }
 
-    /* Reward card */
     .reward-card {
       background: rgba(9,9,11,0.6);
       border: 1px solid rgba(39,39,42,0.7);
@@ -301,10 +294,8 @@
       box-shadow: 0 0 20px rgba(251,191,36,0.04);
     }
 
-    /* Scrollable area */
     .scroll-area { overflow-y: auto; max-height: 400px; }
 
-    /* Neon dot indicator */
     .neon-dot {
       width: 6px; height: 6px;
       background: #7c3aed;
@@ -316,6 +307,12 @@
       background: #4ade80;
       border-radius: 50%;
       box-shadow: 0 0 6px rgba(74,222,128,0.8), 0 0 12px rgba(74,222,128,0.4);
+    }
+    .neon-dot-orange {
+      width: 6px; height: 6px;
+      background: #f97316;
+      border-radius: 50%;
+      box-shadow: 0 0 6px rgba(249,115,22,0.8), 0 0 12px rgba(249,115,22,0.4);
     }
   </style>
 </head>
@@ -380,6 +377,20 @@
             osc.start(now + idx * 0.04);
             osc.stop(now + idx * 0.04 + 0.2);
           });
+        } else if (type === 'pr') {
+          /* Rising arpeggio for PR */
+          [392, 523, 659, 784].forEach((freq, idx) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(freq, now + idx * 0.07);
+            gain.gain.setValueAtTime(0.025, now + idx * 0.07);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.07 + 0.18);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(now + idx * 0.07);
+            osc.stop(now + idx * 0.07 + 0.18);
+          });
         }
       } catch (e) {}
     };
@@ -398,6 +409,27 @@
     const attrClass  = a => a === 'intelligence' ? 'attr-intel' : a === 'strength' ? 'attr-str' : a === 'willpower' ? 'attr-wil' : 'attr-sta';
     const attrLabel  = a => a === 'intelligence' ? 'INT' : a === 'strength' ? 'STR' : a === 'willpower' ? 'WIL' : 'STA';
     const statColor  = s => s === 'intelligence' ? '#60a5fa' : s === 'strength' ? '#f97316' : s === 'willpower' ? '#c084fc' : '#34d399';
+
+    /* Days until next Sunday (0 = today is Sunday) */
+    const daysUntilSunday = () => {
+      const d = new Date().getDay(); // 0=Sun
+      return d === 0 ? 0 : 7 - d;
+    };
+
+    /* ─── PR ENGINE ──────────────────────────────────────────── */
+    const checkAndUpdatePRs = (exercises, currentPRs) => {
+      const newPRNames = [];
+      const updatedPRs = { ...currentPRs };
+      for (const ex of (exercises || [])) {
+        if (!ex.sets || ex.sets.length === 0) continue;
+        const maxWeight = Math.max(...ex.sets.map(s => Number(s.weight) || 0));
+        if (maxWeight > 0 && maxWeight > (updatedPRs[ex.name] || 0)) {
+          newPRNames.push(ex.name);
+          updatedPRs[ex.name] = maxWeight;
+        }
+      }
+      return { newPRNames, updatedPRs };
+    };
 
     /* ─── SUBCOMPONENTS ──────────────────────────────────────── */
     const SectionLabel = ({ children }) => (
@@ -428,6 +460,15 @@
       );
     };
 
+    const StreakBar = ({ streak, cap = 30 }) => {
+      const pct = Math.min(100, (streak / cap) * 100);
+      return (
+        <div className="stat-bar-bg w-full">
+          <div className="streak-bar-fill stat-bar-fill" style={{ width: `${Math.max(pct, streak > 0 ? 3 : 0)}%` }} />
+        </div>
+      );
+    };
+
     const StatBar = ({ value, color }) => {
       const pct = Math.min(100, ((value - 10) / 40) * 100);
       return (
@@ -452,15 +493,18 @@
       const [quests, setQuests] = useState(() => {
         const saved = localStorage.getItem('lq_quests_adi_v4');
         return saved ? JSON.parse(saved) : [
-          { id: 1, text: "Perform 8 Hours of meaningful coding", type: "day", completed: false, difficulty: "hard",   attribute: "intelligence", xp: 80, gold: 40 },
-          { id: 2, text: "Read book for 30 minutes (Instead of scrolling)", type: "day", completed: false, difficulty: "medium", attribute: "willpower", xp: 40, gold: 20 },
-          { id: 3, text: "Hit today's custom Gym Split", type: "day", completed: false, difficulty: "medium", attribute: "strength",     xp: 40, gold: 20 },
-          { id: 4, text: "Secure 8 Hours of deep sleep", type: "day", completed: false, difficulty: "easy",   attribute: "stamina",      xp: 20, gold: 10 }
+          { id: 1, text: "Perform 8 Hours of meaningful coding",              type: "day",  completed: false, difficulty: "hard",   attribute: "intelligence", xp: 80, gold: 40 },
+          { id: 2, text: "Read book for 30 minutes (Instead of scrolling)",   type: "day",  completed: false, difficulty: "medium", attribute: "willpower",    xp: 40, gold: 20 },
+          { id: 3, text: "Hit today's custom Gym Split",                      type: "day",  completed: false, difficulty: "medium", attribute: "strength",     xp: 40, gold: 20 },
+          { id: 4, text: "Secure 8 Hours of deep sleep",                      type: "day",  completed: false, difficulty: "easy",   attribute: "stamina",      xp: 20, gold: 10 },
+          { id: 5, text: "Ship one meaningful side-project feature this week",type: "week", completed: false, difficulty: "hard",   attribute: "intelligence", xp: 120, gold: 60 },
+          { id: 6, text: "Hit 4 gym sessions this week",                      type: "week", completed: false, difficulty: "medium", attribute: "strength",     xp: 80,  gold: 40 },
         ];
       });
 
-      const [gymLogs,  setGymLogs]  = useState(() => JSON.parse(localStorage.getItem('lq_gymlogs_adi_v4'))  || []);
-      const [rewards,  setRewards]  = useState(() => JSON.parse(localStorage.getItem('lq_rewards_adi_v4'))  || [
+      const [gymLogs,     setGymLogs]     = useState(() => JSON.parse(localStorage.getItem('lq_gymlogs_adi_v4'))  || []);
+      const [exercisePRs, setExercisePRs] = useState(() => JSON.parse(localStorage.getItem('lq_prs_adi_v4'))     || {});
+      const [rewards,     setRewards]     = useState(() => JSON.parse(localStorage.getItem('lq_rewards_adi_v4'))  || [
         { id: 1, text: "Watch 1 episode of anime/show guilt-free",  cost: 30  },
         { id: 2, text: "Indulge in a clean cheat meal",             cost: 60  },
         { id: 3, text: "Unlock personal luxury hobby item",         cost: 140 }
@@ -470,8 +514,8 @@
       const [isAiGenerating,  setIsAiGenerating]  = useState(false);
       const [isVisionParsing, setIsVisionParsing] = useState(false);
       const fileInputRef = useRef(null);
-      const [toastMsg,      setToastMsg]      = useState("");
-      const [levelUpModal,  setLevelUpModal]  = useState(false);
+      const [toastMsg,     setToastMsg]     = useState("");
+      const [levelUpModal, setLevelUpModal] = useState(false);
 
       const [newQuestText,       setNewQuestText]       = useState("");
       const [newQuestType,       setNewQuestType]       = useState("day");
@@ -480,14 +524,39 @@
       const [customRewardName,   setCustomRewardName]   = useState("");
       const [customRewardCost,   setCustomRewardCost]   = useState(40);
 
-      /* ── AUTOMATIC MIDNIGHT RESET ENGINE ──────────────────── */
+      /* ── MIDNIGHT RESET + STREAK ENGINE ───────────────────── */
       useEffect(() => {
-        const todayStr      = new Date().toISOString().split('T')[0];
+        const todayStr     = new Date().toISOString().split('T')[0];
+        const yesterdayStr = new Date(Date.now() - 86400000).toISOString().split('T')[0];
         const lastResetDate = localStorage.getItem('lq_last_reset_date');
+
         if (lastResetDate !== todayStr) {
-          setQuests(prev => prev.map(q => q.type === 'day' ? { ...q, completed: false } : q));
+          /* ── Streak logic ── */
+          const dailyQuests       = quests.filter(q => q.type === 'day');
+          const allDailiesWereDone = dailyQuests.length > 0 && dailyQuests.every(q => q.completed);
+          const isConsecutiveDay  = lastResetDate === yesterdayStr;
+          const newStreak = isConsecutiveDay && allDailiesWereDone ? hero.streak + 1 : 0;
+          setHero(h => ({ ...h, streak: newStreak }));
+
+          /* ── Weekly reset (Sunday) ── */
+          const isWeeklyResetDay  = new Date().getDay() === 0;
+          const lastWeeklyReset   = localStorage.getItem('lq_last_weekly_reset');
+          if (isWeeklyResetDay && lastWeeklyReset !== todayStr) {
+            setQuests(prev => prev.map(q => ({ ...q, completed: false })));
+            localStorage.setItem('lq_last_weekly_reset', todayStr);
+            setTimeout(() => triggerToast("🗓️ Weekly reset — all quests refreshed."), 800);
+          } else {
+            /* Daily reset only */
+            setQuests(prev => prev.map(q => q.type === 'day' ? { ...q, completed: false } : q));
+            setTimeout(() => triggerToast("⚡ New day — daily quests reset."), 800);
+          }
+
+          /* ── Streak toast ── */
+          if (newStreak > 0) {
+            setTimeout(() => triggerToast(`🔥 Streak: ${newStreak} day${newStreak > 1 ? 's' : ''} — keep it alive.`), 1400);
+          }
+
           localStorage.setItem('lq_last_reset_date', todayStr);
-          setTimeout(() => triggerToast("⚡ New day — daily quests have been reset."), 800);
         }
       }, []);
 
@@ -497,7 +566,8 @@
         localStorage.setItem('lq_quests_adi_v4',  JSON.stringify(quests));
         localStorage.setItem('lq_gymlogs_adi_v4', JSON.stringify(gymLogs));
         localStorage.setItem('lq_rewards_adi_v4', JSON.stringify(rewards));
-      }, [hero, quests, gymLogs, rewards]);
+        localStorage.setItem('lq_prs_adi_v4',     JSON.stringify(exercisePRs));
+      }, [hero, quests, gymLogs, rewards, exercisePRs]);
 
       const triggerToast = (msg) => { setToastMsg(msg); setTimeout(() => setToastMsg(""), 4500); };
 
@@ -538,22 +608,39 @@
         e.preventDefault();
         if (!newQuestText.trim()) return;
         const calcXp = newQuestDifficulty === 'easy' ? 20 : newQuestDifficulty === 'medium' ? 40 : 80;
-        const q = { id: Date.now(), text: newQuestText, type: newQuestType, completed: false, difficulty: newQuestDifficulty, attribute: newQuestAttr, xp: calcXp, gold: Math.round(calcXp * 0.4) };
+        const baseXp = newQuestType === 'week' ? calcXp * 2 : calcXp;
+        const q = { id: Date.now(), text: newQuestText, type: newQuestType, completed: false, difficulty: newQuestDifficulty, attribute: newQuestAttr, xp: baseXp, gold: Math.round(baseXp * 0.4) };
         setQuests([q, ...quests]);
         setNewQuestText("");
-        triggerToast("Quest forged and added to the board.");
+        triggerToast(`Quest forged — ${newQuestType === 'week' ? 'weekly' : 'daily'} added to board.`);
       };
 
       const deleteQuest = (id) => { setQuests(prev => prev.filter(q => q.id !== id)); };
 
-      /* Preset gym log */
+      /* Preset gym log — with PR detection */
       const triggerPresetWorkoutLog = (dayName) => {
         const preset = PRESET_WORKOUTS[dayName];
         if (!preset) return;
-        const newLog = { id: Date.now(), date: new Date().toISOString().split('T')[0], workoutName: `${preset.name} (${dayName})`, exercises: preset.exercises };
+
+        const { newPRNames, updatedPRs } = checkAndUpdatePRs(preset.exercises, exercisePRs);
+        setExercisePRs(updatedPRs);
+
+        const newLog = {
+          id: Date.now(),
+          date: new Date().toISOString().split('T')[0],
+          workoutName: `${preset.name} (${dayName})`,
+          exercises: preset.exercises,
+          prExercises: newPRNames
+        };
         setGymLogs([newLog, ...gymLogs]);
         setHero(h => ({ ...h, xp: h.xp + 60, gold: h.gold + 20 }));
-        triggerToast(`Split logged: ${preset.name} — +60 XP · +20g`);
+
+        if (newPRNames.length > 0) {
+          playSound('pr');
+          triggerToast(`🏆 PR: ${newPRNames.join(', ')} — +60 XP · +20g`);
+        } else {
+          triggerToast(`Split logged: ${preset.name} — +60 XP · +20g`);
+        }
       };
 
       const handleStatBoost = (statName) => {
@@ -615,6 +702,7 @@
         finally { setIsAiGenerating(false); }
       };
 
+      /* Hevy OCR — with PR detection */
       const handleHevyScreenshotUpload = async (e) => {
         const file = e.target.files?.[0];
         if (!file) return;
@@ -640,14 +728,37 @@
             const result = await res.json();
             const rawText = result.candidates[0].content.parts[0].text;
             const parsed = JSON.parse(rawText);
-            const newLog = { id: Date.now(), date: parsed.date || new Date().toISOString().split('T')[0], workoutName: `${parsed.workoutName} (Hevy Sync)`, exercises: parsed.exercises || [] };
-            setGymLogs([newLog, ...gymLogs]);
+
+            /* PR check — read from localStorage to avoid stale closure */
+            const freshPRs = JSON.parse(localStorage.getItem('lq_prs_adi_v4') || '{}');
+            const { newPRNames, updatedPRs } = checkAndUpdatePRs(parsed.exercises || [], freshPRs);
+            setExercisePRs(updatedPRs);
+
+            const newLog = {
+              id: Date.now(),
+              date: parsed.date || new Date().toISOString().split('T')[0],
+              workoutName: `${parsed.workoutName} (Hevy Sync)`,
+              exercises: parsed.exercises || [],
+              prExercises: newPRNames
+            };
+            setGymLogs(prev => [newLog, ...prev]);
             setHero(h => ({ ...h, xp: h.xp + 85, gold: h.gold + 35 }));
-            triggerToast("Hevy workout parsed and cataloged — +85 XP · +35g");
+
+            if (newPRNames.length > 0) {
+              playSound('pr');
+              triggerToast(`Hevy parsed — +85 XP · +35g · 🏆 PR: ${newPRNames.join(', ')}`);
+            } else {
+              triggerToast("Hevy workout parsed and cataloged — +85 XP · +35g");
+            }
           } catch (err) { triggerToast(`Vision parsing failed: ${err.message}`); }
           finally { setIsVisionParsing(false); }
         };
         reader.readAsDataURL(file);
+      };
+
+      const deleteGymLog = (id) => {
+        setGymLogs(prev => prev.filter(l => l.id !== id));
+        triggerToast("Session removed from log.");
       };
 
       const clearSavedApiKey = () => { localStorage.removeItem("adi_gemini_key"); triggerToast("API key purged from local cache."); };
@@ -663,6 +774,10 @@
       const readQuest   = quests.find(q => q.text.includes("Read book")) || {};
       const completedCount = quests.filter(q => q.completed).length;
       const xpPct = Math.min(100, Math.round((hero.xp / hero.nextLevelXp) * 100));
+
+      const dailyQuests  = quests.filter(q => q.type === 'day');
+      const weeklyQuests = quests.filter(q => q.type === 'week');
+      const daysLeft     = daysUntilSunday();
 
       const tabs = [
         { id: 'dashboard', label: 'Overview' },
@@ -680,20 +795,21 @@
           <header className="header-glass sticky top-0 z-40">
             <div className="max-w-4xl mx-auto px-5 py-3.5">
 
-              {/* Top row */}
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2.5">
                   <div className="neon-dot"></div>
                   <span className="text-[11px] font-mono font-semibold tracking-[0.2em] text-zinc-200">ADI // LIFEQUEST OS</span>
                 </div>
-
                 <div className="flex items-center gap-3 text-[11px] font-mono">
-                  {/* Level badge */}
                   <span className="level-badge px-2 py-0.5 rounded-md font-semibold">LVL {hero.level}</span>
                   <div className="h-3.5 w-px bg-zinc-800"></div>
                   <span className="gold-badge font-semibold">{hero.gold}<span className="text-zinc-600 font-normal">g</span></span>
                   <div className="h-3.5 w-px bg-zinc-800"></div>
-                  <span className="text-zinc-500">{hero.streak}<span className="text-zinc-700">d</span></span>
+                  {/* Streak display — now live */}
+                  <span className={`flex items-center gap-1 font-semibold ${hero.streak > 0 ? 'text-orange-400' : 'text-zinc-600'}`}
+                    title={`${hero.streak}-day streak`}>
+                    {hero.streak > 0 ? '🔥' : '○'} {hero.streak}<span className="text-zinc-700 font-normal">d</span>
+                  </span>
                   {hero.statPoints > 0 && (
                     <span className="ml-1 flex items-center gap-1 text-violet-400 font-semibold animate-pulse">
                       <BoltIcon />{hero.statPoints}
@@ -702,7 +818,6 @@
                 </div>
               </div>
 
-              {/* XP bar row */}
               <div className="flex items-center gap-3 mb-3">
                 <div className="flex-1">
                   <XpBar xp={hero.xp} max={hero.nextLevelXp} />
@@ -710,7 +825,6 @@
                 <span className="text-[10px] font-mono text-zinc-600 whitespace-nowrap">{hero.xp} / {hero.nextLevelXp} XP</span>
               </div>
 
-              {/* Tab nav */}
               <div className="flex gap-1">
                 {tabs.map(t => (
                   <button key={t.id} onClick={() => setActiveTab(t.id)}
@@ -742,23 +856,31 @@
 
                 {/* Hero identity + stats */}
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  {/* Identity card */}
                   <Card className="sm:col-span-1 p-5 flex flex-col justify-between gap-4" glow>
                     <div>
                       <p className="text-[10px] font-mono text-zinc-600 uppercase tracking-widest mb-1">Active Hero</p>
                       <h2 className="text-xl font-bold text-zinc-100 tracking-tight">{hero.name}</h2>
                       <p className="text-xs text-zinc-500 font-mono">{hero.class}</p>
                     </div>
+                    {/* Streak bar */}
+                    <div className="space-y-1.5">
+                      <div className="flex justify-between items-center">
+                        <span className="text-[10px] font-mono text-zinc-600">Streak</span>
+                        <span className={`text-[10px] font-mono font-semibold ${hero.streak > 0 ? 'text-orange-400' : 'text-zinc-600'}`}>
+                          {hero.streak > 0 ? `🔥 ${hero.streak}d` : '0d'}
+                        </span>
+                      </div>
+                      <StreakBar streak={hero.streak} cap={30} />
+                    </div>
                     <div className="space-y-2">
                       <div className="flex justify-between items-center">
-                        <span className="text-[10px] font-mono text-zinc-600">Progress</span>
+                        <span className="text-[10px] font-mono text-zinc-600">XP Progress</span>
                         <span className="text-[10px] font-mono text-zinc-500">{xpPct}%</span>
                       </div>
                       <XpBar xp={hero.xp} max={hero.nextLevelXp} />
                     </div>
                   </Card>
 
-                  {/* Quick stat grid */}
                   <div className="sm:col-span-2 grid grid-cols-2 gap-3">
                     {Object.entries(hero.stats).map(([k, v]) => (
                       <Card key={k} className="p-4 flex flex-col gap-2.5">
@@ -800,7 +922,7 @@
                   <p className="text-[10px] text-zinc-700 font-mono mt-2">Powered by Gemini · Requires API key on first use</p>
                 </Card>
 
-                {/* Quick status cards */}
+                {/* Quick status */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <Card className="p-4 flex items-center justify-between">
                     <div className="flex items-center gap-3">
@@ -853,6 +975,9 @@
                               {q.text}
                             </span>
                             <div className="flex items-center gap-2 flex-shrink-0">
+                              {q.type === 'week' && (
+                                <span className="text-[9px] font-mono font-semibold px-1.5 py-0.5 rounded badge-weekly">WK</span>
+                              )}
                               <span className={`text-[9px] font-mono font-semibold px-1.5 py-0.5 rounded ${diffClass(q.difficulty)}`}>
                                 {q.difficulty.toUpperCase()}
                               </span>
@@ -871,7 +996,7 @@
             {activeTab === 'quests' && (
               <div className="tab-section space-y-6">
 
-                {/* Forge card */}
+                {/* Forge */}
                 <Card className="p-5" glow>
                   <SectionLabel>Forge Custom Quest</SectionLabel>
                   <form onSubmit={handleManualQuestAdd} className="space-y-3.5">
@@ -882,9 +1007,9 @@
                     />
                     <div className="grid grid-cols-3 gap-3">
                       {[
-                        { val: newQuestType, set: setNewQuestType, opts: [['day','Daily'],['week','Weekly']] },
+                        { val: newQuestType,       set: setNewQuestType,       opts: [['day','Daily'],['week','Weekly']] },
                         { val: newQuestDifficulty, set: setNewQuestDifficulty, opts: [['easy','Easy'],['medium','Medium'],['hard','Hard']] },
-                        { val: newQuestAttr, set: setNewQuestAttr, opts: [['intelligence','Intellect'],['strength','Strength'],['willpower','Willpower'],['stamina','Stamina']] },
+                        { val: newQuestAttr,       set: setNewQuestAttr,       opts: [['intelligence','Intellect'],['strength','Strength'],['willpower','Willpower'],['stamina','Stamina']] },
                       ].map((sel, i) => (
                         <select key={i} value={sel.val} onChange={e => sel.set(e.target.value)}
                           className="input-field rounded-lg px-3 py-2 text-xs font-mono text-zinc-400 cursor-pointer">
@@ -892,20 +1017,55 @@
                         </select>
                       ))}
                     </div>
+                    <p className="text-[10px] font-mono text-zinc-700">
+                      {newQuestType === 'week' ? `Weekly quests reset every Sunday · ${daysLeft === 0 ? 'resets tonight' : `${daysLeft}d until reset`}` : 'Daily quests reset at midnight'}
+                    </p>
                     <button type="submit" className="btn-primary w-full rounded-lg py-2.5 text-xs font-mono">
                       Add to Board
                     </button>
                   </form>
                 </Card>
 
-                {/* Active board */}
+                {/* Weekly quests section */}
+                {weeklyQuests.length > 0 && (
+                  <div>
+                    <div className="flex items-center justify-between mb-3">
+                      <SectionLabel>Weekly Quests — {weeklyQuests.filter(q=>q.completed).length}/{weeklyQuests.length}</SectionLabel>
+                      <span className="text-[10px] font-mono text-zinc-700 badge-weekly px-2 py-0.5 rounded-md">
+                        {daysLeft === 0 ? 'resets tonight' : `${daysLeft}d left`}
+                      </span>
+                    </div>
+                    <div className="space-y-2">
+                      {weeklyQuests.map(q => (
+                        <div key={q.id}
+                          className={`rounded-xl border transition-all duration-200 ${q.completed ? 'border-zinc-900/40 opacity-40' : 'border-zinc-900/80 hover:border-zinc-800'}`}
+                          style={{ background: q.completed ? 'rgba(9,9,11,0.3)' : 'rgba(18,18,20,0.7)', borderColor: q.completed ? undefined : 'rgba(129,140,248,0.12)' }}>
+                          <div className="px-4 py-3.5 flex items-center gap-3.5">
+                            <input type="checkbox" className="quest-check" checked={q.completed} onChange={() => handleQuestToggle(q.id)} />
+                            <span className={`text-xs font-mono flex-1 leading-relaxed ${q.completed ? 'line-through text-zinc-600' : 'text-zinc-300'}`}>
+                              {q.text}
+                            </span>
+                            <div className="flex items-center gap-2 flex-shrink-0">
+                              <span className={`text-[9px] font-mono font-semibold px-1.5 py-0.5 rounded ${attrClass(q.attribute)}`}>{attrLabel(q.attribute)}</span>
+                              <span className={`text-[9px] font-mono font-semibold px-1.5 py-0.5 rounded ${diffClass(q.difficulty)}`}>{q.difficulty.charAt(0).toUpperCase()}</span>
+                              <span className="text-[10px] font-mono text-zinc-600">+{q.xp}</span>
+                              <button onClick={() => deleteQuest(q.id)} className="ml-1 p-1 rounded hover:bg-zinc-900 transition-colors"><TrashIcon /></button>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Daily quests section */}
                 <div>
-                  <SectionLabel>Active Board — {quests.length} quests</SectionLabel>
-                  {quests.length === 0 ? (
-                    <EmptyState icon="⚔️" title="The board is empty" sub="Forge your first quest above or use the AI decomposer." />
+                  <SectionLabel>Daily Quests — {dailyQuests.filter(q=>q.completed).length}/{dailyQuests.length}</SectionLabel>
+                  {dailyQuests.length === 0 ? (
+                    <EmptyState icon="⚔️" title="No daily quests" sub="Forge a daily quest above or use the AI decomposer." />
                   ) : (
                     <div className="space-y-2">
-                      {quests.map(q => (
+                      {dailyQuests.map(q => (
                         <div key={q.id}
                           className={`rounded-xl border transition-all duration-200 ${q.completed ? 'border-zinc-900/40 opacity-40' : 'border-zinc-900/80 hover:border-zinc-800'}`}
                           style={{ background: 'rgba(18,18,20,0.7)' }}>
@@ -915,16 +1075,10 @@
                               {q.text}
                             </span>
                             <div className="flex items-center gap-2 flex-shrink-0">
-                              <span className={`text-[9px] font-mono font-semibold px-1.5 py-0.5 rounded ${attrClass(q.attribute)}`}>
-                                {attrLabel(q.attribute)}
-                              </span>
-                              <span className={`text-[9px] font-mono font-semibold px-1.5 py-0.5 rounded ${diffClass(q.difficulty)}`}>
-                                {q.difficulty.charAt(0).toUpperCase()}
-                              </span>
+                              <span className={`text-[9px] font-mono font-semibold px-1.5 py-0.5 rounded ${attrClass(q.attribute)}`}>{attrLabel(q.attribute)}</span>
+                              <span className={`text-[9px] font-mono font-semibold px-1.5 py-0.5 rounded ${diffClass(q.difficulty)}`}>{q.difficulty.charAt(0).toUpperCase()}</span>
                               <span className="text-[10px] font-mono text-zinc-600">+{q.xp}</span>
-                              <button onClick={() => deleteQuest(q.id)} className="ml-1 p-1 rounded hover:bg-zinc-900 transition-colors">
-                                <TrashIcon />
-                              </button>
+                              <button onClick={() => deleteQuest(q.id)} className="ml-1 p-1 rounded hover:bg-zinc-900 transition-colors"><TrashIcon /></button>
                             </div>
                           </div>
                         </div>
@@ -957,6 +1111,22 @@
                   </div>
                 </div>
 
+                {/* PR Board */}
+                {Object.keys(exercisePRs).length > 0 && (
+                  <div>
+                    <SectionLabel>Personal Records 🏆</SectionLabel>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                      {Object.entries(exercisePRs).sort((a,b) => b[1] - a[1]).map(([name, weight]) => (
+                        <div key={name} className="rounded-xl px-3.5 py-3 flex items-center justify-between gap-2"
+                          style={{ background: 'rgba(9,9,11,0.7)', border: '1px solid rgba(251,191,36,0.12)' }}>
+                          <span className="text-[10px] font-mono text-zinc-400 leading-snug truncate">{name}</span>
+                          <span className="text-[11px] font-bold font-mono text-yellow-400 flex-shrink-0">{weight}<span className="text-zinc-600 font-normal text-[9px]">lb</span></span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 {/* Hevy OCR */}
                 <Card className="p-6 text-center space-y-4">
                   <div className="space-y-1">
@@ -983,12 +1153,12 @@
                     )}
                   </button>
                   <input type="file" accept="image/*" ref={fileInputRef} onChange={handleHevyScreenshotUpload} className="hidden" />
-                  <p className="text-[10px] font-mono text-zinc-700">Earns +85 XP · +35g per successful parse</p>
+                  <p className="text-[10px] font-mono text-zinc-700">Earns +85 XP · +35g per successful parse · PR flags auto-detected</p>
                 </Card>
 
                 {/* Logs */}
                 <div>
-                  <SectionLabel>Workout Log History — {gymLogs.length} sessions</SectionLabel>
+                  <SectionLabel>Workout Log — {gymLogs.length} sessions</SectionLabel>
                   {gymLogs.length === 0 ? (
                     <EmptyState icon="🏛️" title="No sessions logged yet" sub="Tap a split above or upload a Hevy screenshot to begin." />
                   ) : (
@@ -996,13 +1166,28 @@
                       {gymLogs.map(log => (
                         <Card key={log.id} className="p-4 space-y-3">
                           <div className="flex justify-between items-start border-b border-zinc-900/60 pb-2.5">
-                            <span className="text-xs font-semibold text-zinc-300">{log.workoutName}</span>
-                            <span className="text-[10px] font-mono text-zinc-600">{log.date}</span>
+                            <div className="flex items-center gap-2">
+                              <span className="text-xs font-semibold text-zinc-300">{log.workoutName}</span>
+                              {log.prExercises && log.prExercises.length > 0 && (
+                                <span className="text-[9px] font-bold px-1.5 py-0.5 rounded badge-pr">🏆 PR</span>
+                              )}
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <span className="text-[10px] font-mono text-zinc-600">{log.date}</span>
+                              <button onClick={() => deleteGymLog(log.id)} className="p-1 rounded hover:bg-zinc-900 transition-colors">
+                                <TrashIcon />
+                              </button>
+                            </div>
                           </div>
                           <div className="space-y-1.5">
                             {log.exercises.map((ex, i) => (
                               <div key={i} className="flex justify-between items-center">
-                                <span className="text-[11px] font-mono text-zinc-500">{ex.name}</span>
+                                <span className="text-[11px] font-mono text-zinc-500 flex items-center gap-1.5">
+                                  {ex.name}
+                                  {log.prExercises?.includes(ex.name) && (
+                                    <span className="text-[8px] font-bold px-1 py-0.5 rounded badge-pr">PR</span>
+                                  )}
+                                </span>
                                 <span className="text-[10px] font-mono text-zinc-600">
                                   {ex.sets.map(s => `${s.reps}×${s.weight}lbs`).join('  ')}
                                 </span>
@@ -1020,8 +1205,6 @@
             {/* ══ STORE TAB ═══════════════════════════════ */}
             {activeTab === 'shop' && (
               <div className="tab-section space-y-6">
-
-                {/* Balance */}
                 <Card className="p-5 flex items-center justify-between" glow>
                   <div>
                     <p className="text-[10px] font-mono text-zinc-600 uppercase tracking-widest mb-1">Gold Balance</p>
@@ -1033,7 +1216,6 @@
                   </div>
                 </Card>
 
-                {/* Stock reward form */}
                 <Card className="p-5">
                   <SectionLabel>Stock New Reward</SectionLabel>
                   <form onSubmit={handleAddReward} className="flex gap-2.5">
@@ -1046,7 +1228,6 @@
                   </form>
                 </Card>
 
-                {/* Rewards grid */}
                 <div>
                   <SectionLabel>Merchant Inventory</SectionLabel>
                   {rewards.length === 0 ? (
@@ -1075,8 +1256,6 @@
             {/* ══ HERO / MATRIX TAB ═══════════════════════ */}
             {activeTab === 'hero' && (
               <div className="tab-section space-y-6">
-
-                {/* Header */}
                 <Card className="p-5" glow>
                   <div className="flex justify-between items-start">
                     <div>
@@ -1088,6 +1267,17 @@
                       <p className="text-xl font-bold text-violet-300 font-mono leading-tight">{hero.level}</p>
                     </div>
                   </div>
+                  {/* Streak in matrix */}
+                  <div className="mt-4 space-y-1.5">
+                    <div className="flex justify-between items-center">
+                      <span className="text-[10px] font-mono text-zinc-600">Current streak</span>
+                      <span className={`text-[11px] font-mono font-bold ${hero.streak > 0 ? 'text-orange-400' : 'text-zinc-600'}`}>
+                        {hero.streak > 0 ? `🔥 ${hero.streak} day${hero.streak > 1 ? 's' : ''}` : 'No active streak'}
+                      </span>
+                    </div>
+                    <StreakBar streak={hero.streak} cap={30} />
+                    <p className="text-[10px] font-mono text-zinc-700">Complete all daily quests to extend your streak</p>
+                  </div>
                   {hero.statPoints > 0 && (
                     <div className="mt-4 flex items-center gap-2 p-3 rounded-lg" style={{ background: 'rgba(124,58,237,0.08)', border: '1px solid rgba(124,58,237,0.2)' }}>
                       <BoltIcon />
@@ -1098,7 +1288,6 @@
                   )}
                 </Card>
 
-                {/* Stat allocation */}
                 <div>
                   <SectionLabel>Attribute Matrix</SectionLabel>
                   <div className="space-y-2.5">
@@ -1125,7 +1314,6 @@
                   </div>
                 </div>
 
-                {/* Developer controls */}
                 <Card className="p-5 space-y-5">
                   <div>
                     <SectionLabel>API Configuration</SectionLabel>
@@ -1138,7 +1326,7 @@
                     <button onClick={triggerTotalSystemReset} className="btn-danger rounded-lg px-4 py-2 text-xs font-mono">
                       Hard Reset All Data
                     </button>
-                    <p className="text-[10px] text-zinc-700 font-mono mt-2">This will wipe all quests, logs, rewards, and hero data.</p>
+                    <p className="text-[10px] text-zinc-700 font-mono mt-2">Wipes all quests, logs, PRs, rewards, and hero data.</p>
                   </div>
                 </Card>
               </div>
@@ -1151,7 +1339,6 @@
             <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: 'rgba(9,9,11,0.85)', backdropFilter: 'blur(16px)' }}>
               <div className="max-w-sm w-full rounded-2xl p-7 text-center space-y-5 glow-border"
                 style={{ background: 'rgba(18,18,20,0.95)', animation: 'scaleIn 0.25s ease-out both' }}>
-                {/* Glow ring */}
                 <div className="mx-auto w-16 h-16 rounded-full flex items-center justify-center mb-1"
                   style={{ background: 'radial-gradient(circle, rgba(124,58,237,0.2) 0%, transparent 70%)', border: '1px solid rgba(124,58,237,0.3)' }}>
                   <span className="text-2xl">⚡</span>
