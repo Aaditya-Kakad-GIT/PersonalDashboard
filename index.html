@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- LifeQuest OS v3 — Streak + PR Tracker + Weekly Quests -->
+<!-- LifeQuest OS v4.1 — Full Feature Update -->
 <html lang="en" class="dark">
 <head>
   <meta charset="UTF-8">
@@ -21,28 +21,17 @@
             mono: ['Geist Mono', 'monospace'],
           },
           keyframes: {
-            fadeSlideIn: {
-              '0%': { opacity: '0', transform: 'translateY(6px)' },
-              '100%': { opacity: '1', transform: 'translateY(0)' },
-            },
-            pulseGlow: {
-              '0%, 100%': { boxShadow: '0 0 0px rgba(139,92,246,0)' },
-              '50%': { boxShadow: '0 0 12px rgba(139,92,246,0.25)' },
-            },
-            shimmer: {
-              '0%': { backgroundPosition: '-200% 0' },
-              '100%': { backgroundPosition: '200% 0' },
-            },
-            scaleIn: {
-              '0%': { opacity: '0', transform: 'scale(0.95)' },
-              '100%': { opacity: '1', transform: 'scale(1)' },
-            }
+            fadeSlideIn: { '0%': { opacity: '0', transform: 'translateY(6px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } },
+            pulseGlow:   { '0%, 100%': { boxShadow: '0 0 0px rgba(139,92,246,0)' }, '50%': { boxShadow: '0 0 12px rgba(139,92,246,0.25)' } },
+            shimmer:     { '0%': { backgroundPosition: '-200% 0' }, '100%': { backgroundPosition: '200% 0' } },
+            scaleIn:     { '0%': { opacity: '0', transform: 'scale(0.95)' }, '100%': { opacity: '1', transform: 'scale(1)' } },
+            floatUp:     { '0%': { opacity: '0', transform: 'translateY(0)' }, '100%': { opacity: '1', transform: 'translateY(-18px)' } },
           },
           animation: {
             fadeSlideIn: 'fadeSlideIn 0.25s ease-out both',
-            pulseGlow: 'pulseGlow 2.5s ease-in-out infinite',
-            shimmer: 'shimmer 2s linear infinite',
-            scaleIn: 'scaleIn 0.2s ease-out both',
+            pulseGlow:   'pulseGlow 2.5s ease-in-out infinite',
+            shimmer:     'shimmer 2s linear infinite',
+            scaleIn:     'scaleIn 0.2s ease-out both',
           }
         }
       }
@@ -66,14 +55,13 @@
       min-height: 100vh;
       overflow-x: hidden;
       -webkit-font-smoothing: antialiased;
+      transition: background 0.3s ease;
     }
 
     ::-webkit-scrollbar { width: 3px; height: 3px; }
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: #27272a; border-radius: 99px; }
-
     ::selection { background: rgba(139, 92, 246, 0.2); color: #e4e4e7; }
-
     .font-mono { font-family: 'Geist Mono', monospace; }
 
     body::before {
@@ -86,31 +74,15 @@
       opacity: 0.4;
     }
 
-    .bg-grid {
-      background-image: radial-gradient(circle, #27272a 1px, transparent 1px);
-      background-size: 28px 28px;
-    }
-
-    .glass {
-      background: rgba(24, 24, 27, 0.6);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-    }
-
-    .glow-border {
-      border: 1px solid rgba(139, 92, 246, 0.3);
-      box-shadow: 0 0 20px rgba(139, 92, 246, 0.06), inset 0 1px 0 rgba(139, 92, 246, 0.08);
-    }
-
-    .sep { border-color: rgba(39, 39, 42, 0.8); }
+    .glass { background: rgba(24,24,27,0.6); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+    .glow-border { border: 1px solid rgba(139,92,246,0.3); box-shadow: 0 0 20px rgba(139,92,246,0.06), inset 0 1px 0 rgba(139,92,246,0.08); }
+    .sep { border-color: rgba(39,39,42,0.8); }
 
     .xp-bar-fill {
       background: linear-gradient(90deg, #6d28d9, #7c3aed, #8b5cf6, #7c3aed, #6d28d9);
       background-size: 200% 100%;
       animation: shimmer 3s linear infinite;
     }
-
-    /* Streak bar — fire gradient */
     .streak-bar-fill {
       background: linear-gradient(90deg, #b45309, #d97706, #f59e0b, #fbbf24, #f59e0b);
       background-size: 200% 100%;
@@ -118,134 +90,51 @@
     }
 
     .quest-check {
-      appearance: none;
-      width: 16px;
-      height: 16px;
-      border: 1px solid #3f3f46;
-      border-radius: 4px;
-      cursor: pointer;
-      transition: all 0.15s ease;
-      position: relative;
-      flex-shrink: 0;
+      appearance: none; width: 16px; height: 16px;
+      border: 1px solid #3f3f46; border-radius: 4px;
+      cursor: pointer; transition: all 0.15s ease;
+      position: relative; flex-shrink: 0;
     }
-    .quest-check:checked {
-      background: #7c3aed;
-      border-color: #7c3aed;
-    }
+    .quest-check:checked { background: #7c3aed; border-color: #7c3aed; }
     .quest-check:checked::after {
-      content: '';
-      position: absolute;
-      left: 4px;
-      top: 1.5px;
-      width: 5px;
-      height: 9px;
-      border: 1.5px solid white;
-      border-left: none;
-      border-top: none;
+      content: ''; position: absolute; left: 4px; top: 1.5px;
+      width: 5px; height: 9px;
+      border: 1.5px solid white; border-left: none; border-top: none;
       transform: rotate(45deg);
     }
-    .quest-check:hover:not(:checked) {
-      border-color: #7c3aed;
-      background: rgba(124, 58, 237, 0.1);
-    }
+    .quest-check:hover:not(:checked) { border-color: #7c3aed; background: rgba(124,58,237,0.1); }
 
-    .tab-active {
-      color: #e4e4e7;
-      background: rgba(39,39,42,0.8);
-      border: 1px solid rgba(63,63,70,0.6);
-    }
-    .tab-inactive {
-      color: #52525b;
-      border: 1px solid transparent;
-    }
+    .tab-active   { color: #e4e4e7; background: rgba(39,39,42,0.8); border: 1px solid rgba(63,63,70,0.6); }
+    .tab-inactive { color: #52525b; border: 1px solid transparent; }
     .tab-inactive:hover { color: #a1a1aa; }
 
-    .stat-bar-bg {
-      height: 3px;
-      background: #27272a;
-      border-radius: 99px;
-      overflow: hidden;
-    }
-    .stat-bar-fill {
-      height: 100%;
-      border-radius: 99px;
-      transition: width 0.4s cubic-bezier(0.4,0,0.2,1);
-    }
+    .stat-bar-bg  { height: 3px; background: #27272a; border-radius: 99px; overflow: hidden; }
+    .stat-bar-fill { height: 100%; border-radius: 99px; transition: width 0.4s cubic-bezier(0.4,0,0.2,1); }
 
-    .card-lift {
-      transition: transform 0.18s ease, border-color 0.18s ease;
-    }
-    .card-lift:hover {
-      transform: translateY(-1px);
-      border-color: rgba(63,63,70,0.9);
-    }
+    .card-lift { transition: transform 0.18s ease, border-color 0.18s ease; }
+    .card-lift:hover { transform: translateY(-1px); border-color: rgba(63,63,70,0.9); }
 
     .input-field {
-      background: rgba(9,9,11,0.8);
-      border: 1px solid rgba(39,39,42,0.9);
+      background: rgba(9,9,11,0.8); border: 1px solid rgba(39,39,42,0.9);
       transition: border-color 0.15s ease, box-shadow 0.15s ease;
     }
-    .input-field:focus {
-      outline: none;
-      border-color: rgba(124, 58, 237, 0.5);
-      box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.08);
-    }
+    .input-field:focus { outline: none; border-color: rgba(124,58,237,0.5); box-shadow: 0 0 0 3px rgba(124,58,237,0.08); }
 
-    .btn-primary {
-      background: #f4f4f5;
-      color: #09090b;
-      font-weight: 700;
-      transition: all 0.15s ease;
-    }
-    .btn-primary:hover {
-      background: #ffffff;
-      transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-    }
+    .btn-primary { background: #f4f4f5; color: #09090b; font-weight: 700; transition: all 0.15s ease; }
+    .btn-primary:hover { background: #ffffff; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.4); }
     .btn-primary:active { transform: translateY(0); }
-    .btn-primary:disabled {
-      opacity: 0.4;
-      cursor: not-allowed;
-      transform: none;
-    }
+    .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 
-    .btn-ghost {
-      background: rgba(24,24,27,0.6);
-      border: 1px solid rgba(39,39,42,0.8);
-      color: #a1a1aa;
-      transition: all 0.15s ease;
-    }
-    .btn-ghost:hover {
-      background: rgba(39,39,42,0.8);
-      color: #e4e4e7;
-      border-color: rgba(63,63,70,0.8);
-    }
+    .btn-ghost { background: rgba(24,24,27,0.6); border: 1px solid rgba(39,39,42,0.8); color: #a1a1aa; transition: all 0.15s ease; }
+    .btn-ghost:hover { background: rgba(39,39,42,0.8); color: #e4e4e7; border-color: rgba(63,63,70,0.8); }
 
-    .btn-danger {
-      background: rgba(127,29,29,0.15);
-      border: 1px solid rgba(185,28,28,0.2);
-      color: #f87171;
-      transition: all 0.15s ease;
-    }
-    .btn-danger:hover {
-      background: rgba(127,29,29,0.25);
-      border-color: rgba(185,28,28,0.4);
-    }
+    .btn-danger { background: rgba(127,29,29,0.15); border: 1px solid rgba(185,28,28,0.2); color: #f87171; transition: all 0.15s ease; }
+    .btn-danger:hover { background: rgba(127,29,29,0.25); border-color: rgba(185,28,28,0.4); }
 
     .tab-section { animation: fadeSlideIn 0.22s ease-out both; }
-
-    .gold-badge { color: #fbbf24; text-shadow: 0 0 8px rgba(251,191,36,0.3); }
-
-    .level-badge {
-      background: linear-gradient(135deg, rgba(124,58,237,0.15), rgba(139,92,246,0.08));
-      border: 1px solid rgba(124,58,237,0.25);
-      color: #a78bfa;
-    }
-
-    .empty-state {
-      border: 1px dashed rgba(39,39,42,0.6);
-      background: rgba(9,9,11,0.3);
-    }
+    .gold-badge   { color: #fbbf24; text-shadow: 0 0 8px rgba(251,191,36,0.3); }
+    .level-badge  { background: linear-gradient(135deg, rgba(124,58,237,0.15), rgba(139,92,246,0.08)); border: 1px solid rgba(124,58,237,0.25); color: #a78bfa; }
+    .empty-state  { border: 1px dashed rgba(39,39,42,0.6); background: rgba(9,9,11,0.3); }
 
     .diff-easy   { color: #4ade80; background: rgba(74,222,128,0.08);  border: 1px solid rgba(74,222,128,0.15);  }
     .diff-medium { color: #fbbf24; background: rgba(251,191,36,0.08);  border: 1px solid rgba(251,191,36,0.15);  }
@@ -256,267 +145,332 @@
     .attr-wil   { color: #c084fc; background: rgba(192,132,252,0.08); border: 1px solid rgba(192,132,252,0.15); }
     .attr-sta   { color: #34d399; background: rgba(52,211,153,0.08);  border: 1px solid rgba(52,211,153,0.15);  }
 
-    /* Weekly quest badge */
-    .badge-weekly { color: #818cf8; background: rgba(129,140,248,0.08); border: 1px solid rgba(129,140,248,0.15); }
+    .badge-weekly  { color: #818cf8; background: rgba(129,140,248,0.08); border: 1px solid rgba(129,140,248,0.15); }
+    .badge-pr      { color: #fbbf24; background: rgba(251,191,36,0.10); border: 1px solid rgba(251,191,36,0.25); }
+    .badge-streak  { color: #fb923c; background: rgba(251,146,60,0.08); border: 1px solid rgba(251,146,60,0.2);  }
 
-    /* PR badge */
-    .badge-pr { color: #fbbf24; background: rgba(251,191,36,0.1); border: 1px solid rgba(251,191,36,0.25); }
+    .day-card { background: rgba(9,9,11,0.7); border: 1px solid rgba(39,39,42,0.7); transition: all 0.18s ease; }
+    .day-card:hover { background: rgba(24,24,27,0.9); border-color: rgba(124,58,237,0.35); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.3), 0 0 20px rgba(124,58,237,0.06); }
 
-    /* Streak flame badge */
-    .badge-streak { color: #fb923c; background: rgba(251,146,60,0.08); border: 1px solid rgba(251,146,60,0.2); }
+    .header-glass { background: rgba(9,9,11,0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid rgba(39,39,42,0.6); }
+    .reward-card  { background: rgba(9,9,11,0.6); border: 1px solid rgba(39,39,42,0.7); transition: all 0.18s ease; }
+    .reward-card:hover { border-color: rgba(251,191,36,0.2); box-shadow: 0 0 20px rgba(251,191,36,0.04); }
 
-    .day-card {
-      background: rgba(9,9,11,0.7);
-      border: 1px solid rgba(39,39,42,0.7);
-      transition: all 0.18s ease;
-    }
-    .day-card:hover {
-      background: rgba(24,24,27,0.9);
-      border-color: rgba(124,58,237,0.35);
-      transform: translateY(-2px);
-      box-shadow: 0 8px 24px rgba(0,0,0,0.3), 0 0 20px rgba(124,58,237,0.06);
-    }
+    .neon-dot        { width:6px;height:6px;background:#7c3aed;border-radius:50%;box-shadow:0 0 6px rgba(124,58,237,0.8),0 0 12px rgba(124,58,237,0.4); }
+    .neon-dot-green  { width:6px;height:6px;background:#4ade80;border-radius:50%;box-shadow:0 0 6px rgba(74,222,128,0.8),0 0 12px rgba(74,222,128,0.4); }
+    .neon-dot-orange { width:6px;height:6px;background:#f97316;border-radius:50%;box-shadow:0 0 6px rgba(249,115,22,0.8),0 0 12px rgba(249,115,22,0.4); }
 
-    .header-glass {
-      background: rgba(9,9,11,0.85);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border-bottom: 1px solid rgba(39,39,42,0.6);
-    }
+    /* Drag-and-drop */
+    .drag-handle { cursor: grab; color: #3f3f46; transition: color 0.15s; }
+    .drag-handle:hover { color: #71717a; }
+    .drag-handle:active { cursor: grabbing; }
+    .quest-dragging { opacity: 0.4; }
+    .quest-drag-over { border-color: rgba(124,58,237,0.5) !important; background: rgba(124,58,237,0.04) !important; }
 
-    .reward-card {
-      background: rgba(9,9,11,0.6);
-      border: 1px solid rgba(39,39,42,0.7);
-      transition: all 0.18s ease;
-    }
-    .reward-card:hover {
-      border-color: rgba(251,191,36,0.2);
-      box-shadow: 0 0 20px rgba(251,191,36,0.04);
-    }
+    /* Quest notes */
+    .notes-expand { max-height: 0; overflow: hidden; transition: max-height 0.2s ease; }
+    .notes-expand.open { max-height: 200px; }
+    .notes-textarea { background: transparent; resize: none; outline: none; width: 100%; font-family: 'Geist Mono', monospace; font-size: 11px; color: #52525b; line-height: 1.6; }
+    .notes-textarea:focus { color: #71717a; }
+    .notes-textarea::placeholder { color: #3f3f46; }
 
-    .scroll-area { overflow-y: auto; max-height: 400px; }
+    /* Milestone chips */
+    .milestone-chip { background: rgba(9,9,11,0.6); border: 1px solid rgba(39,39,42,0.7); transition: all 0.18s ease; }
 
-    .neon-dot {
-      width: 6px; height: 6px;
-      background: #7c3aed;
-      border-radius: 50%;
-      box-shadow: 0 0 6px rgba(124,58,237,0.8), 0 0 12px rgba(124,58,237,0.4);
-    }
-    .neon-dot-green {
-      width: 6px; height: 6px;
-      background: #4ade80;
-      border-radius: 50%;
-      box-shadow: 0 0 6px rgba(74,222,128,0.8), 0 0 12px rgba(74,222,128,0.4);
-    }
-    .neon-dot-orange {
-      width: 6px; height: 6px;
-      background: #f97316;
-      border-radius: 50%;
-      box-shadow: 0 0 6px rgba(249,115,22,0.8), 0 0 12px rgba(249,115,22,0.4);
-    }
+    /* Volume bars */
+    .vol-bar-bg   { height: 4px; background: #1c1c1f; border-radius: 99px; overflow: hidden; flex:1; }
+    .vol-bar-fill { height: 100%; border-radius: 99px; transition: width 0.5s cubic-bezier(0.4,0,0.2,1); }
+
+    /* Dim mode */
+    .dim-mode body, body.dim { background: #141416 !important; }
+
+    /* Keyboard hint */
+    .kbd { display:inline-flex;align-items:center;justify-content:center;padding:1px 5px;border-radius:4px;font-size:9px;font-family:'Geist Mono',monospace;background:rgba(39,39,42,0.6);border:1px solid rgba(63,63,70,0.5);color:#52525b; }
   </style>
 </head>
-<body class="bg-zinc-950 min-h-screen">
+<body class="min-h-screen">
 
   <div id="root"></div>
 
   <script type="text/babel">
-    const { useState, useEffect, useRef } = React;
+    const { useState, useEffect, useRef, useCallback } = React;
 
-    /* ─── ICONS ─────────────────────────────────────────────── */
-    const Icon = ({ d, cls = "w-4 h-4", stroke = 1.6 }) => (
-      <svg className={cls} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={stroke}>
-        <path strokeLinecap="round" strokeLinejoin="round" d={d} />
-      </svg>
-    );
-
-    const TrashIcon = () => (
-      <svg className="w-3.5 h-3.5 transition-colors duration-150" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}
-        style={{ color: '#52525b' }}
-        onMouseEnter={e => e.currentTarget.style.color = '#f87171'}
-        onMouseLeave={e => e.currentTarget.style.color = '#52525b'}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
-      </svg>
-    );
-
-    const BoltIcon = () => (
-      <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
-        <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
-      </svg>
-    );
-
-    /* ─── SOUND ─────────────────────────────────────────────── */
-    const playSound = (type) => {
-      try {
-        const AudioContext = window.AudioContext || window.webkitAudioContext;
-        if (!AudioContext) return;
-        const ctx = new AudioContext();
-        const now = ctx.currentTime;
-        if (type === 'complete') {
-          const osc = ctx.createOscillator();
-          const gain = ctx.createGain();
-          osc.type = 'sine';
-          osc.frequency.setValueAtTime(480, now);
-          osc.frequency.exponentialRampToValueAtTime(240, now + 0.12);
-          gain.gain.setValueAtTime(0.02, now);
-          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
-          osc.connect(gain);
-          gain.connect(ctx.destination);
-          osc.start(now);
-          osc.stop(now + 0.12);
-        } else if (type === 'levelup') {
-          [330, 440, 550, 660].forEach((freq, idx) => {
-            const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(freq, now + idx * 0.04);
-            gain.gain.setValueAtTime(0.02, now + idx * 0.04);
-            gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.04 + 0.2);
-            osc.connect(gain);
-            gain.connect(ctx.destination);
-            osc.start(now + idx * 0.04);
-            osc.stop(now + idx * 0.04 + 0.2);
-          });
-        } else if (type === 'pr') {
-          /* Rising arpeggio for PR */
-          [392, 523, 659, 784].forEach((freq, idx) => {
-            const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
-            osc.type = 'triangle';
-            osc.frequency.setValueAtTime(freq, now + idx * 0.07);
-            gain.gain.setValueAtTime(0.025, now + idx * 0.07);
-            gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.07 + 0.18);
-            osc.connect(gain);
-            gain.connect(ctx.destination);
-            osc.start(now + idx * 0.07);
-            osc.stop(now + idx * 0.07 + 0.18);
-          });
-        }
-      } catch (e) {}
+    /* ─── MUSCLE GROUP MAP ───────────────────────────────── */
+    const MUSCLE_MAP = {
+      'Deadlifts':'Back','Lat Pulldowns':'Back','Hammer Curls':'Biceps',
+      'Flat Bench Press':'Chest','Incline Dumbbell Press':'Chest','Tricep Pushdowns':'Triceps',
+      'Barbell Back Squats':'Legs','Romanian Deadlifts':'Legs',
+      'Overhead Press (OHP)':'Shoulders','Dumbbell Lateral Raises':'Shoulders','Lateral Raises (Giant Set)':'Shoulders',
+      'Hanging Leg Raises':'Core','Bicep 21s':'Biceps',
     };
+    const MUSCLE_COLORS = { Back:'#60a5fa',Chest:'#f97316',Legs:'#34d399',Shoulders:'#c084fc',Arms:'#fbbf24',Biceps:'#fbbf24',Triceps:'#fb923c',Core:'#f87171' };
 
-    /* ─── PRESETS ────────────────────────────────────────────── */
+    /* ─── PRESETS ─────────────────────────────────────────── */
     const PRESET_WORKOUTS = {
-      Tuesday:   { name: "Back & Biceps",     emoji: "🏋️", exercises: [ { name: "Deadlifts", sets: [{ reps: 5, weight: 225 }, { reps: 5, weight: 245 }, { reps: 5, weight: 265 }] }, { name: "Lat Pulldowns", sets: [{ reps: 10, weight: 120 }, { reps: 10, weight: 130 }] }, { name: "Hammer Curls", sets: [{ reps: 12, weight: 30 }, { reps: 12, weight: 35 }] } ] },
-      Wednesday: { name: "Chest & Triceps",   emoji: "💪", exercises: [ { name: "Flat Bench Press", sets: [{ reps: 8, weight: 135 }, { reps: 8, weight: 185 }, { reps: 6, weight: 205 }] }, { name: "Incline Dumbbell Press", sets: [{ reps: 10, weight: 60 }, { reps: 10, weight: 65 }] }, { name: "Tricep Pushdowns", sets: [{ reps: 12, weight: 50 }] } ] },
-      Thursday:  { name: "Legs Day",          emoji: "🦵", exercises: [ { name: "Barbell Back Squats", sets: [{ reps: 8, weight: 185 }, { reps: 8, weight: 225 }, { reps: 6, weight: 245 }] }, { name: "Romanian Deadlifts", sets: [{ reps: 10, weight: 135 }, { reps: 10, weight: 185 }] } ] },
-      Friday:    { name: "Shoulders & Abs",   emoji: "⚡", exercises: [ { name: "Overhead Press (OHP)", sets: [{ reps: 8, weight: 95 }, { reps: 8, weight: 115 }] }, { name: "Dumbbell Lateral Raises", sets: [{ reps: 15, weight: 20 }, { reps: 15, weight: 25 }] }, { name: "Hanging Leg Raises", sets: [{ reps: 12, weight: 0 }, { reps: 12, weight: 0 }] } ] },
-      Saturday:  { name: "Grow Day",          emoji: "🌱", exercises: [ { name: "Bicep 21s", sets: [{ reps: 21, weight: 45 }] }, { name: "Lateral Raises (Giant Set)", sets: [{ reps: 20, weight: 15 }, { reps: 15, weight: 20 }] } ] },
+      Tuesday:   { name:"Back & Biceps",    emoji:"🏋️", exercises:[{name:"Deadlifts",sets:[{reps:5,weight:225},{reps:5,weight:245},{reps:5,weight:265}]},{name:"Lat Pulldowns",sets:[{reps:10,weight:120},{reps:10,weight:130}]},{name:"Hammer Curls",sets:[{reps:12,weight:30},{reps:12,weight:35}]}] },
+      Wednesday: { name:"Chest & Triceps",  emoji:"💪", exercises:[{name:"Flat Bench Press",sets:[{reps:8,weight:135},{reps:8,weight:185},{reps:6,weight:205}]},{name:"Incline Dumbbell Press",sets:[{reps:10,weight:60},{reps:10,weight:65}]},{name:"Tricep Pushdowns",sets:[{reps:12,weight:50}]}] },
+      Thursday:  { name:"Legs Day",         emoji:"🦵", exercises:[{name:"Barbell Back Squats",sets:[{reps:8,weight:185},{reps:8,weight:225},{reps:6,weight:245}]},{name:"Romanian Deadlifts",sets:[{reps:10,weight:135},{reps:10,weight:185}]}] },
+      Friday:    { name:"Shoulders & Abs",  emoji:"⚡", exercises:[{name:"Overhead Press (OHP)",sets:[{reps:8,weight:95},{reps:8,weight:115}]},{name:"Dumbbell Lateral Raises",sets:[{reps:15,weight:20},{reps:15,weight:25}]},{name:"Hanging Leg Raises",sets:[{reps:12,weight:0},{reps:12,weight:0}]}] },
+      Saturday:  { name:"Grow Day",         emoji:"🌱", exercises:[{name:"Bicep 21s",sets:[{reps:21,weight:45}]},{name:"Lateral Raises (Giant Set)",sets:[{reps:20,weight:15},{reps:15,weight:20}]}] },
     };
 
-    /* ─── HELPERS ────────────────────────────────────────────── */
-    const diffClass  = d => d === 'easy' ? 'diff-easy' : d === 'medium' ? 'diff-medium' : 'diff-hard';
-    const attrClass  = a => a === 'intelligence' ? 'attr-intel' : a === 'strength' ? 'attr-str' : a === 'willpower' ? 'attr-wil' : 'attr-sta';
-    const attrLabel  = a => a === 'intelligence' ? 'INT' : a === 'strength' ? 'STR' : a === 'willpower' ? 'WIL' : 'STA';
-    const statColor  = s => s === 'intelligence' ? '#60a5fa' : s === 'strength' ? '#f97316' : s === 'willpower' ? '#c084fc' : '#34d399';
+    /* ─── HELPERS ─────────────────────────────────────────── */
+    const diffClass = d => d==='easy'?'diff-easy':d==='medium'?'diff-medium':'diff-hard';
+    const attrClass = a => a==='intelligence'?'attr-intel':a==='strength'?'attr-str':a==='willpower'?'attr-wil':'attr-sta';
+    const attrLabel = a => a==='intelligence'?'INT':a==='strength'?'STR':a==='willpower'?'WIL':'STA';
+    const statColor = s => s==='intelligence'?'#60a5fa':s==='strength'?'#f97316':s==='willpower'?'#c084fc':'#34d399';
 
-    /* Days until next Sunday (0 = today is Sunday) */
-    const daysUntilSunday = () => {
-      const d = new Date().getDay(); // 0=Sun
-      return d === 0 ? 0 : 7 - d;
+    const daysUntilSunday = () => { const d=new Date().getDay(); return d===0?0:7-d; };
+    const todayStr = () => new Date().toISOString().split('T')[0];
+    const yesterdayStr = () => new Date(Date.now()-86400000).toISOString().split('T')[0];
+
+    const getWeekStart = () => {
+      const now = new Date();
+      const d = new Date(now); d.setDate(d.getDate()-d.getDay());
+      return d.toISOString().split('T')[0];
     };
 
-    /* ─── PR ENGINE ──────────────────────────────────────────── */
+    /* ─── PR ENGINE ───────────────────────────────────────── */
     const checkAndUpdatePRs = (exercises, currentPRs) => {
       const newPRNames = [];
       const updatedPRs = { ...currentPRs };
-      for (const ex of (exercises || [])) {
-        if (!ex.sets || ex.sets.length === 0) continue;
-        const maxWeight = Math.max(...ex.sets.map(s => Number(s.weight) || 0));
-        if (maxWeight > 0 && maxWeight > (updatedPRs[ex.name] || 0)) {
-          newPRNames.push(ex.name);
-          updatedPRs[ex.name] = maxWeight;
-        }
+      for (const ex of (exercises||[])) {
+        if (!ex.sets||ex.sets.length===0) continue;
+        const maxWeight = Math.max(...ex.sets.map(s=>Number(s.weight)||0));
+        if (maxWeight>0 && maxWeight>(updatedPRs[ex.name]||0)) { newPRNames.push(ex.name); updatedPRs[ex.name]=maxWeight; }
       }
       return { newPRNames, updatedPRs };
     };
 
-    /* ─── SUBCOMPONENTS ──────────────────────────────────────── */
-    const SectionLabel = ({ children }) => (
+    /* ─── MILESTONE CHECKER ───────────────────────────────── */
+    const getNewMilestones = (oldStats, newStats) => {
+      const today = todayStr();
+      const milestones = [];
+      for (const stat of Object.keys(newStats)) {
+        const oldF = Math.floor(oldStats[stat]||10);
+        const newF = Math.floor(newStats[stat]||10);
+        if (newF > oldF) milestones.push({ stat, milestone: newF, date: today });
+      }
+      return milestones;
+    };
+
+    /* ─── SOUND ───────────────────────────────────────────── */
+    const playSound = (type) => {
+      try {
+        const Ctx = window.AudioContext||window.webkitAudioContext;
+        if (!Ctx) return;
+        const ctx = new Ctx(); const now = ctx.currentTime;
+        if (type==='complete') {
+          const osc=ctx.createOscillator(),gain=ctx.createGain();
+          osc.type='sine'; osc.frequency.setValueAtTime(480,now); osc.frequency.exponentialRampToValueAtTime(240,now+0.12);
+          gain.gain.setValueAtTime(0.02,now); gain.gain.exponentialRampToValueAtTime(0.001,now+0.12);
+          osc.connect(gain);gain.connect(ctx.destination);osc.start(now);osc.stop(now+0.12);
+        } else if (type==='levelup') {
+          [330,440,550,660].forEach((f,i)=>{
+            const osc=ctx.createOscillator(),gain=ctx.createGain();
+            osc.type='sine';osc.frequency.setValueAtTime(f,now+i*0.04);
+            gain.gain.setValueAtTime(0.02,now+i*0.04);gain.gain.exponentialRampToValueAtTime(0.001,now+i*0.04+0.2);
+            osc.connect(gain);gain.connect(ctx.destination);osc.start(now+i*0.04);osc.stop(now+i*0.04+0.2);
+          });
+        } else if (type==='pr') {
+          [392,523,659,784].forEach((f,i)=>{
+            const osc=ctx.createOscillator(),gain=ctx.createGain();
+            osc.type='triangle';osc.frequency.setValueAtTime(f,now+i*0.07);
+            gain.gain.setValueAtTime(0.025,now+i*0.07);gain.gain.exponentialRampToValueAtTime(0.001,now+i*0.07+0.18);
+            osc.connect(gain);gain.connect(ctx.destination);osc.start(now+i*0.07);osc.stop(now+i*0.07+0.18);
+          });
+        }
+      } catch(e){}
+    };
+
+    /* ─── CONFETTI ────────────────────────────────────────── */
+    function ConfettiCanvas({ active, onDone }) {
+      const canvasRef = useRef(null);
+      const frameRef  = useRef(null);
+      useEffect(() => {
+        if (!active) return;
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        canvas.width  = window.innerWidth;
+        canvas.height = window.innerHeight;
+        const W=canvas.width, H=canvas.height;
+        const COLORS=['#7c3aed','#a78bfa','#f59e0b','#34d399','#60a5fa','#f472b6','#fb923c','#ffffff'];
+        const particles = Array.from({length:120},()=>({
+          x: Math.random()*W, y:-20-Math.random()*H*0.3,
+          vx:(Math.random()-0.5)*6, vy:Math.random()*4+1.5,
+          color:COLORS[Math.floor(Math.random()*COLORS.length)],
+          w:Math.random()*9+3, h:Math.random()*5+2,
+          angle:Math.random()*Math.PI*2, spin:(Math.random()-0.5)*0.25,
+          gravity:0.04+Math.random()*0.04, drag:0.98,
+        }));
+        let elapsed=0, stopped=false;
+        const animate = ()=>{
+          ctx.clearRect(0,0,W,H);
+          let allGone=true;
+          particles.forEach(p=>{
+            p.vx*=p.drag; p.vy+=p.gravity;
+            p.x+=p.vx; p.y+=p.vy; p.angle+=p.spin;
+            if (p.y<H+30) allGone=false;
+            const alpha=Math.max(0,1-p.y/(H*0.9));
+            ctx.save();
+            ctx.translate(p.x,p.y); ctx.rotate(p.angle);
+            ctx.globalAlpha=alpha; ctx.fillStyle=p.color;
+            ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);
+            ctx.restore();
+          });
+          elapsed++;
+          if (allGone||elapsed>240||stopped) { onDone(); }
+          else { frameRef.current=requestAnimationFrame(animate); }
+        };
+        frameRef.current=requestAnimationFrame(animate);
+        const t=setTimeout(()=>{stopped=true;},4000);
+        return ()=>{ cancelAnimationFrame(frameRef.current); clearTimeout(t); };
+      },[active]);
+      if (!active) return null;
+      return <canvas ref={canvasRef} style={{position:'fixed',inset:0,pointerEvents:'none',zIndex:9999}} />;
+    }
+
+    /* ─── WEEKLY XP CHART ─────────────────────────────────── */
+    function WeeklyXpChart({ history }) {
+      const days=[];
+      for(let i=6;i>=0;i--){
+        const d=new Date(Date.now()-i*86400000);
+        const s=d.toISOString().split('T')[0];
+        const label=d.toLocaleDateString('en',{weekday:'short'}).slice(0,2);
+        days.push({s,label,xp:history[s]?.xp||0,gold:history[s]?.gold||0});
+      }
+      const maxXp=Math.max(...days.map(d=>d.xp),40);
+      const CH=64, BW=26, GAP=8;
+      const TW=days.length*(BW+GAP)-GAP;
+      const today=todayStr();
+      return (
+        <svg viewBox={`0 0 ${TW} ${CH+22}`} width="100%" preserveAspectRatio="none" style={{overflow:'visible'}}>
+          {days.map((day,i)=>{
+            const x=i*(BW+GAP);
+            const barH=Math.max(3,(day.xp/maxXp)*CH);
+            const isToday=day.s===today;
+            const isEmpty=day.xp===0;
+            return (
+              <g key={day.s}>
+                <rect x={x} y={CH} width={BW} height={2} rx={1} fill="#1c1c1f"/>
+                {!isEmpty && (
+                  <rect x={x} y={CH-barH} width={BW} height={barH} rx={3}
+                    fill={isToday?'#7c3aed':'#3f3f46'}
+                    opacity={isToday?1:0.7}/>
+                )}
+                {isEmpty && (
+                  <rect x={x} y={CH-3} width={BW} height={3} rx={1.5} fill="#1c1c1f"/>
+                )}
+                {day.xp>0 && (
+                  <text x={x+BW/2} y={CH-barH-4} textAnchor="middle" fontSize="8"
+                    fill={isToday?'#a78bfa':'#52525b'} fontFamily="Geist Mono" fontWeight="600">
+                    {day.xp}
+                  </text>
+                )}
+                <text x={x+BW/2} y={CH+15} textAnchor="middle" fontSize="9"
+                  fill={isToday?'#a1a1aa':'#3f3f46'} fontFamily="Geist Mono">
+                  {day.label}
+                </text>
+              </g>
+            );
+          })}
+        </svg>
+      );
+    }
+
+    /* ─── SUBCOMPONENTS ───────────────────────────────────── */
+    const SectionLabel = ({children}) => (
       <p className="text-[10px] font-mono font-semibold uppercase tracking-[0.18em] text-zinc-600 mb-3">{children}</p>
     );
-
-    const Card = ({ children, className = '', glow = false }) => (
-      <div className={`rounded-xl border border-zinc-900/80 ${glow ? 'glow-border' : ''} ${className}`}
-           style={{ background: 'rgba(18,18,20,0.7)' }}>
+    const Card = ({children,className='',glow=false}) => (
+      <div className={`rounded-xl border border-zinc-900/80 ${glow?'glow-border':''} ${className}`}
+           style={{background:'rgba(18,18,20,0.7)'}}>
         {children}
       </div>
     );
-
-    const EmptyState = ({ icon, title, sub }) => (
+    const EmptyState = ({icon,title,sub}) => (
       <div className="empty-state rounded-xl p-10 flex flex-col items-center justify-center gap-2 text-center">
         <div className="text-2xl opacity-30 mb-1">{icon}</div>
         <p className="text-xs font-mono font-semibold text-zinc-500">{title}</p>
         {sub && <p className="text-[11px] text-zinc-600">{sub}</p>}
       </div>
     );
-
-    const XpBar = ({ xp, max }) => {
-      const pct = Math.min(100, (xp / max) * 100);
-      return (
-        <div className="stat-bar-bg w-full">
-          <div className="xp-bar-fill stat-bar-fill" style={{ width: `${pct}%` }} />
-        </div>
-      );
+    const XpBar = ({xp,max}) => {
+      const pct=Math.min(100,(xp/max)*100);
+      return <div className="stat-bar-bg w-full"><div className="xp-bar-fill stat-bar-fill" style={{width:`${pct}%`}}/></div>;
     };
-
-    const StreakBar = ({ streak, cap = 30 }) => {
-      const pct = Math.min(100, (streak / cap) * 100);
-      return (
-        <div className="stat-bar-bg w-full">
-          <div className="streak-bar-fill stat-bar-fill" style={{ width: `${Math.max(pct, streak > 0 ? 3 : 0)}%` }} />
-        </div>
-      );
+    const StreakBar = ({streak,cap=30}) => {
+      const pct=Math.min(100,(streak/cap)*100);
+      return <div className="stat-bar-bg w-full"><div className="streak-bar-fill stat-bar-fill" style={{width:`${Math.max(pct,streak>0?3:0)}%`}}/></div>;
     };
-
-    const StatBar = ({ value, color }) => {
-      const pct = Math.min(100, ((value - 10) / 40) * 100);
-      return (
-        <div className="stat-bar-bg flex-1">
-          <div className="stat-bar-fill" style={{ width: `${Math.max(4, pct)}%`, background: color }} />
-        </div>
-      );
+    const StatBar = ({value,color}) => {
+      const pct=Math.min(100,((value-10)/40)*100);
+      return <div className="stat-bar-bg flex-1"><div className="stat-bar-fill" style={{width:`${Math.max(4,pct)}%`,background:color}}/></div>;
     };
+    const TrashIcon = () => (
+      <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}
+        style={{color:'#52525b',transition:'color 0.15s'}}
+        onMouseEnter={e=>e.currentTarget.style.color='#f87171'}
+        onMouseLeave={e=>e.currentTarget.style.color='#52525b'}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/>
+      </svg>
+    );
+    const BoltIcon = () => <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>;
+    const ChevronIcon = ({open}) => (
+      <svg className="w-3 h-3 transition-transform duration-200" style={{transform:open?'rotate(180deg)':'none'}}
+        fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7"/>
+      </svg>
+    );
+    const DragHandle = () => (
+      <svg className="w-3.5 h-3.5 drag-handle flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+        <circle cx="9"  cy="5"  r="1.5"/><circle cx="15" cy="5"  r="1.5"/>
+        <circle cx="9"  cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/>
+        <circle cx="9"  cy="19" r="1.5"/><circle cx="15" cy="19" r="1.5"/>
+      </svg>
+    );
 
-    /* ─── MAIN APP ───────────────────────────────────────────── */
+    /* ─── MAIN APP ────────────────────────────────────────── */
     function App() {
-      const [activeTab, setActiveTab] = useState('dashboard');
+      const [activeTab,    setActiveTab]    = useState('dashboard');
+      const [dimMode,      setDimMode]      = useState(false);
+      const [showConfetti, setShowConfetti] = useState(false);
+      const [levelUpModal, setLevelUpModal] = useState(false);
+      const [toastMsg,     setToastMsg]     = useState("");
+      const [expandedQuestId, setExpandedQuestId] = useState(null);
+      const [dragQuestId,  setDragQuestId]  = useState(null);
+      const [dragOverId,   setDragOverId]   = useState(null);
 
-      const [hero, setHero] = useState(() => {
-        const saved = localStorage.getItem('lq_hero_adi_v4');
-        return saved ? JSON.parse(saved) : {
-          name: "Adi", class: "Tech Lead", level: 1, xp: 0, nextLevelXp: 300, gold: 0, streak: 0, statPoints: 0,
-          stats: { strength: 10, intelligence: 10, willpower: 10, stamina: 10 }
-        };
+      const [hero, setHero] = useState(()=>{
+        const s=localStorage.getItem('lq_hero_adi_v4');
+        return s?JSON.parse(s):{name:"Adi",class:"Tech Lead",level:1,xp:0,nextLevelXp:300,gold:0,streak:0,statPoints:0,stats:{strength:10,intelligence:10,willpower:10,stamina:10}};
       });
-
-      const [quests, setQuests] = useState(() => {
-        const saved = localStorage.getItem('lq_quests_adi_v4');
-        return saved ? JSON.parse(saved) : [
-          { id: 1, text: "Perform 8 Hours of meaningful coding",              type: "day",  completed: false, difficulty: "hard",   attribute: "intelligence", xp: 80, gold: 40 },
-          { id: 2, text: "Read book for 30 minutes (Instead of scrolling)",   type: "day",  completed: false, difficulty: "medium", attribute: "willpower",    xp: 40, gold: 20 },
-          { id: 3, text: "Hit today's custom Gym Split",                      type: "day",  completed: false, difficulty: "medium", attribute: "strength",     xp: 40, gold: 20 },
-          { id: 4, text: "Secure 8 Hours of deep sleep",                      type: "day",  completed: false, difficulty: "easy",   attribute: "stamina",      xp: 20, gold: 10 },
-          { id: 5, text: "Ship one meaningful side-project feature this week",type: "week", completed: false, difficulty: "hard",   attribute: "intelligence", xp: 120, gold: 60 },
-          { id: 6, text: "Hit 4 gym sessions this week",                      type: "week", completed: false, difficulty: "medium", attribute: "strength",     xp: 80,  gold: 40 },
+      const [quests, setQuests] = useState(()=>{
+        const s=localStorage.getItem('lq_quests_adi_v4');
+        return s?JSON.parse(s):[
+          {id:1,text:"Perform 8 Hours of meaningful coding",             type:"day", completed:false,difficulty:"hard",  attribute:"intelligence",xp:80, gold:40,notes:""},
+          {id:2,text:"Read book for 30 minutes (Instead of scrolling)",  type:"day", completed:false,difficulty:"medium",attribute:"willpower",   xp:40, gold:20,notes:""},
+          {id:3,text:"Hit today's custom Gym Split",                     type:"day", completed:false,difficulty:"medium",attribute:"strength",    xp:40, gold:20,notes:""},
+          {id:4,text:"Secure 8 Hours of deep sleep",                     type:"day", completed:false,difficulty:"easy",  attribute:"stamina",     xp:20, gold:10,notes:""},
+          {id:5,text:"Ship one meaningful side-project feature this week",type:"week",completed:false,difficulty:"hard",  attribute:"intelligence",xp:120,gold:60,notes:""},
+          {id:6,text:"Hit 4 gym sessions this week",                     type:"week",completed:false,difficulty:"medium",attribute:"strength",    xp:80, gold:40,notes:""},
         ];
       });
-
-      const [gymLogs,     setGymLogs]     = useState(() => JSON.parse(localStorage.getItem('lq_gymlogs_adi_v4'))  || []);
-      const [exercisePRs, setExercisePRs] = useState(() => JSON.parse(localStorage.getItem('lq_prs_adi_v4'))     || {});
-      const [rewards,     setRewards]     = useState(() => JSON.parse(localStorage.getItem('lq_rewards_adi_v4'))  || [
-        { id: 1, text: "Watch 1 episode of anime/show guilt-free",  cost: 30  },
-        { id: 2, text: "Indulge in a clean cheat meal",             cost: 60  },
-        { id: 3, text: "Unlock personal luxury hobby item",         cost: 140 }
+      const [gymLogs,      setGymLogs]      = useState(()=>JSON.parse(localStorage.getItem('lq_gymlogs_adi_v4')) ||[]);
+      const [exercisePRs,  setExercisePRs]  = useState(()=>JSON.parse(localStorage.getItem('lq_prs_adi_v4'))    ||{});
+      const [rewards,      setRewards]      = useState(()=>JSON.parse(localStorage.getItem('lq_rewards_adi_v4'))||[
+        {id:1,text:"Watch 1 episode of anime/show guilt-free", cost:30 },
+        {id:2,text:"Indulge in a clean cheat meal",             cost:60 },
+        {id:3,text:"Unlock personal luxury hobby item",         cost:140},
       ]);
+      const [dailyHistory,  setDailyHistory]  = useState(()=>JSON.parse(localStorage.getItem('lq_history_adi_v4'))    ||{});
+      const [statMilestones,setStatMilestones]= useState(()=>JSON.parse(localStorage.getItem('lq_milestones_adi_v4'))||[]);
 
-      const [aiInputPrompt,   setAiInputPrompt]   = useState("");
-      const [isAiGenerating,  setIsAiGenerating]  = useState(false);
-      const [isVisionParsing, setIsVisionParsing] = useState(false);
+      const [aiInputPrompt,  setAiInputPrompt]  = useState("");
+      const [isAiGenerating, setIsAiGenerating] = useState(false);
+      const [isVisionParsing,setIsVisionParsing]= useState(false);
       const fileInputRef = useRef(null);
-      const [toastMsg,     setToastMsg]     = useState("");
-      const [levelUpModal, setLevelUpModal] = useState(false);
-
       const [newQuestText,       setNewQuestText]       = useState("");
       const [newQuestType,       setNewQuestType]       = useState("day");
       const [newQuestDifficulty, setNewQuestDifficulty] = useState("medium");
@@ -524,277 +478,312 @@
       const [customRewardName,   setCustomRewardName]   = useState("");
       const [customRewardCost,   setCustomRewardCost]   = useState(40);
 
-      /* ── MIDNIGHT RESET + STREAK ENGINE ───────────────────── */
-      useEffect(() => {
-        const todayStr     = new Date().toISOString().split('T')[0];
-        const yesterdayStr = new Date(Date.now() - 86400000).toISOString().split('T')[0];
-        const lastResetDate = localStorage.getItem('lq_last_reset_date');
+      /* ── DIM MODE body sync ─────────────────────────────── */
+      useEffect(()=>{
+        document.body.style.background = dimMode ? '#141416' : '#09090b';
+      },[dimMode]);
 
-        if (lastResetDate !== todayStr) {
-          /* ── Streak logic ── */
-          const dailyQuests       = quests.filter(q => q.type === 'day');
-          const allDailiesWereDone = dailyQuests.length > 0 && dailyQuests.every(q => q.completed);
-          const isConsecutiveDay  = lastResetDate === yesterdayStr;
-          const newStreak = isConsecutiveDay && allDailiesWereDone ? hero.streak + 1 : 0;
-          setHero(h => ({ ...h, streak: newStreak }));
+      /* ── KEYBOARD SHORTCUTS ─────────────────────────────── */
+      useEffect(()=>{
+        const tabIds=['dashboard','quests','gym','shop','hero'];
+        const handle = (e) => {
+          if (e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA'||e.target.tagName==='SELECT') return;
+          if (e.key>='1'&&e.key<='5') setActiveTab(tabIds[parseInt(e.key)-1]);
+          if (e.key==='Escape') { setLevelUpModal(false); setShowConfetti(false); }
+          if (e.key==='d'||e.key==='D') setDimMode(m=>!m);
+        };
+        window.addEventListener('keydown',handle);
+        return ()=>window.removeEventListener('keydown',handle);
+      },[]);
 
-          /* ── Weekly reset (Sunday) ── */
-          const isWeeklyResetDay  = new Date().getDay() === 0;
-          const lastWeeklyReset   = localStorage.getItem('lq_last_weekly_reset');
-          if (isWeeklyResetDay && lastWeeklyReset !== todayStr) {
-            setQuests(prev => prev.map(q => ({ ...q, completed: false })));
-            localStorage.setItem('lq_last_weekly_reset', todayStr);
-            setTimeout(() => triggerToast("🗓️ Weekly reset — all quests refreshed."), 800);
+      /* ── MIDNIGHT RESET + STREAK ENGINE ─────────────────── */
+      useEffect(()=>{
+        const today   = todayStr();
+        const yest    = yesterdayStr();
+        const lastReset = localStorage.getItem('lq_last_reset_date');
+        if (lastReset!==today) {
+          const dailyQuests = quests.filter(q=>q.type==='day');
+          const allDone     = dailyQuests.length>0 && dailyQuests.every(q=>q.completed);
+          const consecutive = lastReset===yest;
+          const newStreak   = (consecutive && allDone) ? hero.streak+1 : 0;
+          setHero(h=>({...h,streak:newStreak}));
+
+          const isWeeklyReset  = new Date().getDay()===0;
+          const lastWeekly     = localStorage.getItem('lq_last_weekly_reset');
+          if (isWeeklyReset && lastWeekly!==today) {
+            setQuests(prev=>prev.map(q=>({...q,completed:false})));
+            localStorage.setItem('lq_last_weekly_reset',today);
+            setTimeout(()=>triggerToast("🗓️ Weekly reset — all quests refreshed."),800);
           } else {
-            /* Daily reset only */
-            setQuests(prev => prev.map(q => q.type === 'day' ? { ...q, completed: false } : q));
-            setTimeout(() => triggerToast("⚡ New day — daily quests reset."), 800);
+            setQuests(prev=>prev.map(q=>q.type==='day'?{...q,completed:false}:q));
+            setTimeout(()=>triggerToast("⚡ New day — daily quests reset."),800);
           }
-
-          /* ── Streak toast ── */
-          if (newStreak > 0) {
-            setTimeout(() => triggerToast(`🔥 Streak: ${newStreak} day${newStreak > 1 ? 's' : ''} — keep it alive.`), 1400);
-          }
-
-          localStorage.setItem('lq_last_reset_date', todayStr);
+          if (newStreak>0) setTimeout(()=>triggerToast(`🔥 Streak: ${newStreak} day${newStreak>1?'s':''} — keep it alive.`),1400);
+          localStorage.setItem('lq_last_reset_date',today);
         }
-      }, []);
+      },[]);
 
-      /* ── PERSIST ───────────────────────────────────────────── */
-      useEffect(() => {
+      /* ── PERSIST ────────────────────────────────────────── */
+      useEffect(()=>{
         localStorage.setItem('lq_hero_adi_v4',    JSON.stringify(hero));
         localStorage.setItem('lq_quests_adi_v4',  JSON.stringify(quests));
         localStorage.setItem('lq_gymlogs_adi_v4', JSON.stringify(gymLogs));
         localStorage.setItem('lq_rewards_adi_v4', JSON.stringify(rewards));
         localStorage.setItem('lq_prs_adi_v4',     JSON.stringify(exercisePRs));
-      }, [hero, quests, gymLogs, rewards, exercisePRs]);
+        localStorage.setItem('lq_history_adi_v4', JSON.stringify(dailyHistory));
+        localStorage.setItem('lq_milestones_adi_v4',JSON.stringify(statMilestones));
+      },[hero,quests,gymLogs,rewards,exercisePRs,dailyHistory,statMilestones]);
 
-      const triggerToast = (msg) => { setToastMsg(msg); setTimeout(() => setToastMsg(""), 4500); };
+      const triggerToast = (msg)=>{ setToastMsg(msg); setTimeout(()=>setToastMsg(""),4500); };
 
-      /* Quest toggle */
+      /* ── QUEST TOGGLE ───────────────────────────────────── */
       const handleQuestToggle = (id) => {
         playSound('complete');
-        setQuests(prev => prev.map(q => {
-          if (q.id === id) {
-            const completing = !q.completed;
-            const xpChange   = completing ? q.xp   : -q.xp;
-            const goldChange = completing ? q.gold  : -q.gold;
-            setHero(h => {
-              let nXp   = h.xp + xpChange;
-              let nGold = Math.max(0, h.gold + goldChange);
-              let nLvl  = h.level;
-              let tXp   = h.nextLevelXp;
-              let rolledLvl = false;
-              if (nXp >= tXp) {
-                nXp -= tXp; nLvl += 1; tXp = nLvl * 300; rolledLvl = true;
-                playSound('levelup');
-                setLevelUpModal(true);
-              } else if (nXp < 0) { nXp = 0; }
-              const nextStats = { ...h.stats };
-              if (completing && q.attribute) {
-                nextStats[q.attribute] = (nextStats[q.attribute] || 10) + (q.difficulty === 'hard' ? 1.0 : 0.4);
-              }
-              return { ...h, xp: Math.round(nXp), gold: nGold, level: nLvl, nextLevelXp: tXp, stats: nextStats, statPoints: rolledLvl ? h.statPoints + 3 : h.statPoints };
-            });
-            if (completing) triggerToast(`Quest completed — +${q.xp} XP · +${q.gold}g`);
-            return { ...q, completed: completing };
+        setQuests(prev=>prev.map(q=>{
+          if (q.id!==id) return q;
+          const completing = !q.completed;
+          const xpChange   = completing?q.xp:-q.xp;
+          const goldChange = completing?q.gold:-q.gold;
+
+          if (completing) {
+            const today=todayStr();
+            setDailyHistory(h=>({...h,[today]:{xp:(h[today]?.xp||0)+q.xp,gold:(h[today]?.gold||0)+q.gold}}));
           }
-          return q;
+
+          setHero(h=>{
+            let nXp=h.xp+xpChange, nGold=Math.max(0,h.gold+goldChange);
+            let nLvl=h.level, tXp=h.nextLevelXp;
+            let rolledLvl=false;
+            if(nXp>=tXp){ nXp-=tXp;nLvl++;tXp=nLvl*300;rolledLvl=true;playSound('levelup');setLevelUpModal(true);setShowConfetti(true); }
+            else if(nXp<0) nXp=0;
+
+            const oldStats={...h.stats};
+            const nextStats={...h.stats};
+            if(completing && q.attribute) nextStats[q.attribute]=(nextStats[q.attribute]||10)+(q.difficulty==='hard'?1.0:0.4);
+
+            if(completing){
+              const newMs=getNewMilestones(oldStats,nextStats);
+              if(newMs.length>0) setStatMilestones(prev=>[...newMs,...prev].slice(0,50));
+            }
+            return {...h,xp:Math.round(nXp),gold:nGold,level:nLvl,nextLevelXp:tXp,stats:nextStats,statPoints:rolledLvl?h.statPoints+3:h.statPoints};
+          });
+
+          if(completing) triggerToast(`Quest completed — +${q.xp} XP · +${q.gold}g`);
+          return {...q,completed:completing};
         }));
       };
 
-      /* Manual quest add */
+      /* ── QUEST NOTES ────────────────────────────────────── */
+      const updateQuestNotes = (id, notes) => {
+        setQuests(prev=>prev.map(q=>q.id===id?{...q,notes}:q));
+      };
+
+      /* ── DRAG REORDER ───────────────────────────────────── */
+      const handleDragStart = (e, id) => { setDragQuestId(id); e.dataTransfer.effectAllowed='move'; };
+      const handleDragOver  = (e, id) => { e.preventDefault(); setDragOverId(id); };
+      const handleDrop      = (e, targetId) => {
+        e.preventDefault();
+        if(!dragQuestId||dragQuestId===targetId){ setDragQuestId(null);setDragOverId(null);return; }
+        setQuests(prev=>{
+          const items=[...prev];
+          const from=items.findIndex(q=>q.id===dragQuestId);
+          const to  =items.findIndex(q=>q.id===targetId);
+          if(from<0||to<0) return prev;
+          const [moved]=items.splice(from,1);
+          items.splice(to,0,moved);
+          return items;
+        });
+        setDragQuestId(null); setDragOverId(null);
+      };
+      const handleDragEnd = ()=>{ setDragQuestId(null); setDragOverId(null); };
+
+      /* ── QUEST ADD / DELETE ─────────────────────────────── */
       const handleManualQuestAdd = (e) => {
         e.preventDefault();
-        if (!newQuestText.trim()) return;
-        const calcXp = newQuestDifficulty === 'easy' ? 20 : newQuestDifficulty === 'medium' ? 40 : 80;
-        const baseXp = newQuestType === 'week' ? calcXp * 2 : calcXp;
-        const q = { id: Date.now(), text: newQuestText, type: newQuestType, completed: false, difficulty: newQuestDifficulty, attribute: newQuestAttr, xp: baseXp, gold: Math.round(baseXp * 0.4) };
-        setQuests([q, ...quests]);
-        setNewQuestText("");
-        triggerToast(`Quest forged — ${newQuestType === 'week' ? 'weekly' : 'daily'} added to board.`);
+        if(!newQuestText.trim()) return;
+        const calcXp = newQuestDifficulty==='easy'?20:newQuestDifficulty==='medium'?40:80;
+        const baseXp = newQuestType==='week'?calcXp*2:calcXp;
+        const q={id:Date.now(),text:newQuestText,type:newQuestType,completed:false,difficulty:newQuestDifficulty,attribute:newQuestAttr,xp:baseXp,gold:Math.round(baseXp*0.4),notes:""};
+        setQuests([q,...quests]); setNewQuestText("");
+        triggerToast(`Quest forged — ${newQuestType==='week'?'weekly':'daily'} added to board.`);
       };
+      const deleteQuest = (id) => setQuests(prev=>prev.filter(q=>q.id!==id));
 
-      const deleteQuest = (id) => { setQuests(prev => prev.filter(q => q.id !== id)); };
-
-      /* Preset gym log — with PR detection */
+      /* ── GYM ────────────────────────────────────────────── */
       const triggerPresetWorkoutLog = (dayName) => {
-        const preset = PRESET_WORKOUTS[dayName];
-        if (!preset) return;
-
-        const { newPRNames, updatedPRs } = checkAndUpdatePRs(preset.exercises, exercisePRs);
+        const preset=PRESET_WORKOUTS[dayName]; if(!preset) return;
+        const {newPRNames,updatedPRs}=checkAndUpdatePRs(preset.exercises,exercisePRs);
         setExercisePRs(updatedPRs);
-
-        const newLog = {
-          id: Date.now(),
-          date: new Date().toISOString().split('T')[0],
-          workoutName: `${preset.name} (${dayName})`,
-          exercises: preset.exercises,
-          prExercises: newPRNames
-        };
-        setGymLogs([newLog, ...gymLogs]);
-        setHero(h => ({ ...h, xp: h.xp + 60, gold: h.gold + 20 }));
-
-        if (newPRNames.length > 0) {
-          playSound('pr');
-          triggerToast(`🏆 PR: ${newPRNames.join(', ')} — +60 XP · +20g`);
-        } else {
-          triggerToast(`Split logged: ${preset.name} — +60 XP · +20g`);
-        }
+        const newLog={id:Date.now(),date:todayStr(),workoutName:`${preset.name} (${dayName})`,exercises:preset.exercises,prExercises:newPRNames};
+        setGymLogs([newLog,...gymLogs]);
+        setHero(h=>({...h,xp:h.xp+60,gold:h.gold+20}));
+        if(newPRNames.length>0){ playSound('pr'); triggerToast(`🏆 PR: ${newPRNames.join(', ')} — +60 XP · +20g`); }
+        else triggerToast(`Split logged: ${preset.name} — +60 XP · +20g`);
       };
+      const deleteGymLog = (id) => { setGymLogs(prev=>prev.filter(l=>l.id!==id)); triggerToast("Session removed."); };
 
-      const handleStatBoost = (statName) => {
-        if (hero.statPoints <= 0) return;
-        setHero(h => ({ ...h, statPoints: h.statPoints - 1, stats: { ...h.stats, [statName]: h.stats[statName] + 1 } }));
+      /* ── WEEKLY VOLUME CALC ─────────────────────────────── */
+      const weeklyVolume = React.useMemo(()=>{
+        const ws=getWeekStart();
+        const thisWeek=gymLogs.filter(l=>l.date>=ws);
+        const byGroup={};
+        thisWeek.forEach(log=>{
+          (log.exercises||[]).forEach(ex=>{
+            const group=MUSCLE_MAP[ex.name]||'Other';
+            const vol=(ex.sets||[]).reduce((sum,s)=>sum+((Number(s.reps)||0)*(Number(s.weight)||0)),0);
+            byGroup[group]=(byGroup[group]||0)+vol;
+          });
+        });
+        return byGroup;
+      },[gymLogs]);
+
+      /* ── MISC ───────────────────────────────────────────── */
+      const handleStatBoost = (s) => {
+        if(hero.statPoints<=0) return;
+        setHero(h=>({...h,statPoints:h.statPoints-1,stats:{...h.stats,[s]:h.stats[s]+1}}));
       };
-
-      const purchaseReward = (id, cost, title) => {
-        if (hero.gold < cost) { triggerToast("Insufficient gold balance."); return; }
-        setHero(h => ({ ...h, gold: h.gold - cost }));
+      const purchaseReward = (id,cost,title) => {
+        if(hero.gold<cost){ triggerToast("Insufficient gold balance."); return; }
+        setHero(h=>({...h,gold:h.gold-cost}));
         triggerToast(`Redeemed: ${title}`);
       };
-
       const handleAddReward = (e) => {
         e.preventDefault();
-        if (!customRewardName.trim()) return;
-        setRewards([{ id: Date.now(), text: customRewardName, cost: Number(customRewardCost) }, ...rewards]);
-        setCustomRewardName("");
-        triggerToast("Reward stocked in the merchant store.");
+        if(!customRewardName.trim()) return;
+        setRewards([{id:Date.now(),text:customRewardName,cost:Number(customRewardCost)},...rewards]);
+        setCustomRewardName(""); triggerToast("Reward stocked in the merchant store.");
+      };
+      const archiveCompletedDailies = () => { setQuests(quests.filter(q=>!q.completed)); triggerToast("Completed quests archived."); };
+
+      const loadApiKey = () => {
+        let key=localStorage.getItem("adi_gemini_key");
+        if(!key){ key=prompt("Enter your Gemini API key:"); if(key) localStorage.setItem("adi_gemini_key",key.trim()); }
+        return key?key.trim():null;
       };
 
-      const archiveCompletedDailies = () => {
-        setQuests(quests.filter(q => !q.completed));
-        triggerToast("Completed quests archived.");
-      };
-
-      const loadApiKeySecurely = () => {
-        let key = localStorage.getItem("adi_gemini_key");
-        if (!key || key.trim() === "") {
-          key = prompt("Enter your Gemini API key:");
-          if (key) localStorage.setItem("adi_gemini_key", key.trim());
-        }
-        return key ? key.trim() : null;
-      };
-
-      const callAiAgentQuestGenerator = async () => {
-        if (!aiInputPrompt.trim()) return;
-        const apiKey = loadApiKeySecurely();
-        if (!apiKey) return;
+      const callAiAgent = async () => {
+        if(!aiInputPrompt.trim()) return;
+        const apiKey=loadApiKey(); if(!apiKey) return;
         setIsAiGenerating(true);
         try {
-          const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
-            method: "POST", headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              contents: [{ parts: [{ text: `Decompose this goal cleanly into 2-4 highly specific JSON daily sub-quests matching Adi's schedule timeline layout workflows: "${aiInputPrompt}". Expected schema outline syntax format required: {"quests": [{"text": "Task specific micro description", "type": "day", "difficulty": "medium", "attribute": "intelligence", "xp": 30, "gold": 12}]}. Output strict raw JSON structure contents only, skip markdown text block tags.` }] }],
-              generationConfig: { responseMimeType: "application/json" }
-            })
+          const res=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,{
+            method:"POST",headers:{"Content-Type":"application/json"},
+            body:JSON.stringify({contents:[{parts:[{text:`Decompose this goal into 2-4 specific JSON daily sub-quests for Adi: "${aiInputPrompt}". Schema: {"quests":[{"text":"Task","type":"day","difficulty":"medium","attribute":"intelligence","xp":30,"gold":12}]}. Raw JSON only.`}]}],generationConfig:{responseMimeType:"application/json"}})
           });
-          if (!res.ok) { const errData = await res.json(); triggerToast(`API Error: ${errData.error?.message || res.statusText}`); setIsAiGenerating(false); return; }
-          const result = await res.json();
-          const rawText = result.candidates[0].content.parts[0].text;
-          const data = JSON.parse(rawText);
-          if (data.quests) {
-            setQuests([...data.quests.map((q, i) => ({ ...q, id: Date.now() + i, completed: false })), ...quests]);
-            setAiInputPrompt("");
-            triggerToast(`AI decomposed your goal into ${data.quests.length} micro-quests.`);
+          if(!res.ok){ const d=await res.json();triggerToast(`API Error: ${d.error?.message}`);setIsAiGenerating(false);return; }
+          const result=await res.json();
+          const data=JSON.parse(result.candidates[0].content.parts[0].text);
+          if(data.quests){
+            setQuests([...data.quests.map((q,i)=>({...q,id:Date.now()+i,completed:false,notes:""})),...quests]);
+            setAiInputPrompt(""); triggerToast(`AI decomposed into ${data.quests.length} micro-quests.`);
           }
-        } catch (e) { triggerToast(`Error: ${e.message}`); }
-        finally { setIsAiGenerating(false); }
+        } catch(e){ triggerToast(`Error: ${e.message}`); }
+        finally{ setIsAiGenerating(false); }
       };
 
-      /* Hevy OCR — with PR detection */
-      const handleHevyScreenshotUpload = async (e) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
-        const apiKey = loadApiKeySecurely();
-        if (!apiKey) return;
-        setIsVisionParsing(true);
-        triggerToast("Parsing workout via Vision AI...");
-        const reader = new FileReader();
-        reader.onloadend = async () => {
-          try {
-            const base64Data = reader.result.split(',')[1];
-            const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
-              method: "POST", headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                contents: [{ role: "user", parts: [
-                  { text: `Read this workout snapshot metric from the Hevy application interface. Parse the exercises, sets list, weights configuration, and repetitions. Respond with ONLY a valid raw JSON matching this schema format: {"workoutName": "Focus Area title", "date": "2026-05-19", "exercises": [{"name": "Exercise Name Title", "sets": [{"reps": 10, "weight": 135}]}]}` },
-                  { inlineData: { mimeType: file.type, data: base64Data } }
-                ]}],
-                generationConfig: { responseMimeType: "application/json" }
-              })
+      const handleHevyUpload = async (e) => {
+        const file=e.target.files?.[0]; if(!file) return;
+        const apiKey=loadApiKey(); if(!apiKey) return;
+        setIsVisionParsing(true); triggerToast("Parsing workout via Vision AI...");
+        const reader=new FileReader();
+        reader.onloadend=async()=>{
+          try{
+            const b64=reader.result.split(',')[1];
+            const res=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,{
+              method:"POST",headers:{"Content-Type":"application/json"},
+              body:JSON.stringify({contents:[{role:"user",parts:[
+                {text:`Parse this Hevy workout screenshot. Return ONLY JSON: {"workoutName":"name","date":"2026-05-26","exercises":[{"name":"Exercise","sets":[{"reps":10,"weight":135}]}]}`},
+                {inlineData:{mimeType:file.type,data:b64}}
+              ]}],generationConfig:{responseMimeType:"application/json"}})
             });
-            if (!res.ok) { const errData = await res.json(); triggerToast(`Vision API Error: ${errData.error?.message || res.statusText}`); setIsVisionParsing(false); return; }
-            const result = await res.json();
-            const rawText = result.candidates[0].content.parts[0].text;
-            const parsed = JSON.parse(rawText);
-
-            /* PR check — read from localStorage to avoid stale closure */
-            const freshPRs = JSON.parse(localStorage.getItem('lq_prs_adi_v4') || '{}');
-            const { newPRNames, updatedPRs } = checkAndUpdatePRs(parsed.exercises || [], freshPRs);
+            if(!res.ok){ const d=await res.json();triggerToast(`Vision Error: ${d.error?.message}`);setIsVisionParsing(false);return; }
+            const result=await res.json();
+            const parsed=JSON.parse(result.candidates[0].content.parts[0].text);
+            const freshPRs=JSON.parse(localStorage.getItem('lq_prs_adi_v4')||'{}');
+            const{newPRNames,updatedPRs}=checkAndUpdatePRs(parsed.exercises||[],freshPRs);
             setExercisePRs(updatedPRs);
-
-            const newLog = {
-              id: Date.now(),
-              date: parsed.date || new Date().toISOString().split('T')[0],
-              workoutName: `${parsed.workoutName} (Hevy Sync)`,
-              exercises: parsed.exercises || [],
-              prExercises: newPRNames
-            };
-            setGymLogs(prev => [newLog, ...prev]);
-            setHero(h => ({ ...h, xp: h.xp + 85, gold: h.gold + 35 }));
-
-            if (newPRNames.length > 0) {
-              playSound('pr');
-              triggerToast(`Hevy parsed — +85 XP · +35g · 🏆 PR: ${newPRNames.join(', ')}`);
-            } else {
-              triggerToast("Hevy workout parsed and cataloged — +85 XP · +35g");
-            }
-          } catch (err) { triggerToast(`Vision parsing failed: ${err.message}`); }
-          finally { setIsVisionParsing(false); }
+            const newLog={id:Date.now(),date:parsed.date||todayStr(),workoutName:`${parsed.workoutName} (Hevy Sync)`,exercises:parsed.exercises||[],prExercises:newPRNames};
+            setGymLogs(prev=>[newLog,...prev]);
+            setHero(h=>({...h,xp:h.xp+85,gold:h.gold+35}));
+            if(newPRNames.length>0){ playSound('pr'); triggerToast(`Hevy parsed — +85 XP · +35g · 🏆 PR: ${newPRNames.join(', ')}`); }
+            else triggerToast("Hevy parsed — +85 XP · +35g");
+          }catch(err){ triggerToast(`Vision failed: ${err.message}`); }
+          finally{ setIsVisionParsing(false); }
         };
         reader.readAsDataURL(file);
       };
 
-      const deleteGymLog = (id) => {
-        setGymLogs(prev => prev.filter(l => l.id !== id));
-        triggerToast("Session removed from log.");
+      const triggerReset = () => {
+        if(confirm("Nuke all data? Resets everything.")) { localStorage.clear(); window.location.reload(); }
       };
 
-      const clearSavedApiKey = () => { localStorage.removeItem("adi_gemini_key"); triggerToast("API key purged from local cache."); };
+      /* ── DERIVED ────────────────────────────────────────── */
+      const codingQuest = quests.find(q=>q.text.includes("8 Hours"))||{};
+      const readQuest   = quests.find(q=>q.text.includes("Read book"))||{};
+      const completedCount = quests.filter(q=>q.completed).length;
+      const xpPct = Math.min(100,Math.round((hero.xp/hero.nextLevelXp)*100));
+      const dailyQuests  = quests.filter(q=>q.type==='day');
+      const weeklyQuests = quests.filter(q=>q.type==='week');
+      const daysLeft = daysUntilSunday();
+      const maxVolume = Math.max(...Object.values(weeklyVolume),1);
 
-      const triggerTotalSystemReset = () => {
-        if (confirm("Nuke all data? This resets everything back to baseline.")) {
-          localStorage.clear();
-          window.location.reload();
-        }
-      };
-
-      const codingQuest = quests.find(q => q.text.includes("8 Hours")) || {};
-      const readQuest   = quests.find(q => q.text.includes("Read book")) || {};
-      const completedCount = quests.filter(q => q.completed).length;
-      const xpPct = Math.min(100, Math.round((hero.xp / hero.nextLevelXp) * 100));
-
-      const dailyQuests  = quests.filter(q => q.type === 'day');
-      const weeklyQuests = quests.filter(q => q.type === 'week');
-      const daysLeft     = daysUntilSunday();
-
-      const tabs = [
-        { id: 'dashboard', label: 'Overview' },
-        { id: 'quests',    label: 'Quests'   },
-        { id: 'gym',       label: 'Temple'   },
-        { id: 'shop',      label: 'Store'    },
-        { id: 'hero',      label: 'Matrix'   },
+      const tabs=[
+        {id:'dashboard',label:'Overview'},
+        {id:'quests',   label:'Quests'},
+        {id:'gym',      label:'Temple'},
+        {id:'shop',     label:'Store'},
+        {id:'hero',     label:'Matrix'},
       ];
 
-      /* ─── RENDER ──────────────────────────────────────────── */
-      return (
-        <div className="min-h-screen flex flex-col relative" style={{ zIndex: 1 }}>
+      /* ── QUEST ROW (reusable) ───────────────────────────── */
+      const QuestRow = ({q,showDragHandle=false})=>(
+        <div
+          className={`rounded-xl border transition-all duration-200 ${q.completed?'border-zinc-900/40 opacity-40':'border-zinc-900/80'} ${dragQuestId===q.id?'quest-dragging':''} ${dragOverId===q.id&&dragQuestId!==q.id?'quest-drag-over':''}`}
+          style={{background:q.completed?'rgba(9,9,11,0.3)':'rgba(18,18,20,0.7)'}}
+          draggable={showDragHandle}
+          onDragStart={showDragHandle?e=>handleDragStart(e,q.id):undefined}
+          onDragOver={showDragHandle?e=>handleDragOver(e,q.id):undefined}
+          onDrop={showDragHandle?e=>handleDrop(e,q.id):undefined}
+          onDragEnd={handleDragEnd}>
+          <div className="px-4 py-3.5 flex items-center gap-3">
+            {showDragHandle && <DragHandle/>}
+            <input type="checkbox" className="quest-check" checked={q.completed} onChange={()=>handleQuestToggle(q.id)}/>
+            <span className={`text-xs font-mono flex-1 leading-relaxed ${q.completed?'line-through text-zinc-600':'text-zinc-300'}`}>{q.text}</span>
+            <div className="flex items-center gap-1.5 flex-shrink-0">
+              {q.type==='week' && <span className="text-[9px] font-mono font-semibold px-1.5 py-0.5 rounded badge-weekly">WK</span>}
+              <span className={`text-[9px] font-mono font-semibold px-1.5 py-0.5 rounded ${attrClass(q.attribute)}`}>{attrLabel(q.attribute)}</span>
+              <span className={`text-[9px] font-mono font-semibold px-1.5 py-0.5 rounded ${diffClass(q.difficulty)}`}>{q.difficulty.charAt(0).toUpperCase()}</span>
+              <span className="text-[10px] font-mono text-zinc-600">+{q.xp}</span>
+              <button onClick={()=>setExpandedQuestId(expandedQuestId===q.id?null:q.id)}
+                className="p-1 rounded hover:bg-zinc-900 transition-colors text-zinc-600 hover:text-zinc-400">
+                <ChevronIcon open={expandedQuestId===q.id}/>
+              </button>
+              <button onClick={()=>deleteQuest(q.id)} className="p-1 rounded hover:bg-zinc-900 transition-colors"><TrashIcon/></button>
+            </div>
+          </div>
+          <div className={`notes-expand ${expandedQuestId===q.id?'open':''}`}>
+            <div className="px-4 pb-3 pt-0 border-t border-zinc-900/50">
+              <textarea
+                className="notes-textarea mt-2"
+                value={q.notes||""}
+                onChange={e=>updateQuestNotes(q.id,e.target.value)}
+                placeholder="Notes, subtasks, context… (auto-saved)"
+                rows={3}
+              />
+            </div>
+          </div>
+        </div>
+      );
 
-          {/* ── HEADER ─────────────────────────────────────── */}
+      /* ── RENDER ─────────────────────────────────────────── */
+      return (
+        <div className="min-h-screen flex flex-col relative" style={{zIndex:1}}>
+
+          <ConfettiCanvas active={showConfetti} onDone={()=>setShowConfetti(false)}/>
+
+          {/* HEADER */}
           <header className="header-glass sticky top-0 z-40">
             <div className="max-w-4xl mx-auto px-5 py-3.5">
-
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2.5">
                   <div className="neon-dot"></div>
@@ -805,41 +794,45 @@
                   <div className="h-3.5 w-px bg-zinc-800"></div>
                   <span className="gold-badge font-semibold">{hero.gold}<span className="text-zinc-600 font-normal">g</span></span>
                   <div className="h-3.5 w-px bg-zinc-800"></div>
-                  {/* Streak display — now live */}
-                  <span className={`flex items-center gap-1 font-semibold ${hero.streak > 0 ? 'text-orange-400' : 'text-zinc-600'}`}
-                    title={`${hero.streak}-day streak`}>
-                    {hero.streak > 0 ? '🔥' : '○'} {hero.streak}<span className="text-zinc-700 font-normal">d</span>
+                  <span className={`flex items-center gap-1 font-semibold ${hero.streak>0?'text-orange-400':'text-zinc-600'}`}>
+                    {hero.streak>0?'🔥':'○'} {hero.streak}<span className="text-zinc-700 font-normal">d</span>
                   </span>
-                  {hero.statPoints > 0 && (
-                    <span className="ml-1 flex items-center gap-1 text-violet-400 font-semibold animate-pulse">
-                      <BoltIcon />{hero.statPoints}
+                  {hero.statPoints>0 && (
+                    <span className="flex items-center gap-1 text-violet-400 font-semibold animate-pulse ml-1">
+                      <BoltIcon/>{hero.statPoints}
                     </span>
                   )}
+                  <button onClick={()=>setDimMode(m=>!m)} title="Toggle dim mode (D)"
+                    className="ml-1 p-1 rounded-md hover:bg-zinc-900 transition-colors text-zinc-600 hover:text-zinc-400">
+                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+                      {dimMode
+                        ?<path strokeLinecap="round" strokeLinejoin="round" d="M12 3v1m0 16v1m8-9h1M3 12H2m14.95 4.95l.707.707M6.343 6.343l-.707-.707M17.657 6.343l.707-.707M6.343 17.657l-.707.707M12 7a5 5 0 110 10A5 5 0 0112 7z"/>
+                        :<path strokeLinecap="round" strokeLinejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9 9 0 008.354-5.646z"/>
+                      }
+                    </svg>
+                  </button>
                 </div>
               </div>
-
               <div className="flex items-center gap-3 mb-3">
-                <div className="flex-1">
-                  <XpBar xp={hero.xp} max={hero.nextLevelXp} />
-                </div>
+                <div className="flex-1"><XpBar xp={hero.xp} max={hero.nextLevelXp}/></div>
                 <span className="text-[10px] font-mono text-zinc-600 whitespace-nowrap">{hero.xp} / {hero.nextLevelXp} XP</span>
               </div>
-
               <div className="flex gap-1">
-                {tabs.map(t => (
-                  <button key={t.id} onClick={() => setActiveTab(t.id)}
-                    className={`px-3 py-1.5 rounded-lg text-[11px] font-mono font-medium transition-all duration-150 ${activeTab === t.id ? 'tab-active' : 'tab-inactive'}`}>
+                {tabs.map((t,i)=>(
+                  <button key={t.id} onClick={()=>setActiveTab(t.id)}
+                    className={`px-3 py-1.5 rounded-lg text-[11px] font-mono font-medium transition-all duration-150 ${activeTab===t.id?'tab-active':'tab-inactive'}`}
+                    title={`Press ${i+1}`}>
                     {t.label}
-                    {t.id === 'hero' && hero.statPoints > 0 && <span className="ml-1 text-violet-400">·</span>}
+                    {t.id==='hero'&&hero.statPoints>0&&<span className="ml-1 text-violet-400">·</span>}
                   </button>
                 ))}
               </div>
             </div>
           </header>
 
-          {/* ── TOAST ──────────────────────────────────────── */}
+          {/* TOAST */}
           {toastMsg && (
-            <div className="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 max-w-sm w-full px-4" style={{ animation: 'fadeSlideIn 0.2s ease-out both' }}>
+            <div className="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 max-w-sm w-full px-4" style={{animation:'fadeSlideIn 0.2s ease-out both'}}>
               <div className="glass rounded-xl border border-zinc-800/80 px-4 py-3 flex items-center gap-2.5 shadow-2xl">
                 <div className="neon-dot-green flex-shrink-0"></div>
                 <span className="text-xs font-mono text-zinc-300">{toastMsg}</span>
@@ -847,14 +840,13 @@
             </div>
           )}
 
-          {/* ── MAIN CONTENT ───────────────────────────────── */}
           <main className="max-w-4xl mx-auto px-5 py-7 w-full flex-grow">
 
-            {/* ══ OVERVIEW TAB ════════════════════════════ */}
-            {activeTab === 'dashboard' && (
+            {/* ══ OVERVIEW TAB ═══════════════════════════════ */}
+            {activeTab==='dashboard' && (
               <div className="tab-section space-y-7">
 
-                {/* Hero identity + stats */}
+                {/* Hero + stats */}
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <Card className="sm:col-span-1 p-5 flex flex-col justify-between gap-4" glow>
                     <div>
@@ -862,61 +854,63 @@
                       <h2 className="text-xl font-bold text-zinc-100 tracking-tight">{hero.name}</h2>
                       <p className="text-xs text-zinc-500 font-mono">{hero.class}</p>
                     </div>
-                    {/* Streak bar */}
                     <div className="space-y-1.5">
                       <div className="flex justify-between items-center">
                         <span className="text-[10px] font-mono text-zinc-600">Streak</span>
-                        <span className={`text-[10px] font-mono font-semibold ${hero.streak > 0 ? 'text-orange-400' : 'text-zinc-600'}`}>
-                          {hero.streak > 0 ? `🔥 ${hero.streak}d` : '0d'}
+                        <span className={`text-[10px] font-mono font-semibold ${hero.streak>0?'text-orange-400':'text-zinc-600'}`}>
+                          {hero.streak>0?`🔥 ${hero.streak}d`:'0d'}
                         </span>
                       </div>
-                      <StreakBar streak={hero.streak} cap={30} />
+                      <StreakBar streak={hero.streak} cap={30}/>
                     </div>
                     <div className="space-y-2">
                       <div className="flex justify-between items-center">
                         <span className="text-[10px] font-mono text-zinc-600">XP Progress</span>
                         <span className="text-[10px] font-mono text-zinc-500">{xpPct}%</span>
                       </div>
-                      <XpBar xp={hero.xp} max={hero.nextLevelXp} />
+                      <XpBar xp={hero.xp} max={hero.nextLevelXp}/>
                     </div>
                   </Card>
-
                   <div className="sm:col-span-2 grid grid-cols-2 gap-3">
-                    {Object.entries(hero.stats).map(([k, v]) => (
+                    {Object.entries(hero.stats).map(([k,v])=>(
                       <Card key={k} className="p-4 flex flex-col gap-2.5">
                         <div className="flex justify-between items-start">
                           <span className="text-[10px] font-mono uppercase tracking-widest text-zinc-600">{k}</span>
-                          <span className="text-sm font-bold font-mono" style={{ color: statColor(k) }}>{Math.floor(v)}</span>
+                          <span className="text-sm font-bold font-mono" style={{color:statColor(k)}}>{Math.floor(v)}</span>
                         </div>
-                        <StatBar value={v} color={statColor(k)} />
+                        <StatBar value={v} color={statColor(k)}/>
                       </Card>
                     ))}
                   </div>
                 </div>
 
-                {/* AI Goal Decomposer */}
+                {/* Weekly XP Chart */}
+                <Card className="p-5">
+                  <div className="flex justify-between items-center mb-4">
+                    <SectionLabel>7-Day XP Trend</SectionLabel>
+                    <span className="text-[10px] font-mono text-zinc-600">
+                      {Object.values(dailyHistory).reduce((a,d)=>a+d.xp,0)} XP total
+                    </span>
+                  </div>
+                  <WeeklyXpChart history={dailyHistory}/>
+                  <div className="flex justify-between mt-2">
+                    <span className="text-[10px] font-mono text-zinc-700">XP earned per day · today highlighted</span>
+                    <span className="text-[10px] font-mono text-zinc-600">
+                      {dailyHistory[todayStr()]?.xp||0} XP today
+                    </span>
+                  </div>
+                </Card>
+
+                {/* AI Decomposer */}
                 <Card className="p-5">
                   <SectionLabel>AI Goal Decomposer</SectionLabel>
                   <div className="flex gap-2.5">
-                    <input
-                      type="text"
-                      value={aiInputPrompt}
-                      onChange={e => setAiInputPrompt(e.target.value)}
-                      onKeyDown={e => e.key === 'Enter' && callAiAgentQuestGenerator()}
+                    <input type="text" value={aiInputPrompt} onChange={e=>setAiInputPrompt(e.target.value)}
+                      onKeyDown={e=>e.key==='Enter'&&callAiAgent()}
                       placeholder="Enter a goal — e.g. 'Build a REST API', 'DSA tree problems'…"
-                      className="input-field flex-grow rounded-lg px-3.5 py-2.5 text-xs font-mono text-zinc-200 placeholder-zinc-700"
-                    />
-                    <button onClick={callAiAgentQuestGenerator} disabled={isAiGenerating}
-                      className="btn-primary rounded-lg px-5 text-xs font-mono whitespace-nowrap">
-                      {isAiGenerating ? (
-                        <span className="flex items-center gap-1.5">
-                          <svg className="animate-spin w-3 h-3" fill="none" viewBox="0 0 24 24">
-                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
-                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
-                          </svg>
-                          Parsing…
-                        </span>
-                      ) : 'Split Goal'}
+                      className="input-field flex-grow rounded-lg px-3.5 py-2.5 text-xs font-mono text-zinc-200 placeholder-zinc-700"/>
+                    <button onClick={callAiAgent} disabled={isAiGenerating} className="btn-primary rounded-lg px-5 text-xs font-mono whitespace-nowrap">
+                      {isAiGenerating?<span className="flex items-center gap-1.5"><svg className="animate-spin w-3 h-3" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>Parsing…</span>:'Split Goal'}
                     </button>
                   </div>
                   <p className="text-[10px] text-zinc-700 font-mono mt-2">Powered by Gemini · Requires API key on first use</p>
@@ -925,22 +919,12 @@
                 {/* Quick status */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <Card className="p-4 flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <span className="text-base">💻</span>
-                      <span className="text-xs font-mono text-zinc-400">8 Hours Intent Coding</span>
-                    </div>
-                    <span className={`text-[10px] font-mono font-semibold px-2 py-0.5 rounded-md ${codingQuest.completed ? 'text-green-400 bg-green-400/8 border border-green-400/15' : 'text-zinc-600 bg-zinc-900 border border-zinc-800'}`}>
-                      {codingQuest.completed ? '✓ Done' : 'Pending'}
-                    </span>
+                    <div className="flex items-center gap-3"><span className="text-base">💻</span><span className="text-xs font-mono text-zinc-400">8 Hours Intent Coding</span></div>
+                    <span className={`text-[10px] font-mono font-semibold px-2 py-0.5 rounded-md ${codingQuest.completed?'text-green-400 bg-green-400/8 border border-green-400/15':'text-zinc-600 bg-zinc-900 border border-zinc-800'}`}>{codingQuest.completed?'✓ Done':'Pending'}</span>
                   </Card>
                   <Card className="p-4 flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <span className="text-base">📚</span>
-                      <span className="text-xs font-mono text-zinc-400">Books over Scrolling</span>
-                    </div>
-                    <span className={`text-[10px] font-mono font-semibold px-2 py-0.5 rounded-md ${readQuest.completed ? 'text-green-400 bg-green-400/8 border border-green-400/15' : 'text-zinc-600 bg-zinc-900 border border-zinc-800'}`}>
-                      {readQuest.completed ? '✓ Done' : 'Pending'}
-                    </span>
+                    <div className="flex items-center gap-3"><span className="text-base">📚</span><span className="text-xs font-mono text-zinc-400">Books over Scrolling</span></div>
+                    <span className={`text-[10px] font-mono font-semibold px-2 py-0.5 rounded-md ${readQuest.completed?'text-green-400 bg-green-400/8 border border-green-400/15':'text-zinc-600 bg-zinc-900 border border-zinc-800'}`}>{readQuest.completed?'✓ Done':'Pending'}</span>
                   </Card>
                 </div>
 
@@ -948,157 +932,86 @@
                 <div>
                   <div className="flex justify-between items-center mb-3">
                     <SectionLabel>Daily Ledger — {completedCount}/{quests.length} complete</SectionLabel>
-                    <button onClick={archiveCompletedDailies}
-                      className="text-[10px] font-mono text-zinc-600 hover:text-zinc-400 transition-colors duration-150 underline underline-offset-2">
-                      Archive done
-                    </button>
+                    <button onClick={archiveCompletedDailies} className="text-[10px] font-mono text-zinc-600 hover:text-zinc-400 transition-colors underline underline-offset-2">Archive done</button>
                   </div>
+                  {quests.length===0
+                    ?<EmptyState icon="📋" title="No active quests" sub="Add some from the Quests tab."/>
+                    :<div className="space-y-2">{quests.map(q=><QuestRow key={q.id} q={q}/>)}</div>
+                  }
+                </div>
 
-                  {quests.length === 0 ? (
-                    <EmptyState icon="📋" title="No active quests" sub="Add some from the Quests tab or use the AI decomposer above." />
-                  ) : (
-                    <div className="space-y-2">
-                      {quests.map(q => (
-                        <div key={q.id}
-                          className={`rounded-xl border transition-all duration-200 ${q.completed
-                            ? 'border-zinc-900/40 opacity-40'
-                            : 'border-zinc-900/80 hover:border-zinc-800 card-lift'}`}
-                          style={{ background: q.completed ? 'rgba(9,9,11,0.3)' : 'rgba(18,18,20,0.7)' }}>
-                          <div className="px-4 py-3.5 flex items-center gap-3.5">
-                            <input
-                              type="checkbox"
-                              className="quest-check"
-                              checked={q.completed}
-                              onChange={() => handleQuestToggle(q.id)}
-                            />
-                            <span className={`text-xs font-mono flex-1 leading-relaxed ${q.completed ? 'line-through text-zinc-600' : 'text-zinc-300'}`}>
-                              {q.text}
-                            </span>
-                            <div className="flex items-center gap-2 flex-shrink-0">
-                              {q.type === 'week' && (
-                                <span className="text-[9px] font-mono font-semibold px-1.5 py-0.5 rounded badge-weekly">WK</span>
-                              )}
-                              <span className={`text-[9px] font-mono font-semibold px-1.5 py-0.5 rounded ${diffClass(q.difficulty)}`}>
-                                {q.difficulty.toUpperCase()}
-                              </span>
-                              <span className="text-[10px] font-mono text-zinc-600">+{q.xp}xp</span>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
+                {/* Keyboard hint */}
+                <div className="flex items-center gap-2 pt-2 flex-wrap">
+                  <span className="text-[10px] font-mono text-zinc-700">Shortcuts:</span>
+                  {['1','2','3','4','5'].map((k,i)=>(
+                    <span key={k} className="flex items-center gap-1"><kbd className="kbd">{k}</kbd><span className="text-[9px] font-mono text-zinc-700">{tabs[i].label}</span></span>
+                  ))}
+                  <kbd className="kbd ml-1">D</kbd><span className="text-[9px] font-mono text-zinc-700">dim</span>
+                  <kbd className="kbd">Esc</kbd><span className="text-[9px] font-mono text-zinc-700">close modal</span>
                 </div>
               </div>
             )}
 
-            {/* ══ QUESTS TAB ══════════════════════════════ */}
-            {activeTab === 'quests' && (
+            {/* ══ QUESTS TAB ══════════════════════════════════ */}
+            {activeTab==='quests' && (
               <div className="tab-section space-y-6">
-
-                {/* Forge */}
                 <Card className="p-5" glow>
                   <SectionLabel>Forge Custom Quest</SectionLabel>
                   <form onSubmit={handleManualQuestAdd} className="space-y-3.5">
-                    <input
-                      type="text" value={newQuestText} onChange={e => setNewQuestText(e.target.value)}
+                    <input type="text" value={newQuestText} onChange={e=>setNewQuestText(e.target.value)}
                       placeholder="Describe the quest objective…"
-                      className="input-field w-full rounded-lg px-3.5 py-2.5 text-xs font-mono text-zinc-200 placeholder-zinc-700"
-                    />
+                      className="input-field w-full rounded-lg px-3.5 py-2.5 text-xs font-mono text-zinc-200 placeholder-zinc-700"/>
                     <div className="grid grid-cols-3 gap-3">
                       {[
-                        { val: newQuestType,       set: setNewQuestType,       opts: [['day','Daily'],['week','Weekly']] },
-                        { val: newQuestDifficulty, set: setNewQuestDifficulty, opts: [['easy','Easy'],['medium','Medium'],['hard','Hard']] },
-                        { val: newQuestAttr,       set: setNewQuestAttr,       opts: [['intelligence','Intellect'],['strength','Strength'],['willpower','Willpower'],['stamina','Stamina']] },
-                      ].map((sel, i) => (
-                        <select key={i} value={sel.val} onChange={e => sel.set(e.target.value)}
+                        {val:newQuestType,      set:setNewQuestType,      opts:[['day','Daily'],['week','Weekly']]},
+                        {val:newQuestDifficulty,set:setNewQuestDifficulty,opts:[['easy','Easy'],['medium','Medium'],['hard','Hard']]},
+                        {val:newQuestAttr,      set:setNewQuestAttr,      opts:[['intelligence','Intellect'],['strength','Strength'],['willpower','Willpower'],['stamina','Stamina']]},
+                      ].map((sel,i)=>(
+                        <select key={i} value={sel.val} onChange={e=>sel.set(e.target.value)}
                           className="input-field rounded-lg px-3 py-2 text-xs font-mono text-zinc-400 cursor-pointer">
-                          {sel.opts.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
+                          {sel.opts.map(([v,l])=><option key={v} value={v}>{l}</option>)}
                         </select>
                       ))}
                     </div>
                     <p className="text-[10px] font-mono text-zinc-700">
-                      {newQuestType === 'week' ? `Weekly quests reset every Sunday · ${daysLeft === 0 ? 'resets tonight' : `${daysLeft}d until reset`}` : 'Daily quests reset at midnight'}
+                      {newQuestType==='week'?`Weekly · ${daysLeft===0?'resets tonight':`${daysLeft}d until reset`}`:'Daily · resets at midnight'}
                     </p>
-                    <button type="submit" className="btn-primary w-full rounded-lg py-2.5 text-xs font-mono">
-                      Add to Board
-                    </button>
+                    <button type="submit" className="btn-primary w-full rounded-lg py-2.5 text-xs font-mono">Add to Board</button>
                   </form>
                 </Card>
 
-                {/* Weekly quests section */}
-                {weeklyQuests.length > 0 && (
+                <p className="text-[10px] font-mono text-zinc-700 -mt-2">↕ Drag the grip icon to reorder · Click ∨ to add notes to any quest</p>
+
+                {weeklyQuests.length>0 && (
                   <div>
                     <div className="flex items-center justify-between mb-3">
                       <SectionLabel>Weekly Quests — {weeklyQuests.filter(q=>q.completed).length}/{weeklyQuests.length}</SectionLabel>
-                      <span className="text-[10px] font-mono text-zinc-700 badge-weekly px-2 py-0.5 rounded-md">
-                        {daysLeft === 0 ? 'resets tonight' : `${daysLeft}d left`}
-                      </span>
+                      <span className="text-[10px] font-mono badge-weekly px-2 py-0.5 rounded-md">{daysLeft===0?'resets tonight':`${daysLeft}d left`}</span>
                     </div>
-                    <div className="space-y-2">
-                      {weeklyQuests.map(q => (
-                        <div key={q.id}
-                          className={`rounded-xl border transition-all duration-200 ${q.completed ? 'border-zinc-900/40 opacity-40' : 'border-zinc-900/80 hover:border-zinc-800'}`}
-                          style={{ background: q.completed ? 'rgba(9,9,11,0.3)' : 'rgba(18,18,20,0.7)', borderColor: q.completed ? undefined : 'rgba(129,140,248,0.12)' }}>
-                          <div className="px-4 py-3.5 flex items-center gap-3.5">
-                            <input type="checkbox" className="quest-check" checked={q.completed} onChange={() => handleQuestToggle(q.id)} />
-                            <span className={`text-xs font-mono flex-1 leading-relaxed ${q.completed ? 'line-through text-zinc-600' : 'text-zinc-300'}`}>
-                              {q.text}
-                            </span>
-                            <div className="flex items-center gap-2 flex-shrink-0">
-                              <span className={`text-[9px] font-mono font-semibold px-1.5 py-0.5 rounded ${attrClass(q.attribute)}`}>{attrLabel(q.attribute)}</span>
-                              <span className={`text-[9px] font-mono font-semibold px-1.5 py-0.5 rounded ${diffClass(q.difficulty)}`}>{q.difficulty.charAt(0).toUpperCase()}</span>
-                              <span className="text-[10px] font-mono text-zinc-600">+{q.xp}</span>
-                              <button onClick={() => deleteQuest(q.id)} className="ml-1 p-1 rounded hover:bg-zinc-900 transition-colors"><TrashIcon /></button>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
+                    <div className="space-y-2">{weeklyQuests.map(q=><QuestRow key={q.id} q={q} showDragHandle/>)}</div>
                   </div>
                 )}
 
-                {/* Daily quests section */}
                 <div>
                   <SectionLabel>Daily Quests — {dailyQuests.filter(q=>q.completed).length}/{dailyQuests.length}</SectionLabel>
-                  {dailyQuests.length === 0 ? (
-                    <EmptyState icon="⚔️" title="No daily quests" sub="Forge a daily quest above or use the AI decomposer." />
-                  ) : (
-                    <div className="space-y-2">
-                      {dailyQuests.map(q => (
-                        <div key={q.id}
-                          className={`rounded-xl border transition-all duration-200 ${q.completed ? 'border-zinc-900/40 opacity-40' : 'border-zinc-900/80 hover:border-zinc-800'}`}
-                          style={{ background: 'rgba(18,18,20,0.7)' }}>
-                          <div className="px-4 py-3.5 flex items-center gap-3.5">
-                            <input type="checkbox" className="quest-check" checked={q.completed} onChange={() => handleQuestToggle(q.id)} />
-                            <span className={`text-xs font-mono flex-1 leading-relaxed ${q.completed ? 'line-through text-zinc-600' : 'text-zinc-300'}`}>
-                              {q.text}
-                            </span>
-                            <div className="flex items-center gap-2 flex-shrink-0">
-                              <span className={`text-[9px] font-mono font-semibold px-1.5 py-0.5 rounded ${attrClass(q.attribute)}`}>{attrLabel(q.attribute)}</span>
-                              <span className={`text-[9px] font-mono font-semibold px-1.5 py-0.5 rounded ${diffClass(q.difficulty)}`}>{q.difficulty.charAt(0).toUpperCase()}</span>
-                              <span className="text-[10px] font-mono text-zinc-600">+{q.xp}</span>
-                              <button onClick={() => deleteQuest(q.id)} className="ml-1 p-1 rounded hover:bg-zinc-900 transition-colors"><TrashIcon /></button>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
+                  {dailyQuests.length===0
+                    ?<EmptyState icon="⚔️" title="No daily quests" sub="Forge a quest above or use the AI decomposer."/>
+                    :<div className="space-y-2">{dailyQuests.map(q=><QuestRow key={q.id} q={q} showDragHandle/>)}</div>
+                  }
                 </div>
               </div>
             )}
 
-            {/* ══ GYM TAB ═════════════════════════════════ */}
-            {activeTab === 'gym' && (
+            {/* ══ GYM TAB ═════════════════════════════════════ */}
+            {activeTab==='gym' && (
               <div className="tab-section space-y-7">
 
-                {/* Weekly Split */}
+                {/* Weekly split */}
                 <div>
                   <SectionLabel>Weekly Split — Tap to Log</SectionLabel>
                   <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
-                    {Object.entries(PRESET_WORKOUTS).map(([day, data]) => (
-                      <button key={day} onClick={() => triggerPresetWorkoutLog(day)}
+                    {Object.entries(PRESET_WORKOUTS).map(([day,data])=>(
+                      <button key={day} onClick={()=>triggerPresetWorkoutLog(day)}
                         className="day-card rounded-xl p-4 text-left space-y-2 group">
                         <div className="flex justify-between items-center">
                           <span className="text-[9px] font-mono text-zinc-700 uppercase tracking-widest">{day}</span>
@@ -1112,13 +1025,13 @@
                 </div>
 
                 {/* PR Board */}
-                {Object.keys(exercisePRs).length > 0 && (
+                {Object.keys(exercisePRs).length>0 && (
                   <div>
                     <SectionLabel>Personal Records 🏆</SectionLabel>
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                      {Object.entries(exercisePRs).sort((a,b) => b[1] - a[1]).map(([name, weight]) => (
+                      {Object.entries(exercisePRs).sort((a,b)=>b[1]-a[1]).map(([name,weight])=>(
                         <div key={name} className="rounded-xl px-3.5 py-3 flex items-center justify-between gap-2"
-                          style={{ background: 'rgba(9,9,11,0.7)', border: '1px solid rgba(251,191,36,0.12)' }}>
+                          style={{background:'rgba(9,9,11,0.7)',border:'1px solid rgba(251,191,36,0.12)'}}>
                           <span className="text-[10px] font-mono text-zinc-400 leading-snug truncate">{name}</span>
                           <span className="text-[11px] font-bold font-mono text-yellow-400 flex-shrink-0">{weight}<span className="text-zinc-600 font-normal text-[9px]">lb</span></span>
                         </div>
@@ -1127,83 +1040,86 @@
                   </div>
                 )}
 
+                {/* Weekly Volume Summary */}
+                {Object.keys(weeklyVolume).length>0 && (
+                  <Card className="p-5">
+                    <div className="flex justify-between items-center mb-4">
+                      <SectionLabel>Weekly Volume</SectionLabel>
+                      <span className="text-[10px] font-mono text-zinc-600">
+                        {Object.values(weeklyVolume).reduce((a,b)=>a+b,0).toLocaleString()} lbs total
+                      </span>
+                    </div>
+                    <div className="space-y-3">
+                      {Object.entries(weeklyVolume).sort((a,b)=>b[1]-a[1]).map(([group,vol])=>(
+                        <div key={group} className="flex items-center gap-3">
+                          <span className="text-[10px] font-mono w-20 flex-shrink-0"
+                            style={{color:MUSCLE_COLORS[group]||'#71717a'}}>{group}</span>
+                          <div className="vol-bar-bg">
+                            <div className="vol-bar-fill" style={{width:`${(vol/maxVolume)*100}%`,background:MUSCLE_COLORS[group]||'#52525b'}}/>
+                          </div>
+                          <span className="text-[10px] font-mono text-zinc-600 w-16 text-right flex-shrink-0">{vol.toLocaleString()} lbs</span>
+                        </div>
+                      ))}
+                    </div>
+                  </Card>
+                )}
+
                 {/* Hevy OCR */}
                 <Card className="p-6 text-center space-y-4">
                   <div className="space-y-1">
                     <p className="text-sm font-semibold text-zinc-200">Hevy Screenshot Parser</p>
                     <p className="text-xs text-zinc-600 font-mono">Vision AI reads your Hevy workout summary and auto-catalogs it</p>
                   </div>
-                  <button onClick={() => fileInputRef.current.click()} disabled={isVisionParsing}
+                  <button onClick={()=>fileInputRef.current.click()} disabled={isVisionParsing}
                     className="btn-ghost rounded-lg px-5 py-2.5 text-xs font-mono inline-flex items-center gap-2">
-                    {isVisionParsing ? (
-                      <>
-                        <svg className="animate-spin w-3.5 h-3.5" fill="none" viewBox="0 0 24 24">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
-                        </svg>
-                        Scanning…
-                      </>
-                    ) : (
-                      <>
-                        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
-                        </svg>
-                        Upload Screenshot
-                      </>
-                    )}
+                    {isVisionParsing
+                      ?<><svg className="animate-spin w-3.5 h-3.5" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>Scanning…</>
+                      :<><svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/></svg>Upload Screenshot</>
+                    }
                   </button>
-                  <input type="file" accept="image/*" ref={fileInputRef} onChange={handleHevyScreenshotUpload} className="hidden" />
-                  <p className="text-[10px] font-mono text-zinc-700">Earns +85 XP · +35g per successful parse · PR flags auto-detected</p>
+                  <input type="file" accept="image/*" ref={fileInputRef} onChange={handleHevyUpload} className="hidden"/>
+                  <p className="text-[10px] font-mono text-zinc-700">+85 XP · +35g per parse · PR flags auto-detected · volume auto-tracked</p>
                 </Card>
 
                 {/* Logs */}
                 <div>
                   <SectionLabel>Workout Log — {gymLogs.length} sessions</SectionLabel>
-                  {gymLogs.length === 0 ? (
-                    <EmptyState icon="🏛️" title="No sessions logged yet" sub="Tap a split above or upload a Hevy screenshot to begin." />
-                  ) : (
-                    <div className="space-y-3">
-                      {gymLogs.map(log => (
+                  {gymLogs.length===0
+                    ?<EmptyState icon="🏛️" title="No sessions logged yet" sub="Tap a split above or upload a Hevy screenshot."/>
+                    :<div className="space-y-3">
+                      {gymLogs.map(log=>(
                         <Card key={log.id} className="p-4 space-y-3">
                           <div className="flex justify-between items-start border-b border-zinc-900/60 pb-2.5">
                             <div className="flex items-center gap-2">
                               <span className="text-xs font-semibold text-zinc-300">{log.workoutName}</span>
-                              {log.prExercises && log.prExercises.length > 0 && (
-                                <span className="text-[9px] font-bold px-1.5 py-0.5 rounded badge-pr">🏆 PR</span>
-                              )}
+                              {log.prExercises&&log.prExercises.length>0&&<span className="text-[9px] font-bold px-1.5 py-0.5 rounded badge-pr">🏆 PR</span>}
                             </div>
                             <div className="flex items-center gap-2">
                               <span className="text-[10px] font-mono text-zinc-600">{log.date}</span>
-                              <button onClick={() => deleteGymLog(log.id)} className="p-1 rounded hover:bg-zinc-900 transition-colors">
-                                <TrashIcon />
-                              </button>
+                              <button onClick={()=>deleteGymLog(log.id)} className="p-1 rounded hover:bg-zinc-900 transition-colors"><TrashIcon/></button>
                             </div>
                           </div>
                           <div className="space-y-1.5">
-                            {log.exercises.map((ex, i) => (
+                            {log.exercises.map((ex,i)=>(
                               <div key={i} className="flex justify-between items-center">
                                 <span className="text-[11px] font-mono text-zinc-500 flex items-center gap-1.5">
                                   {ex.name}
-                                  {log.prExercises?.includes(ex.name) && (
-                                    <span className="text-[8px] font-bold px-1 py-0.5 rounded badge-pr">PR</span>
-                                  )}
+                                  {log.prExercises?.includes(ex.name)&&<span className="text-[8px] font-bold px-1 py-0.5 rounded badge-pr">PR</span>}
                                 </span>
-                                <span className="text-[10px] font-mono text-zinc-600">
-                                  {ex.sets.map(s => `${s.reps}×${s.weight}lbs`).join('  ')}
-                                </span>
+                                <span className="text-[10px] font-mono text-zinc-600">{ex.sets.map(s=>`${s.reps}×${s.weight}lbs`).join('  ')}</span>
                               </div>
                             ))}
                           </div>
                         </Card>
                       ))}
                     </div>
-                  )}
+                  }
                 </div>
               </div>
             )}
 
-            {/* ══ STORE TAB ═══════════════════════════════ */}
-            {activeTab === 'shop' && (
+            {/* ══ STORE TAB ═══════════════════════════════════ */}
+            {activeTab==='shop' && (
               <div className="tab-section space-y-6">
                 <Card className="p-5 flex items-center justify-between" glow>
                   <div>
@@ -1212,49 +1128,42 @@
                   </div>
                   <div className="text-right">
                     <p className="text-[10px] font-mono text-zinc-600 uppercase tracking-widest mb-1">Earned Today</p>
-                    <p className="text-xs font-mono text-zinc-500">{quests.filter(q=>q.completed).reduce((a,q)=>a+q.gold,0)}g from quests</p>
+                    <p className="text-xs font-mono text-zinc-500">{dailyHistory[todayStr()]?.gold||0}g from quests</p>
                   </div>
                 </Card>
-
                 <Card className="p-5">
                   <SectionLabel>Stock New Reward</SectionLabel>
                   <form onSubmit={handleAddReward} className="flex gap-2.5">
-                    <input type="text" value={customRewardName} onChange={e => setCustomRewardName(e.target.value)}
+                    <input type="text" value={customRewardName} onChange={e=>setCustomRewardName(e.target.value)}
                       placeholder="Reward description…"
-                      className="input-field flex-grow rounded-lg px-3.5 py-2.5 text-xs font-mono text-zinc-200 placeholder-zinc-700" />
-                    <input type="number" value={customRewardCost} onChange={e => setCustomRewardCost(e.target.value)}
-                      className="input-field w-20 rounded-lg px-3 text-xs font-mono text-zinc-400 text-center" />
+                      className="input-field flex-grow rounded-lg px-3.5 py-2.5 text-xs font-mono text-zinc-200 placeholder-zinc-700"/>
+                    <input type="number" value={customRewardCost} onChange={e=>setCustomRewardCost(e.target.value)}
+                      className="input-field w-20 rounded-lg px-3 text-xs font-mono text-zinc-400 text-center"/>
                     <button type="submit" className="btn-primary rounded-lg px-4 text-xs font-mono whitespace-nowrap">Add</button>
                   </form>
                 </Card>
-
                 <div>
                   <SectionLabel>Merchant Inventory</SectionLabel>
-                  {rewards.length === 0 ? (
-                    <EmptyState icon="🏪" title="Store is empty" sub="Stock some rewards above to motivate your grind." />
-                  ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      {rewards.map(r => (
+                  {rewards.length===0
+                    ?<EmptyState icon="🏪" title="Store is empty" sub="Stock some rewards above."/>
+                    :<div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      {rewards.map(r=>(
                         <div key={r.id} className="reward-card rounded-xl p-4 flex items-center justify-between gap-3">
                           <span className="text-xs font-mono text-zinc-300 leading-relaxed">{r.text}</span>
-                          <button onClick={() => purchaseReward(r.id, r.cost, r.text)}
-                            className={`flex-shrink-0 rounded-lg px-3 py-1.5 text-[11px] font-mono font-semibold transition-all duration-150 ${
-                              hero.gold >= r.cost
-                                ? 'gold-badge bg-yellow-400/8 border border-yellow-400/20 hover:bg-yellow-400/15 cursor-pointer'
-                                : 'text-zinc-700 bg-zinc-900 border border-zinc-800 cursor-not-allowed opacity-50'
-                            }`}>
+                          <button onClick={()=>purchaseReward(r.id,r.cost,r.text)}
+                            className={`flex-shrink-0 rounded-lg px-3 py-1.5 text-[11px] font-mono font-semibold transition-all ${hero.gold>=r.cost?'gold-badge bg-yellow-400/8 border border-yellow-400/20 hover:bg-yellow-400/15 cursor-pointer':'text-zinc-700 bg-zinc-900 border border-zinc-800 cursor-not-allowed opacity-50'}`}>
                             {r.cost}g
                           </button>
                         </div>
                       ))}
                     </div>
-                  )}
+                  }
                 </div>
               </div>
             )}
 
-            {/* ══ HERO / MATRIX TAB ═══════════════════════ */}
-            {activeTab === 'hero' && (
+            {/* ══ HERO / MATRIX TAB ═══════════════════════════ */}
+            {activeTab==='hero' && (
               <div className="tab-section space-y-6">
                 <Card className="p-5" glow>
                   <div className="flex justify-between items-start">
@@ -1267,44 +1176,41 @@
                       <p className="text-xl font-bold text-violet-300 font-mono leading-tight">{hero.level}</p>
                     </div>
                   </div>
-                  {/* Streak in matrix */}
                   <div className="mt-4 space-y-1.5">
                     <div className="flex justify-between items-center">
                       <span className="text-[10px] font-mono text-zinc-600">Current streak</span>
-                      <span className={`text-[11px] font-mono font-bold ${hero.streak > 0 ? 'text-orange-400' : 'text-zinc-600'}`}>
-                        {hero.streak > 0 ? `🔥 ${hero.streak} day${hero.streak > 1 ? 's' : ''}` : 'No active streak'}
+                      <span className={`text-[11px] font-mono font-bold ${hero.streak>0?'text-orange-400':'text-zinc-600'}`}>
+                        {hero.streak>0?`🔥 ${hero.streak} day${hero.streak>1?'s':''}`:'No active streak'}
                       </span>
                     </div>
-                    <StreakBar streak={hero.streak} cap={30} />
-                    <p className="text-[10px] font-mono text-zinc-700">Complete all daily quests to extend your streak</p>
+                    <StreakBar streak={hero.streak} cap={30}/>
+                    <p className="text-[10px] font-mono text-zinc-700">Complete all daily quests before midnight to extend your streak</p>
                   </div>
-                  {hero.statPoints > 0 && (
-                    <div className="mt-4 flex items-center gap-2 p-3 rounded-lg" style={{ background: 'rgba(124,58,237,0.08)', border: '1px solid rgba(124,58,237,0.2)' }}>
-                      <BoltIcon />
-                      <span className="text-xs font-mono text-violet-300 font-semibold">
-                        {hero.statPoints} unallocated matrix shard{hero.statPoints > 1 ? 's' : ''} available
-                      </span>
+                  {hero.statPoints>0 && (
+                    <div className="mt-4 flex items-center gap-2 p-3 rounded-lg" style={{background:'rgba(124,58,237,0.08)',border:'1px solid rgba(124,58,237,0.2)'}}>
+                      <BoltIcon/><span className="text-xs font-mono text-violet-300 font-semibold">{hero.statPoints} unallocated matrix shard{hero.statPoints>1?'s':''} available</span>
                     </div>
                   )}
                 </Card>
 
+                {/* Attribute Matrix */}
                 <div>
                   <SectionLabel>Attribute Matrix</SectionLabel>
                   <div className="space-y-2.5">
-                    {Object.entries(hero.stats).map(([stat, val]) => (
+                    {Object.entries(hero.stats).map(([stat,val])=>(
                       <Card key={stat} className="px-5 py-4 flex items-center gap-5">
                         <div className="w-20 flex-shrink-0">
-                          <span className="text-xs font-mono font-semibold capitalize" style={{ color: statColor(stat) }}>{stat}</span>
+                          <span className="text-xs font-mono font-semibold capitalize" style={{color:statColor(stat)}}>{stat}</span>
                         </div>
-                        <StatBar value={val} color={statColor(stat)} />
+                        <StatBar value={val} color={statColor(stat)}/>
                         <div className="flex items-center gap-3 flex-shrink-0">
-                          <span className="text-sm font-bold font-mono w-8 text-right" style={{ color: statColor(stat) }}>{Math.floor(val)}</span>
-                          {hero.statPoints > 0 && (
-                            <button onClick={() => handleStatBoost(stat)}
-                              className="text-[10px] font-mono font-semibold px-2.5 py-1 rounded-lg transition-all duration-150"
-                              style={{ background: 'rgba(124,58,237,0.1)', border: '1px solid rgba(124,58,237,0.25)', color: '#a78bfa' }}
-                              onMouseEnter={e => { e.currentTarget.style.background='rgba(124,58,237,0.2)'; }}
-                              onMouseLeave={e => { e.currentTarget.style.background='rgba(124,58,237,0.1)'; }}>
+                          <span className="text-sm font-bold font-mono w-8 text-right" style={{color:statColor(stat)}}>{Math.floor(val)}</span>
+                          {hero.statPoints>0 && (
+                            <button onClick={()=>handleStatBoost(stat)}
+                              className="text-[10px] font-mono font-semibold px-2.5 py-1 rounded-lg transition-all"
+                              style={{background:'rgba(124,58,237,0.1)',border:'1px solid rgba(124,58,237,0.25)',color:'#a78bfa'}}
+                              onMouseEnter={e=>e.currentTarget.style.background='rgba(124,58,237,0.2)'}
+                              onMouseLeave={e=>e.currentTarget.style.background='rgba(124,58,237,0.1)'}>
                               +1
                             </button>
                           )}
@@ -1314,19 +1220,42 @@
                   </div>
                 </div>
 
+                {/* Stat Milestone Log */}
+                {statMilestones.length>0 && (
+                  <div>
+                    <SectionLabel>Stat Milestone Log</SectionLabel>
+                    <div className="space-y-1.5">
+                      {statMilestones.slice(0,12).map((m,i)=>(
+                        <div key={i} className="milestone-chip rounded-lg px-3.5 py-2.5 flex items-center justify-between">
+                          <div className="flex items-center gap-2.5">
+                            <span className={`text-[9px] font-mono font-bold px-1.5 py-0.5 rounded ${attrClass(m.stat)}`}>{attrLabel(m.stat)}</span>
+                            <span className="text-xs font-mono text-zinc-400">
+                              <span style={{color:statColor(m.stat)}} className="font-bold">{m.stat}</span> reached <span className="font-bold text-zinc-300">{m.milestone}</span>
+                            </span>
+                          </div>
+                          <span className="text-[10px] font-mono text-zinc-600">{m.date}</span>
+                        </div>
+                      ))}
+                    </div>
+                    {statMilestones.length>12 && (
+                      <p className="text-[10px] font-mono text-zinc-700 mt-2 text-center">+{statMilestones.length-12} older milestones in history</p>
+                    )}
+                  </div>
+                )}
+                {statMilestones.length===0 && (
+                  <EmptyState icon="📈" title="No milestones yet" sub="Complete quests to raise your stats and unlock milestone records."/>
+                )}
+
+                {/* Config */}
                 <Card className="p-5 space-y-5">
                   <div>
                     <SectionLabel>API Configuration</SectionLabel>
-                    <button onClick={clearSavedApiKey} className="btn-ghost rounded-lg px-4 py-2 text-xs font-mono">
-                      Purge Cached API Key
-                    </button>
+                    <button onClick={()=>{localStorage.removeItem("adi_gemini_key");triggerToast("API key purged.");}} className="btn-ghost rounded-lg px-4 py-2 text-xs font-mono">Purge Cached API Key</button>
                   </div>
                   <div className="border-t border-zinc-900/60 pt-4">
                     <p className="text-[10px] font-mono text-red-500/60 uppercase tracking-widest mb-2">Danger Zone</p>
-                    <button onClick={triggerTotalSystemReset} className="btn-danger rounded-lg px-4 py-2 text-xs font-mono">
-                      Hard Reset All Data
-                    </button>
-                    <p className="text-[10px] text-zinc-700 font-mono mt-2">Wipes all quests, logs, PRs, rewards, and hero data.</p>
+                    <button onClick={triggerReset} className="btn-danger rounded-lg px-4 py-2 text-xs font-mono">Hard Reset All Data</button>
+                    <p className="text-[10px] text-zinc-700 font-mono mt-2">Wipes all quests, logs, PRs, rewards, history, and hero data.</p>
                   </div>
                 </Card>
               </div>
@@ -1334,26 +1263,25 @@
 
           </main>
 
-          {/* ── LEVEL UP MODAL ─────────────────────────── */}
+          {/* LEVEL UP MODAL */}
           {levelUpModal && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: 'rgba(9,9,11,0.85)', backdropFilter: 'blur(16px)' }}>
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{background:'rgba(9,9,11,0.9)',backdropFilter:'blur(16px)'}}>
               <div className="max-w-sm w-full rounded-2xl p-7 text-center space-y-5 glow-border"
-                style={{ background: 'rgba(18,18,20,0.95)', animation: 'scaleIn 0.25s ease-out both' }}>
+                style={{background:'rgba(18,18,20,0.98)',animation:'scaleIn 0.25s ease-out both'}}>
                 <div className="mx-auto w-16 h-16 rounded-full flex items-center justify-center mb-1"
-                  style={{ background: 'radial-gradient(circle, rgba(124,58,237,0.2) 0%, transparent 70%)', border: '1px solid rgba(124,58,237,0.3)' }}>
+                  style={{background:'radial-gradient(circle, rgba(124,58,237,0.2) 0%, transparent 70%)',border:'1px solid rgba(124,58,237,0.3)'}}>
                   <span className="text-2xl">⚡</span>
                 </div>
                 <div>
                   <p className="text-[10px] font-mono text-violet-500 uppercase tracking-widest mb-1">Matrix Upgrade</p>
                   <h3 className="text-xl font-bold text-zinc-100">Level {hero.level} Reached</h3>
-                  <p className="text-xs text-zinc-500 font-mono mt-2 leading-relaxed">
-                    3 attribute shards earned. Allocate them in the Matrix tab to sharpen your stats.
-                  </p>
+                  <p className="text-xs text-zinc-500 font-mono mt-2 leading-relaxed">3 attribute shards earned. Allocate them in the Matrix tab to sharpen your stats.</p>
                 </div>
-                <button onClick={() => { setLevelUpModal(false); setActiveTab('hero'); }}
-                  className="btn-primary w-full rounded-xl py-3 text-sm font-mono">
-                  Open Matrix
-                </button>
+                <div className="flex gap-2">
+                  <button onClick={()=>setLevelUpModal(false)} className="btn-ghost flex-1 rounded-xl py-3 text-sm font-mono">Dismiss</button>
+                  <button onClick={()=>{setLevelUpModal(false);setActiveTab('hero');}} className="btn-primary flex-1 rounded-xl py-3 text-sm font-mono">Open Matrix</button>
+                </div>
+                <p className="text-[10px] font-mono text-zinc-700">Press <kbd className="kbd">Esc</kbd> to close</p>
               </div>
             </div>
           )}
@@ -1362,7 +1290,7 @@
       );
     }
 
-    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+    ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
   </script>
 </body>
 </html>
