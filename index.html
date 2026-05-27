@@ -48,14 +48,54 @@
   <style>
     *, *::before, *::after { box-sizing: border-box; }
 
+    /* ── THEME TOKENS ── dark (default) */
+    :root {
+      --bg-base:       #09090b;
+      --bg-surface:    rgba(18,18,20,0.7);
+      --bg-header:     rgba(9,9,11,0.85);
+      --bg-card:       rgba(18,18,20,0.7);
+      --bg-input:      rgba(9,9,11,0.8);
+      --bg-day-card:   rgba(9,9,11,0.7);
+      --bg-glass:      rgba(24,24,27,0.6);
+      --bg-empty:      rgba(9,9,11,0.3);
+      --bg-reward:     rgba(9,9,11,0.6);
+      --border-base:   rgba(39,39,42,0.9);
+      --border-card:   rgba(39,39,42,0.8);
+      --stat-bar-bg:   #27272a;
+      --vol-bar-bg:    #1c1c1f;
+      --text-primary:  #f4f4f5;
+      --text-muted:    #a1a1aa;
+      --noise-opacity: 0.4;
+    }
+
+    /* ── DIM MODE — applied via body.dim ── */
+    body.dim {
+      --bg-base:       #1a1a1f;
+      --bg-surface:    rgba(28,28,35,0.85);
+      --bg-header:     rgba(18,18,24,0.92);
+      --bg-card:       rgba(26,26,32,0.85);
+      --bg-input:      rgba(18,18,24,0.9);
+      --bg-day-card:   rgba(20,20,26,0.85);
+      --bg-glass:      rgba(30,30,38,0.75);
+      --bg-empty:      rgba(18,18,24,0.4);
+      --bg-reward:     rgba(18,18,24,0.7);
+      --border-base:   rgba(55,55,65,0.9);
+      --border-card:   rgba(55,55,65,0.8);
+      --stat-bar-bg:   #2e2e38;
+      --vol-bar-bg:    #252530;
+      --text-primary:  #d4d4d8;
+      --text-muted:    #8a8a96;
+      --noise-opacity: 0.25;
+    }
+
     body {
       font-family: 'Geist', sans-serif;
-      background: #09090b;
-      color: #f4f4f5;
+      background: var(--bg-base);
+      color: var(--text-primary);
       min-height: 100vh;
       overflow-x: hidden;
       -webkit-font-smoothing: antialiased;
-      transition: background 0.3s ease;
+      transition: background 0.35s ease, color 0.35s ease;
     }
 
     ::-webkit-scrollbar { width: 3px; height: 3px; }
@@ -71,12 +111,13 @@
       background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
       pointer-events: none;
       z-index: 0;
-      opacity: 0.4;
+      opacity: var(--noise-opacity);
+      transition: opacity 0.35s ease;
     }
 
-    .glass { background: rgba(24,24,27,0.6); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
-    .glow-border { border: 1px solid rgba(139,92,246,0.3); box-shadow: 0 0 20px rgba(139,92,246,0.06), inset 0 1px 0 rgba(139,92,246,0.08); }
-    .sep { border-color: rgba(39,39,42,0.8); }
+    .glass        { background: var(--bg-glass); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); transition: background 0.35s ease; }
+    .glow-border  { border: 1px solid rgba(139,92,246,0.3); box-shadow: 0 0 20px rgba(139,92,246,0.06), inset 0 1px 0 rgba(139,92,246,0.08); }
+    .sep          { border-color: rgba(39,39,42,0.8); }
 
     .xp-bar-fill {
       background: linear-gradient(90deg, #6d28d9, #7c3aed, #8b5cf6, #7c3aed, #6d28d9);
@@ -108,15 +149,15 @@
     .tab-inactive { color: #52525b; border: 1px solid transparent; }
     .tab-inactive:hover { color: #a1a1aa; }
 
-    .stat-bar-bg  { height: 3px; background: #27272a; border-radius: 99px; overflow: hidden; }
+    .stat-bar-bg  { height: 3px; background: var(--stat-bar-bg); border-radius: 99px; overflow: hidden; transition: background 0.35s ease; }
     .stat-bar-fill { height: 100%; border-radius: 99px; transition: width 0.4s cubic-bezier(0.4,0,0.2,1); }
 
     .card-lift { transition: transform 0.18s ease, border-color 0.18s ease; }
     .card-lift:hover { transform: translateY(-1px); border-color: rgba(63,63,70,0.9); }
 
     .input-field {
-      background: rgba(9,9,11,0.8); border: 1px solid rgba(39,39,42,0.9);
-      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+      background: var(--bg-input); border: 1px solid var(--border-base);
+      transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.35s ease;
     }
     .input-field:focus { outline: none; border-color: rgba(124,58,237,0.5); box-shadow: 0 0 0 3px rgba(124,58,237,0.08); }
 
@@ -149,11 +190,11 @@
     .badge-pr      { color: #fbbf24; background: rgba(251,191,36,0.10); border: 1px solid rgba(251,191,36,0.25); }
     .badge-streak  { color: #fb923c; background: rgba(251,146,60,0.08); border: 1px solid rgba(251,146,60,0.2);  }
 
-    .day-card { background: rgba(9,9,11,0.7); border: 1px solid rgba(39,39,42,0.7); transition: all 0.18s ease; }
+    .day-card { background: var(--bg-day-card); border: 1px solid var(--border-card); transition: all 0.18s ease; }
     .day-card:hover { background: rgba(24,24,27,0.9); border-color: rgba(124,58,237,0.35); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.3), 0 0 20px rgba(124,58,237,0.06); }
 
-    .header-glass { background: rgba(9,9,11,0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid rgba(39,39,42,0.6); }
-    .reward-card  { background: rgba(9,9,11,0.6); border: 1px solid rgba(39,39,42,0.7); transition: all 0.18s ease; }
+    .header-glass { background: var(--bg-header); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid rgba(39,39,42,0.6); transition: background 0.35s ease; }
+    .reward-card  { background: var(--bg-reward); border: 1px solid var(--border-card); transition: all 0.18s ease; }
     .reward-card:hover { border-color: rgba(251,191,36,0.2); box-shadow: 0 0 20px rgba(251,191,36,0.04); }
 
     .neon-dot        { width:6px;height:6px;background:#7c3aed;border-radius:50%;box-shadow:0 0 6px rgba(124,58,237,0.8),0 0 12px rgba(124,58,237,0.4); }
@@ -175,17 +216,34 @@
     .notes-textarea::placeholder { color: #3f3f46; }
 
     /* Milestone chips */
-    .milestone-chip { background: rgba(9,9,11,0.6); border: 1px solid rgba(39,39,42,0.7); transition: all 0.18s ease; }
+    .milestone-chip { background: var(--bg-day-card); border: 1px solid var(--border-card); transition: all 0.18s ease; }
 
     /* Volume bars */
-    .vol-bar-bg   { height: 4px; background: #1c1c1f; border-radius: 99px; overflow: hidden; flex:1; }
+    .vol-bar-bg   { height: 4px; background: var(--vol-bar-bg); border-radius: 99px; overflow: hidden; flex:1; transition: background 0.35s ease; }
     .vol-bar-fill { height: 100%; border-radius: 99px; transition: width 0.5s cubic-bezier(0.4,0,0.2,1); }
-
-    /* Dim mode */
-    .dim-mode body, body.dim { background: #141416 !important; }
 
     /* Keyboard hint */
     .kbd { display:inline-flex;align-items:center;justify-content:center;padding:1px 5px;border-radius:4px;font-size:9px;font-family:'Geist Mono',monospace;background:rgba(39,39,42,0.6);border:1px solid rgba(63,63,70,0.5);color:#52525b; }
+
+    /* Dim mode toggle pill */
+    .dim-toggle {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 4px 10px; border-radius: 99px;
+      font-size: 10px; font-family: 'Geist Mono', monospace; font-weight: 600;
+      cursor: pointer; transition: all 0.2s ease;
+      background: rgba(39,39,42,0.5);
+      border: 1px solid rgba(63,63,70,0.6);
+      color: #71717a;
+      user-select: none;
+    }
+    .dim-toggle:hover { background: rgba(63,63,70,0.6); color: #a1a1aa; border-color: rgba(82,82,91,0.8); }
+    .dim-toggle.active {
+      background: rgba(30,30,40,0.8);
+      border-color: rgba(129,140,248,0.35);
+      color: #818cf8;
+      box-shadow: 0 0 10px rgba(129,140,248,0.12);
+    }
+    .dim-toggle.active:hover { background: rgba(38,38,52,0.9); }
   </style>
 </head>
 <body class="min-h-screen">
@@ -385,7 +443,7 @@
     );
     const Card = ({children,className='',glow=false}) => (
       <div className={`rounded-xl border border-zinc-900/80 ${glow?'glow-border':''} ${className}`}
-           style={{background:'rgba(18,18,20,0.7)'}}>
+           style={{background:'var(--bg-card)',transition:'background 0.35s ease'}}>
         {children}
       </div>
     );
@@ -478,9 +536,9 @@
       const [customRewardName,   setCustomRewardName]   = useState("");
       const [customRewardCost,   setCustomRewardCost]   = useState(40);
 
-      /* ── DIM MODE body sync ─────────────────────────────── */
+      /* ── DIM MODE body class sync ───────────────────────── */
       useEffect(()=>{
-        document.body.style.background = dimMode ? '#141416' : '#09090b';
+        document.body.classList.toggle('dim', dimMode);
       },[dimMode]);
 
       /* ── KEYBOARD SHORTCUTS ─────────────────────────────── */
@@ -739,7 +797,7 @@
       const QuestRow = ({q,showDragHandle=false})=>(
         <div
           className={`rounded-xl border transition-all duration-200 ${q.completed?'border-zinc-900/40 opacity-40':'border-zinc-900/80'} ${dragQuestId===q.id?'quest-dragging':''} ${dragOverId===q.id&&dragQuestId!==q.id?'quest-drag-over':''}`}
-          style={{background:q.completed?'rgba(9,9,11,0.3)':'rgba(18,18,20,0.7)'}}
+          style={{background:q.completed?'var(--bg-empty)':'var(--bg-card)',transition:'background 0.35s ease'}}
           draggable={showDragHandle}
           onDragStart={showDragHandle?e=>handleDragStart(e,q.id):undefined}
           onDragOver={showDragHandle?e=>handleDragOver(e,q.id):undefined}
@@ -803,13 +861,14 @@
                     </span>
                   )}
                   <button onClick={()=>setDimMode(m=>!m)} title="Toggle dim mode (D)"
-                    className="ml-1 p-1 rounded-md hover:bg-zinc-900 transition-colors text-zinc-600 hover:text-zinc-400">
-                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+                    className={`dim-toggle ${dimMode?'active':''}`}>
+                    <svg className="w-3 h-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
                       {dimMode
                         ?<path strokeLinecap="round" strokeLinejoin="round" d="M12 3v1m0 16v1m8-9h1M3 12H2m14.95 4.95l.707.707M6.343 6.343l-.707-.707M17.657 6.343l.707-.707M6.343 17.657l-.707.707M12 7a5 5 0 110 10A5 5 0 0112 7z"/>
                         :<path strokeLinecap="round" strokeLinejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9 9 0 008.354-5.646z"/>
                       }
                     </svg>
+                    {dimMode ? 'Dim' : 'Dark'}
                   </button>
                 </div>
               </div>
@@ -1031,7 +1090,7 @@
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                       {Object.entries(exercisePRs).sort((a,b)=>b[1]-a[1]).map(([name,weight])=>(
                         <div key={name} className="rounded-xl px-3.5 py-3 flex items-center justify-between gap-2"
-                          style={{background:'rgba(9,9,11,0.7)',border:'1px solid rgba(251,191,36,0.12)'}}>
+                          style={{background:'var(--bg-day-card)',border:'1px solid rgba(251,191,36,0.12)',transition:'background 0.35s ease'}}>
                           <span className="text-[10px] font-mono text-zinc-400 leading-snug truncate">{name}</span>
                           <span className="text-[11px] font-bold font-mono text-yellow-400 flex-shrink-0">{weight}<span className="text-zinc-600 font-normal text-[9px]">lb</span></span>
                         </div>
@@ -1267,7 +1326,7 @@
           {levelUpModal && (
             <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{background:'rgba(9,9,11,0.9)',backdropFilter:'blur(16px)'}}>
               <div className="max-w-sm w-full rounded-2xl p-7 text-center space-y-5 glow-border"
-                style={{background:'rgba(18,18,20,0.98)',animation:'scaleIn 0.25s ease-out both'}}>
+                style={{background:'var(--bg-card)',animation:'scaleIn 0.25s ease-out both'}}>
                 <div className="mx-auto w-16 h-16 rounded-full flex items-center justify-center mb-1"
                   style={{background:'radial-gradient(circle, rgba(124,58,237,0.2) 0%, transparent 70%)',border:'1px solid rgba(124,58,237,0.3)'}}>
                   <span className="text-2xl">⚡</span>
