@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<!-- LifeQuest OS v4.1 — Full Feature Update -->
 <html lang="en" class="dark">
 <head>
   <meta charset="UTF-8">
@@ -14,24 +13,23 @@
         extend: {
           colors: {
             zinc: { 950: '#09090b', 925: '#0d0d10', 875: '#18181f' },
-            violet: { 550: '#8b5cf6' }
           },
           fontFamily: {
-            sans: ['Geist', 'sans-serif'],
-            mono: ['Geist Mono', 'monospace'],
+            sans: ['DM Sans', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+            display: ['Syne', 'sans-serif'],
           },
           keyframes: {
-            fadeSlideIn: { '0%': { opacity: '0', transform: 'translateY(6px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } },
-            pulseGlow:   { '0%, 100%': { boxShadow: '0 0 0px rgba(139,92,246,0)' }, '50%': { boxShadow: '0 0 12px rgba(139,92,246,0.25)' } },
+            fadeSlideIn: { '0%': { opacity: '0', transform: 'translateY(8px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } },
             shimmer:     { '0%': { backgroundPosition: '-200% 0' }, '100%': { backgroundPosition: '200% 0' } },
-            scaleIn:     { '0%': { opacity: '0', transform: 'scale(0.95)' }, '100%': { opacity: '1', transform: 'scale(1)' } },
-            floatUp:     { '0%': { opacity: '0', transform: 'translateY(0)' }, '100%': { opacity: '1', transform: 'translateY(-18px)' } },
+            scaleIn:     { '0%': { opacity: '0', transform: 'scale(0.96)' }, '100%': { opacity: '1', transform: 'scale(1)' } },
+            pulse:       { '0%,100%': { opacity: 1 }, '50%': { opacity: 0.5 } },
           },
           animation: {
-            fadeSlideIn: 'fadeSlideIn 0.25s ease-out both',
-            pulseGlow:   'pulseGlow 2.5s ease-in-out infinite',
+            fadeSlideIn: 'fadeSlideIn 0.28s ease-out both',
             shimmer:     'shimmer 2s linear infinite',
-            scaleIn:     'scaleIn 0.2s ease-out both',
+            scaleIn:     'scaleIn 0.22s ease-out both',
+            pulse:       'pulse 2s ease-in-out infinite',
           }
         }
       }
@@ -43,219 +41,246 @@
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@300;400;500;600;700&family=Geist:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@300;400;500;600;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
   <style>
-    *, *::before, *::after { box-sizing: border-box; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     /* ── THEME TOKENS ── dark (default) */
     :root {
-      --bg-base:       #09090b;
-      --bg-surface:    rgba(18,18,20,0.7);
-      --bg-header:     rgba(9,9,11,0.85);
-      --bg-card:       rgba(18,18,20,0.7);
-      --bg-input:      rgba(9,9,11,0.8);
-      --bg-day-card:   rgba(9,9,11,0.7);
-      --bg-glass:      rgba(24,24,27,0.6);
-      --bg-empty:      rgba(9,9,11,0.3);
-      --bg-reward:     rgba(9,9,11,0.6);
-      --border-base:   rgba(39,39,42,0.9);
-      --border-card:   rgba(39,39,42,0.8);
-      --stat-bar-bg:   #27272a;
-      --vol-bar-bg:    #1c1c1f;
-      --text-primary:  #f4f4f5;
-      --text-muted:    #a1a1aa;
-      --noise-opacity: 0.4;
+      --bg-base:       #0a0a0d;
+      --bg-surface:    rgba(16,16,20,0.75);
+      --bg-header:     rgba(10,10,13,0.92);
+      --bg-card:       rgba(16,16,20,0.75);
+      --bg-input:      rgba(10,10,13,0.85);
+      --bg-day-card:   rgba(10,10,13,0.6);
+      --bg-glass:      rgba(20,20,26,0.65);
+      --bg-empty:      rgba(10,10,13,0.25);
+      --bg-reward:     rgba(10,10,13,0.55);
+      --border-base:   rgba(42,42,48,0.95);
+      --border-card:   rgba(36,36,42,0.85);
+      --stat-bar-bg:   #1e1e26;
+      --vol-bar-bg:    #161620;
+      --text-primary:  #f0f0f2;
+      --text-muted:    #8a8a96;
+      --accent:        #7c3aed;
+      --accent-soft:   rgba(124,58,237,0.12);
+      --noise-opacity: 0.35;
     }
 
-    /* ── DIM MODE — applied via body.dim ── */
     body.dim {
-      --bg-base:       #1a1a1f;
-      --bg-surface:    rgba(28,28,35,0.85);
-      --bg-header:     rgba(18,18,24,0.92);
-      --bg-card:       rgba(26,26,32,0.85);
-      --bg-input:      rgba(18,18,24,0.9);
-      --bg-day-card:   rgba(20,20,26,0.85);
-      --bg-glass:      rgba(30,30,38,0.75);
-      --bg-empty:      rgba(18,18,24,0.4);
-      --bg-reward:     rgba(18,18,24,0.7);
-      --border-base:   rgba(55,55,65,0.9);
-      --border-card:   rgba(55,55,65,0.8);
-      --stat-bar-bg:   #2e2e38;
-      --vol-bar-bg:    #252530;
-      --text-primary:  #d4d4d8;
-      --text-muted:    #8a8a96;
-      --noise-opacity: 0.25;
+      --bg-base:       #13131a;
+      --bg-surface:    rgba(22,22,30,0.88);
+      --bg-header:     rgba(14,14,20,0.94);
+      --bg-card:       rgba(20,20,28,0.88);
+      --bg-input:      rgba(14,14,20,0.9);
+      --bg-day-card:   rgba(17,17,24,0.85);
+      --bg-glass:      rgba(24,24,34,0.78);
+      --bg-empty:      rgba(14,14,20,0.38);
+      --bg-reward:     rgba(14,14,20,0.68);
+      --border-base:   rgba(58,58,72,0.9);
+      --border-card:   rgba(50,50,64,0.82);
+      --stat-bar-bg:   #22222e;
+      --vol-bar-bg:    #1a1a26;
+      --text-primary:  #d8d8e0;
+      --text-muted:    #7a7a8a;
+      --noise-opacity: 0.2;
     }
 
     body {
-      font-family: 'Geist', sans-serif;
+      font-family: 'DM Sans', sans-serif;
       background: var(--bg-base);
       color: var(--text-primary);
       min-height: 100vh;
       overflow-x: hidden;
       -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      font-size: 15px;
+      line-height: 1.6;
       transition: background 0.35s ease, color 0.35s ease;
     }
 
-    ::-webkit-scrollbar { width: 3px; height: 3px; }
+    ::-webkit-scrollbar { width: 4px; height: 4px; }
     ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: #27272a; border-radius: 99px; }
-    ::selection { background: rgba(139, 92, 246, 0.2); color: #e4e4e7; }
-    .font-mono { font-family: 'Geist Mono', monospace; }
+    ::-webkit-scrollbar-thumb { background: #2a2a32; border-radius: 99px; }
+    ::selection { background: rgba(124,58,237,0.22); color: #e8e8f0; }
+
+    .font-mono { font-family: 'JetBrains Mono', monospace; }
+    .font-display { font-family: 'Syne', sans-serif; }
 
     body::before {
       content: '';
       position: fixed;
       inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");
       pointer-events: none;
       z-index: 0;
       opacity: var(--noise-opacity);
       transition: opacity 0.35s ease;
     }
 
-    .glass        { background: var(--bg-glass); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); transition: background 0.35s ease; }
-    .glow-border  { border: 1px solid rgba(139,92,246,0.3); box-shadow: 0 0 20px rgba(139,92,246,0.06), inset 0 1px 0 rgba(139,92,246,0.08); }
-    .sep          { border-color: rgba(39,39,42,0.8); }
+    /* ── GLASS + CARD ── */
+    .glass { background: var(--bg-glass); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); transition: background 0.35s ease; }
+    .glow-border { border: 1px solid rgba(124,58,237,0.28); box-shadow: 0 0 24px rgba(124,58,237,0.06), inset 0 1px 0 rgba(124,58,237,0.1); }
 
+    /* ── XP / STREAK BARS ── */
     .xp-bar-fill {
-      background: linear-gradient(90deg, #6d28d9, #7c3aed, #8b5cf6, #7c3aed, #6d28d9);
+      background: linear-gradient(90deg, #5b21b6, #7c3aed, #a78bfa, #7c3aed, #5b21b6);
       background-size: 200% 100%;
       animation: shimmer 3s linear infinite;
     }
     .streak-bar-fill {
-      background: linear-gradient(90deg, #b45309, #d97706, #f59e0b, #fbbf24, #f59e0b);
+      background: linear-gradient(90deg, #92400e, #d97706, #fbbf24, #f59e0b, #d97706);
       background-size: 200% 100%;
-      animation: shimmer 2s linear infinite;
+      animation: shimmer 2.2s linear infinite;
     }
 
+    /* ── QUEST CHECKBOX ── */
     .quest-check {
-      appearance: none; width: 16px; height: 16px;
-      border: 1px solid #3f3f46; border-radius: 4px;
+      appearance: none; width: 18px; height: 18px;
+      border: 1.5px solid #3a3a48; border-radius: 5px;
       cursor: pointer; transition: all 0.15s ease;
       position: relative; flex-shrink: 0;
     }
     .quest-check:checked { background: #7c3aed; border-color: #7c3aed; }
     .quest-check:checked::after {
-      content: ''; position: absolute; left: 4px; top: 1.5px;
-      width: 5px; height: 9px;
-      border: 1.5px solid white; border-left: none; border-top: none;
+      content: ''; position: absolute; left: 5px; top: 2px;
+      width: 5px; height: 10px;
+      border: 2px solid white; border-left: none; border-top: none;
       transform: rotate(45deg);
     }
     .quest-check:hover:not(:checked) { border-color: #7c3aed; background: rgba(124,58,237,0.1); }
 
-    .tab-active   { color: #e4e4e7; background: rgba(39,39,42,0.8); border: 1px solid rgba(63,63,70,0.6); }
-    .tab-inactive { color: #52525b; border: 1px solid transparent; }
-    .tab-inactive:hover { color: #a1a1aa; }
+    /* ── TABS ── */
+    .tab-active   { color: #e8e8f0; background: rgba(42,42,52,0.85); border: 1.5px solid rgba(64,64,80,0.7); }
+    .tab-inactive { color: #4a4a58; border: 1.5px solid transparent; }
+    .tab-inactive:hover { color: #8a8a96; background: rgba(30,30,38,0.4); }
 
-    .stat-bar-bg  { height: 3px; background: var(--stat-bar-bg); border-radius: 99px; overflow: hidden; transition: background 0.35s ease; }
-    .stat-bar-fill { height: 100%; border-radius: 99px; transition: width 0.4s cubic-bezier(0.4,0,0.2,1); }
+    /* ── STAT BARS ── */
+    .stat-bar-bg  { height: 4px; background: var(--stat-bar-bg); border-radius: 99px; overflow: hidden; transition: background 0.35s ease; }
+    .stat-bar-fill { height: 100%; border-radius: 99px; transition: width 0.45s cubic-bezier(0.4,0,0.2,1); }
 
-    .card-lift { transition: transform 0.18s ease, border-color 0.18s ease; }
-    .card-lift:hover { transform: translateY(-1px); border-color: rgba(63,63,70,0.9); }
+    /* ── CARDS ── */
+    .card-lift { transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease; }
+    .card-lift:hover { transform: translateY(-2px); border-color: rgba(64,64,80,0.9); box-shadow: 0 8px 32px rgba(0,0,0,0.25); }
 
+    /* ── INPUTS ── */
     .input-field {
-      background: var(--bg-input); border: 1px solid var(--border-base);
+      background: var(--bg-input); border: 1.5px solid var(--border-base);
       transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.35s ease;
+      color: var(--text-primary);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
     }
-    .input-field:focus { outline: none; border-color: rgba(124,58,237,0.5); box-shadow: 0 0 0 3px rgba(124,58,237,0.08); }
+    .input-field::placeholder { color: #3a3a48; }
+    .input-field:focus { outline: none; border-color: rgba(124,58,237,0.55); box-shadow: 0 0 0 4px rgba(124,58,237,0.08); }
 
-    .btn-primary { background: #f4f4f5; color: #09090b; font-weight: 700; transition: all 0.15s ease; }
-    .btn-primary:hover { background: #ffffff; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.4); }
+    /* ── BUTTONS ── */
+    .btn-primary { background: #f0f0f2; color: #0a0a0d; font-weight: 600; font-size: 13px; transition: all 0.15s ease; }
+    .btn-primary:hover { background: #ffffff; transform: translateY(-1px); box-shadow: 0 6px 18px rgba(0,0,0,0.4); }
     .btn-primary:active { transform: translateY(0); }
     .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 
-    .btn-ghost { background: rgba(24,24,27,0.6); border: 1px solid rgba(39,39,42,0.8); color: #a1a1aa; transition: all 0.15s ease; }
-    .btn-ghost:hover { background: rgba(39,39,42,0.8); color: #e4e4e7; border-color: rgba(63,63,70,0.8); }
+    .btn-ghost { background: rgba(22,22,28,0.65); border: 1.5px solid rgba(42,42,52,0.85); color: #8a8a96; transition: all 0.15s ease; font-size: 13px; }
+    .btn-ghost:hover { background: rgba(42,42,52,0.85); color: #e0e0e8; border-color: rgba(64,64,80,0.85); }
 
-    .btn-danger { background: rgba(127,29,29,0.15); border: 1px solid rgba(185,28,28,0.2); color: #f87171; transition: all 0.15s ease; }
-    .btn-danger:hover { background: rgba(127,29,29,0.25); border-color: rgba(185,28,28,0.4); }
+    .btn-danger { background: rgba(127,29,29,0.12); border: 1.5px solid rgba(185,28,28,0.18); color: #f87171; transition: all 0.15s ease; font-size: 13px; }
+    .btn-danger:hover { background: rgba(127,29,29,0.22); border-color: rgba(185,28,28,0.35); }
 
-    .tab-section { animation: fadeSlideIn 0.22s ease-out both; }
-    .gold-badge   { color: #fbbf24; text-shadow: 0 0 8px rgba(251,191,36,0.3); }
-    .level-badge  { background: linear-gradient(135deg, rgba(124,58,237,0.15), rgba(139,92,246,0.08)); border: 1px solid rgba(124,58,237,0.25); color: #a78bfa; }
-    .empty-state  { border: 1px dashed rgba(39,39,42,0.6); background: rgba(9,9,11,0.3); }
+    /* ── SECTION ANIMATION ── */
+    .tab-section { animation: fadeSlideIn 0.25s ease-out both; }
 
-    .diff-easy   { color: #4ade80; background: rgba(74,222,128,0.08);  border: 1px solid rgba(74,222,128,0.15);  }
-    .diff-medium { color: #fbbf24; background: rgba(251,191,36,0.08);  border: 1px solid rgba(251,191,36,0.15);  }
-    .diff-hard   { color: #f87171; background: rgba(248,113,113,0.08); border: 1px solid rgba(248,113,113,0.15); }
+    /* ── BADGES ── */
+    .gold-badge   { color: #fbbf24; }
+    .level-badge  { background: linear-gradient(135deg, rgba(124,58,237,0.16), rgba(139,92,246,0.08)); border: 1.5px solid rgba(124,58,237,0.28); color: #a78bfa; }
 
-    .attr-intel { color: #60a5fa; background: rgba(96,165,250,0.08);  border: 1px solid rgba(96,165,250,0.15);  }
-    .attr-str   { color: #f97316; background: rgba(249,115,22,0.08);  border: 1px solid rgba(249,115,22,0.15);  }
-    .attr-wil   { color: #c084fc; background: rgba(192,132,252,0.08); border: 1px solid rgba(192,132,252,0.15); }
-    .attr-sta   { color: #34d399; background: rgba(52,211,153,0.08);  border: 1px solid rgba(52,211,153,0.15);  }
+    /* ── DIFFICULTY BADGES ── */
+    .diff-easy   { color: #4ade80; background: rgba(74,222,128,0.09);  border: 1.5px solid rgba(74,222,128,0.18);  }
+    .diff-medium { color: #fbbf24; background: rgba(251,191,36,0.09);  border: 1.5px solid rgba(251,191,36,0.18);  }
+    .diff-hard   { color: #f87171; background: rgba(248,113,113,0.09); border: 1.5px solid rgba(248,113,113,0.18); }
 
-    .badge-weekly  { color: #818cf8; background: rgba(129,140,248,0.08); border: 1px solid rgba(129,140,248,0.15); }
-    .badge-pr      { color: #fbbf24; background: rgba(251,191,36,0.10); border: 1px solid rgba(251,191,36,0.25); }
-    .badge-streak  { color: #fb923c; background: rgba(251,146,60,0.08); border: 1px solid rgba(251,146,60,0.2);  }
+    /* ── ATTRIBUTE BADGES ── */
+    .attr-intel { color: #60a5fa; background: rgba(96,165,250,0.09);  border: 1.5px solid rgba(96,165,250,0.18);  }
+    .attr-str   { color: #fb923c; background: rgba(249,115,22,0.09);  border: 1.5px solid rgba(249,115,22,0.18);  }
+    .attr-wil   { color: #c084fc; background: rgba(192,132,252,0.09); border: 1.5px solid rgba(192,132,252,0.18); }
+    .attr-sta   { color: #34d399; background: rgba(52,211,153,0.09);  border: 1.5px solid rgba(52,211,153,0.18);  }
 
-    .day-card { background: var(--bg-day-card); border: 1px solid var(--border-card); transition: all 0.18s ease; }
-    .day-card:hover { background: rgba(24,24,27,0.9); border-color: rgba(124,58,237,0.35); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.3), 0 0 20px rgba(124,58,237,0.06); }
+    .badge-weekly  { color: #818cf8; background: rgba(129,140,248,0.09); border: 1.5px solid rgba(129,140,248,0.18); }
+    .badge-pr      { color: #fbbf24; background: rgba(251,191,36,0.12);  border: 1.5px solid rgba(251,191,36,0.28); }
+    .badge-streak  { color: #fb923c; background: rgba(251,146,60,0.09);  border: 1.5px solid rgba(251,146,60,0.22); }
 
-    .header-glass { background: var(--bg-header); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid rgba(39,39,42,0.6); transition: background 0.35s ease; }
-    .reward-card  { background: var(--bg-reward); border: 1px solid var(--border-card); transition: all 0.18s ease; }
-    .reward-card:hover { border-color: rgba(251,191,36,0.2); box-shadow: 0 0 20px rgba(251,191,36,0.04); }
+    /* ── DAY CARD ── */
+    .day-card { background: var(--bg-day-card); border: 1.5px solid var(--border-card); transition: all 0.2s ease; }
+    .day-card:hover { background: rgba(22,22,30,0.9); border-color: rgba(124,58,237,0.38); transform: translateY(-2px); box-shadow: 0 10px 28px rgba(0,0,0,0.3), 0 0 20px rgba(124,58,237,0.06); }
 
-    .neon-dot        { width:6px;height:6px;background:#7c3aed;border-radius:50%;box-shadow:0 0 6px rgba(124,58,237,0.8),0 0 12px rgba(124,58,237,0.4); }
-    .neon-dot-green  { width:6px;height:6px;background:#4ade80;border-radius:50%;box-shadow:0 0 6px rgba(74,222,128,0.8),0 0 12px rgba(74,222,128,0.4); }
-    .neon-dot-orange { width:6px;height:6px;background:#f97316;border-radius:50%;box-shadow:0 0 6px rgba(249,115,22,0.8),0 0 12px rgba(249,115,22,0.4); }
+    /* ── HEADER ── */
+    .header-glass { background: var(--bg-header); backdrop-filter: blur(22px); -webkit-backdrop-filter: blur(22px); border-bottom: 1.5px solid rgba(42,42,52,0.65); transition: background 0.35s ease; }
 
-    /* Drag-and-drop */
-    .drag-handle { cursor: grab; color: #3f3f46; transition: color 0.15s; }
-    .drag-handle:hover { color: #71717a; }
+    /* ── REWARD CARD ── */
+    .reward-card { background: var(--bg-reward); border: 1.5px solid var(--border-card); transition: all 0.18s ease; }
+    .reward-card:hover { border-color: rgba(251,191,36,0.22); box-shadow: 0 0 24px rgba(251,191,36,0.05); }
+
+    /* ── NEON DOTS ── */
+    .neon-dot        { width: 7px; height: 7px; background: #7c3aed; border-radius: 50%; box-shadow: 0 0 7px rgba(124,58,237,0.8), 0 0 14px rgba(124,58,237,0.35); flex-shrink: 0; }
+    .neon-dot-green  { width: 7px; height: 7px; background: #4ade80; border-radius: 50%; box-shadow: 0 0 7px rgba(74,222,128,0.8), 0 0 14px rgba(74,222,128,0.35); flex-shrink: 0; }
+    .neon-dot-orange { width: 7px; height: 7px; background: #f97316; border-radius: 50%; box-shadow: 0 0 7px rgba(249,115,22,0.8), 0 0 14px rgba(249,115,22,0.35); flex-shrink: 0; }
+
+    /* ── DRAG ── */
+    .drag-handle { cursor: grab; color: #3a3a48; transition: color 0.15s; }
+    .drag-handle:hover { color: #6a6a78; }
     .drag-handle:active { cursor: grabbing; }
-    .quest-dragging { opacity: 0.4; }
-    .quest-drag-over { border-color: rgba(124,58,237,0.5) !important; background: rgba(124,58,237,0.04) !important; }
+    .quest-dragging { opacity: 0.38; }
+    .quest-drag-over { border-color: rgba(124,58,237,0.55) !important; background: rgba(124,58,237,0.05) !important; }
 
-    /* Quest notes */
-    .notes-expand { max-height: 0; overflow: hidden; transition: max-height 0.2s ease; }
-    .notes-expand.open { max-height: 200px; }
-    .notes-textarea { background: transparent; resize: none; outline: none; width: 100%; font-family: 'Geist Mono', monospace; font-size: 11px; color: #52525b; line-height: 1.6; }
-    .notes-textarea:focus { color: #71717a; }
-    .notes-textarea::placeholder { color: #3f3f46; }
+    /* ── NOTES EXPAND ── */
+    .notes-expand { max-height: 0; overflow: hidden; transition: max-height 0.22s ease; }
+    .notes-expand.open { max-height: 220px; }
+    .notes-textarea { background: transparent; resize: none; outline: none; width: 100%; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #4a4a58; line-height: 1.65; }
+    .notes-textarea:focus { color: #6a6a78; }
+    .notes-textarea::placeholder { color: #2e2e3a; }
 
-    /* Milestone chips */
-    .milestone-chip { background: var(--bg-day-card); border: 1px solid var(--border-card); transition: all 0.18s ease; }
+    /* ── MILESTONE CHIPS ── */
+    .milestone-chip { background: var(--bg-day-card); border: 1.5px solid var(--border-card); transition: all 0.18s ease; }
 
-    /* Volume bars */
-    .vol-bar-bg   { height: 4px; background: var(--vol-bar-bg); border-radius: 99px; overflow: hidden; flex:1; transition: background 0.35s ease; }
-    .vol-bar-fill { height: 100%; border-radius: 99px; transition: width 0.5s cubic-bezier(0.4,0,0.2,1); }
+    /* ── VOLUME BARS ── */
+    .vol-bar-bg   { height: 5px; background: var(--vol-bar-bg); border-radius: 99px; overflow: hidden; flex: 1; transition: background 0.35s ease; }
+    .vol-bar-fill { height: 100%; border-radius: 99px; transition: width 0.55s cubic-bezier(0.4,0,0.2,1); }
 
-    /* Keyboard hint */
-    .kbd { display:inline-flex;align-items:center;justify-content:center;padding:1px 5px;border-radius:4px;font-size:9px;font-family:'Geist Mono',monospace;background:rgba(39,39,42,0.6);border:1px solid rgba(63,63,70,0.5);color:#52525b; }
+    /* ── KBD ── */
+    .kbd { display: inline-flex; align-items: center; justify-content: center; padding: 2px 6px; border-radius: 5px; font-size: 10px; font-family: 'JetBrains Mono', monospace; background: rgba(42,42,52,0.65); border: 1.5px solid rgba(64,64,80,0.55); color: #52525b; }
 
-    /* Journal theme chip hover */
-    .theme-chip { transition: transform 0.15s ease; }
-    .theme-chip:hover { transform: scale(1.04); }
-
-    /* Dim mode toggle pill */
+    /* ── DIM TOGGLE ── */
     .dim-toggle {
       display: inline-flex; align-items: center; gap: 5px;
-      padding: 4px 10px; border-radius: 99px;
-      font-size: 10px; font-family: 'Geist Mono', monospace; font-weight: 600;
+      padding: 5px 12px; border-radius: 99px;
+      font-size: 11px; font-family: 'JetBrains Mono', monospace; font-weight: 500;
       cursor: pointer; transition: all 0.2s ease;
-      background: rgba(39,39,42,0.5);
-      border: 1px solid rgba(63,63,70,0.6);
-      color: #71717a;
+      background: rgba(42,42,52,0.55);
+      border: 1.5px solid rgba(64,64,80,0.65);
+      color: #6a6a78;
       user-select: none;
     }
-    .dim-toggle:hover { background: rgba(63,63,70,0.6); color: #a1a1aa; border-color: rgba(82,82,91,0.8); }
-    .dim-toggle.active {
-      background: rgba(30,30,40,0.8);
-      border-color: rgba(129,140,248,0.35);
-      color: #818cf8;
-      box-shadow: 0 0 10px rgba(129,140,248,0.12);
-    }
-    .dim-toggle.active:hover { background: rgba(38,38,52,0.9); }
+    .dim-toggle:hover { background: rgba(64,64,80,0.65); color: #9a9aa8; }
+    .dim-toggle.active { background: rgba(28,28,42,0.85); border-color: rgba(129,140,248,0.38); color: #818cf8; box-shadow: 0 0 12px rgba(129,140,248,0.1); }
+
+    /* ── EMPTY STATE ── */
+    .empty-state { border: 1.5px dashed rgba(42,42,52,0.65); background: rgba(10,10,13,0.25); }
+
+    /* ── CARD DEFAULTS ── */
+    .lq-card { background: var(--bg-card); border: 1.5px solid var(--border-card); border-radius: 14px; transition: background 0.35s ease, border-color 0.35s ease; }
+
+    /* ── SECTION LABEL ── */
+    .section-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: #4a4a5a; margin-bottom: 14px; }
+
+    select option { background: #14141c; color: #d0d0d8; }
   </style>
 </head>
 <body class="min-h-screen">
-
   <div id="root"></div>
 
   <script type="text/babel">
-    const { useState, useEffect, useRef, useCallback } = React;
+    const { useState, useEffect, useRef, useCallback, useMemo } = React;
 
     /* ─── MUSCLE GROUP MAP ───────────────────────────────── */
     const MUSCLE_MAP = {
@@ -265,7 +290,7 @@
       'Overhead Press (OHP)':'Shoulders','Dumbbell Lateral Raises':'Shoulders','Lateral Raises (Giant Set)':'Shoulders',
       'Hanging Leg Raises':'Core','Bicep 21s':'Biceps',
     };
-    const MUSCLE_COLORS = { Back:'#60a5fa',Chest:'#f97316',Legs:'#34d399',Shoulders:'#c084fc',Arms:'#fbbf24',Biceps:'#fbbf24',Triceps:'#fb923c',Core:'#f87171' };
+    const MUSCLE_COLORS = { Back:'#60a5fa',Chest:'#fb923c',Legs:'#34d399',Shoulders:'#c084fc',Arms:'#fbbf24',Biceps:'#fbbf24',Triceps:'#fb923c',Core:'#f87171' };
 
     /* ─── PRESETS ─────────────────────────────────────────── */
     const PRESET_WORKOUTS = {
@@ -280,22 +305,20 @@
     const diffClass = d => d==='easy'?'diff-easy':d==='medium'?'diff-medium':'diff-hard';
     const attrClass = a => a==='intelligence'?'attr-intel':a==='strength'?'attr-str':a==='willpower'?'attr-wil':'attr-sta';
     const attrLabel = a => a==='intelligence'?'INT':a==='strength'?'STR':a==='willpower'?'WIL':'STA';
-    const statColor = s => s==='intelligence'?'#60a5fa':s==='strength'?'#f97316':s==='willpower'?'#c084fc':'#34d399';
+    const statColor = s => s==='intelligence'?'#60a5fa':s==='strength'?'#fb923c':s==='willpower'?'#c084fc':'#34d399';
 
     const daysUntilSunday = () => { const d=new Date().getDay(); return d===0?0:7-d; };
     const todayStr = () => new Date().toISOString().split('T')[0];
     const yesterdayStr = () => new Date(Date.now()-86400000).toISOString().split('T')[0];
-
     const getWeekStart = () => {
-      const now = new Date();
-      const d = new Date(now); d.setDate(d.getDate()-d.getDay());
+      const now = new Date(); const d = new Date(now);
+      d.setDate(d.getDate()-d.getDay());
       return d.toISOString().split('T')[0];
     };
 
     /* ─── PR ENGINE ───────────────────────────────────────── */
     const checkAndUpdatePRs = (exercises, currentPRs) => {
-      const newPRNames = [];
-      const updatedPRs = { ...currentPRs };
+      const newPRNames = []; const updatedPRs = { ...currentPRs };
       for (const ex of (exercises||[])) {
         if (!ex.sets||ex.sets.length===0) continue;
         const maxWeight = Math.max(...ex.sets.map(s=>Number(s.weight)||0));
@@ -306,11 +329,9 @@
 
     /* ─── MILESTONE CHECKER ───────────────────────────────── */
     const getNewMilestones = (oldStats, newStats) => {
-      const today = todayStr();
-      const milestones = [];
+      const today = todayStr(); const milestones = [];
       for (const stat of Object.keys(newStats)) {
-        const oldF = Math.floor(oldStats[stat]||10);
-        const newF = Math.floor(newStats[stat]||10);
+        const oldF = Math.floor(oldStats[stat]||10); const newF = Math.floor(newStats[stat]||10);
         if (newF > oldF) milestones.push({ stat, milestone: newF, date: today });
       }
       return milestones;
@@ -319,47 +340,33 @@
     /* ─── SOUND ───────────────────────────────────────────── */
     const playSound = (type) => {
       try {
-        const Ctx = window.AudioContext||window.webkitAudioContext;
-        if (!Ctx) return;
+        const Ctx = window.AudioContext||window.webkitAudioContext; if (!Ctx) return;
         const ctx = new Ctx(); const now = ctx.currentTime;
         if (type==='complete') {
           const osc=ctx.createOscillator(),gain=ctx.createGain();
           osc.type='sine'; osc.frequency.setValueAtTime(480,now); osc.frequency.exponentialRampToValueAtTime(240,now+0.12);
           gain.gain.setValueAtTime(0.02,now); gain.gain.exponentialRampToValueAtTime(0.001,now+0.12);
-          osc.connect(gain);gain.connect(ctx.destination);osc.start(now);osc.stop(now+0.12);
+          osc.connect(gain); gain.connect(ctx.destination); osc.start(now); osc.stop(now+0.12);
         } else if (type==='levelup') {
-          [330,440,550,660].forEach((f,i)=>{
-            const osc=ctx.createOscillator(),gain=ctx.createGain();
-            osc.type='sine';osc.frequency.setValueAtTime(f,now+i*0.04);
-            gain.gain.setValueAtTime(0.02,now+i*0.04);gain.gain.exponentialRampToValueAtTime(0.001,now+i*0.04+0.2);
-            osc.connect(gain);gain.connect(ctx.destination);osc.start(now+i*0.04);osc.stop(now+i*0.04+0.2);
-          });
+          [330,440,550,660].forEach((f,i)=>{ const osc=ctx.createOscillator(),gain=ctx.createGain(); osc.type='sine'; osc.frequency.setValueAtTime(f,now+i*0.04); gain.gain.setValueAtTime(0.02,now+i*0.04); gain.gain.exponentialRampToValueAtTime(0.001,now+i*0.04+0.2); osc.connect(gain); gain.connect(ctx.destination); osc.start(now+i*0.04); osc.stop(now+i*0.04+0.2); });
         } else if (type==='pr') {
-          [392,523,659,784].forEach((f,i)=>{
-            const osc=ctx.createOscillator(),gain=ctx.createGain();
-            osc.type='triangle';osc.frequency.setValueAtTime(f,now+i*0.07);
-            gain.gain.setValueAtTime(0.025,now+i*0.07);gain.gain.exponentialRampToValueAtTime(0.001,now+i*0.07+0.18);
-            osc.connect(gain);gain.connect(ctx.destination);osc.start(now+i*0.07);osc.stop(now+i*0.07+0.18);
-          });
+          [392,523,659,784].forEach((f,i)=>{ const osc=ctx.createOscillator(),gain=ctx.createGain(); osc.type='triangle'; osc.frequency.setValueAtTime(f,now+i*0.07); gain.gain.setValueAtTime(0.025,now+i*0.07); gain.gain.exponentialRampToValueAtTime(0.001,now+i*0.07+0.18); osc.connect(gain); gain.connect(ctx.destination); osc.start(now+i*0.07); osc.stop(now+i*0.07+0.18); });
         }
       } catch(e){}
     };
 
     /* ─── CONFETTI ────────────────────────────────────────── */
     function ConfettiCanvas({ active, onDone }) {
-      const canvasRef = useRef(null);
-      const frameRef  = useRef(null);
+      const canvasRef = useRef(null); const frameRef = useRef(null);
       useEffect(() => {
         if (!active) return;
-        const canvas = canvasRef.current;
-        if (!canvas) return;
+        const canvas = canvasRef.current; if (!canvas) return;
         const ctx = canvas.getContext('2d');
-        canvas.width  = window.innerWidth;
-        canvas.height = window.innerHeight;
+        canvas.width = window.innerWidth; canvas.height = window.innerHeight;
         const W=canvas.width, H=canvas.height;
         const COLORS=['#7c3aed','#a78bfa','#f59e0b','#34d399','#60a5fa','#f472b6','#fb923c','#ffffff'];
-        const particles = Array.from({length:120},()=>({
-          x: Math.random()*W, y:-20-Math.random()*H*0.3,
+        const particles = Array.from({length:130},()=>({
+          x:Math.random()*W, y:-20-Math.random()*H*0.3,
           vx:(Math.random()-0.5)*6, vy:Math.random()*4+1.5,
           color:COLORS[Math.floor(Math.random()*COLORS.length)],
           w:Math.random()*9+3, h:Math.random()*5+2,
@@ -370,20 +377,9 @@
         const animate = ()=>{
           ctx.clearRect(0,0,W,H);
           let allGone=true;
-          particles.forEach(p=>{
-            p.vx*=p.drag; p.vy+=p.gravity;
-            p.x+=p.vx; p.y+=p.vy; p.angle+=p.spin;
-            if (p.y<H+30) allGone=false;
-            const alpha=Math.max(0,1-p.y/(H*0.9));
-            ctx.save();
-            ctx.translate(p.x,p.y); ctx.rotate(p.angle);
-            ctx.globalAlpha=alpha; ctx.fillStyle=p.color;
-            ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);
-            ctx.restore();
-          });
+          particles.forEach(p=>{ p.vx*=p.drag; p.vy+=p.gravity; p.x+=p.vx; p.y+=p.vy; p.angle+=p.spin; if(p.y<H+30) allGone=false; const alpha=Math.max(0,1-p.y/(H*0.9)); ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.angle); ctx.globalAlpha=alpha; ctx.fillStyle=p.color; ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h); ctx.restore(); });
           elapsed++;
-          if (allGone||elapsed>240||stopped) { onDone(); }
-          else { frameRef.current=requestAnimationFrame(animate); }
+          if (allGone||elapsed>240||stopped) { onDone(); } else { frameRef.current=requestAnimationFrame(animate); }
         };
         frameRef.current=requestAnimationFrame(animate);
         const t=setTimeout(()=>{stopped=true;},4000);
@@ -403,37 +399,23 @@
         days.push({s,label,xp:history[s]?.xp||0,gold:history[s]?.gold||0});
       }
       const maxXp=Math.max(...days.map(d=>d.xp),40);
-      const CH=64, BW=26, GAP=8;
+      const CH=72, BW=30, GAP=10;
       const TW=days.length*(BW+GAP)-GAP;
       const today=todayStr();
       return (
-        <svg viewBox={`0 0 ${TW} ${CH+22}`} width="100%" preserveAspectRatio="none" style={{overflow:'visible'}}>
+        <svg viewBox={`0 0 ${TW} ${CH+26}`} width="100%" preserveAspectRatio="none" style={{overflow:'visible'}}>
           {days.map((day,i)=>{
             const x=i*(BW+GAP);
-            const barH=Math.max(3,(day.xp/maxXp)*CH);
+            const barH=Math.max(4,(day.xp/maxXp)*CH);
             const isToday=day.s===today;
             const isEmpty=day.xp===0;
             return (
               <g key={day.s}>
-                <rect x={x} y={CH} width={BW} height={2} rx={1} fill="#1c1c1f"/>
-                {!isEmpty && (
-                  <rect x={x} y={CH-barH} width={BW} height={barH} rx={3}
-                    fill={isToday?'#7c3aed':'#3f3f46'}
-                    opacity={isToday?1:0.7}/>
-                )}
-                {isEmpty && (
-                  <rect x={x} y={CH-3} width={BW} height={3} rx={1.5} fill="#1c1c1f"/>
-                )}
-                {day.xp>0 && (
-                  <text x={x+BW/2} y={CH-barH-4} textAnchor="middle" fontSize="8"
-                    fill={isToday?'#a78bfa':'#52525b'} fontFamily="Geist Mono" fontWeight="600">
-                    {day.xp}
-                  </text>
-                )}
-                <text x={x+BW/2} y={CH+15} textAnchor="middle" fontSize="9"
-                  fill={isToday?'#a1a1aa':'#3f3f46'} fontFamily="Geist Mono">
-                  {day.label}
-                </text>
+                <rect x={x} y={CH} width={BW} height={2.5} rx={1.5} fill="#1a1a24"/>
+                {!isEmpty && <rect x={x} y={CH-barH} width={BW} height={barH} rx={4} fill={isToday?'#7c3aed':'#2e2e3e'} opacity={isToday?1:0.75}/>}
+                {isEmpty && <rect x={x} y={CH-4} width={BW} height={4} rx={2} fill="#181820"/>}
+                {day.xp>0 && <text x={x+BW/2} y={CH-barH-5} textAnchor="middle" fontSize="9" fill={isToday?'#a78bfa':'#4a4a5a'} fontFamily="JetBrains Mono" fontWeight="600">{day.xp}</text>}
+                <text x={x+BW/2} y={CH+18} textAnchor="middle" fontSize="10" fill={isToday?'#9a9aaa':'#3a3a48'} fontFamily="JetBrains Mono">{day.label}</text>
               </g>
             );
           })}
@@ -441,55 +423,63 @@
       );
     }
 
-    /* ─── SUBCOMPONENTS ───────────────────────────────────── */
+    /* ─── BASE COMPONENTS ─────────────────────────────────── */
     const SectionLabel = ({children}) => (
-      <p className="text-[10px] font-mono font-semibold uppercase tracking-[0.18em] text-zinc-600 mb-3">{children}</p>
+      <p className="section-label">{children}</p>
     );
-    const Card = ({children,className='',glow=false}) => (
-      <div className={`rounded-xl border border-zinc-900/80 ${glow?'glow-border':''} ${className}`}
-           style={{background:'var(--bg-card)',transition:'background 0.35s ease'}}>
+
+    const Card = ({children, className='', glow=false, style={}}) => (
+      <div className={`lq-card ${glow?'glow-border':''} ${className}`} style={style}>
         {children}
       </div>
     );
-    const EmptyState = ({icon,title,sub}) => (
-      <div className="empty-state rounded-xl p-10 flex flex-col items-center justify-center gap-2 text-center">
-        <div className="text-2xl opacity-30 mb-1">{icon}</div>
-        <p className="text-xs font-mono font-semibold text-zinc-500">{title}</p>
-        {sub && <p className="text-[11px] text-zinc-600">{sub}</p>}
+
+    const EmptyState = ({icon, title, sub}) => (
+      <div className="empty-state rounded-2xl p-12 flex flex-col items-center justify-center gap-3 text-center">
+        <div className="text-3xl opacity-25 mb-1">{icon}</div>
+        <p className="font-mono font-semibold text-zinc-500 text-sm">{title}</p>
+        {sub && <p className="text-zinc-600 text-sm leading-relaxed max-w-xs">{sub}</p>}
       </div>
     );
-    const XpBar = ({xp,max}) => {
+
+    const XpBar = ({xp, max}) => {
       const pct=Math.min(100,(xp/max)*100);
       return <div className="stat-bar-bg w-full"><div className="xp-bar-fill stat-bar-fill" style={{width:`${pct}%`}}/></div>;
     };
-    const StreakBar = ({streak,cap=30}) => {
+
+    const StreakBar = ({streak, cap=30}) => {
       const pct=Math.min(100,(streak/cap)*100);
       return <div className="stat-bar-bg w-full"><div className="streak-bar-fill stat-bar-fill" style={{width:`${Math.max(pct,streak>0?3:0)}%`}}/></div>;
     };
-    const StatBar = ({value,color}) => {
+
+    const StatBar = ({value, color}) => {
       const pct=Math.min(100,((value-10)/40)*100);
       return <div className="stat-bar-bg flex-1"><div className="stat-bar-fill" style={{width:`${Math.max(4,pct)}%`,background:color}}/></div>;
     };
+
     const TrashIcon = () => (
-      <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}
-        style={{color:'#52525b',transition:'color 0.15s'}}
+      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}
+        style={{color:'#4a4a58',transition:'color 0.15s'}}
         onMouseEnter={e=>e.currentTarget.style.color='#f87171'}
-        onMouseLeave={e=>e.currentTarget.style.color='#52525b'}>
+        onMouseLeave={e=>e.currentTarget.style.color='#4a4a58'}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/>
       </svg>
     );
-    const BoltIcon = () => <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>;
+
+    const BoltIcon = () => <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>;
+
     const ChevronIcon = ({open}) => (
-      <svg className="w-3 h-3 transition-transform duration-200" style={{transform:open?'rotate(180deg)':'none'}}
+      <svg className="w-3.5 h-3.5 transition-transform duration-200" style={{transform:open?'rotate(180deg)':'none'}}
         fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7"/>
       </svg>
     );
+
     const DragHandle = () => (
-      <svg className="w-3.5 h-3.5 drag-handle flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
-        <circle cx="9"  cy="5"  r="1.5"/><circle cx="15" cy="5"  r="1.5"/>
-        <circle cx="9"  cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/>
-        <circle cx="9"  cy="19" r="1.5"/><circle cx="15" cy="19" r="1.5"/>
+      <svg className="w-4 h-4 drag-handle flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+        <circle cx="9" cy="5" r="1.5"/><circle cx="15" cy="5" r="1.5"/>
+        <circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/>
+        <circle cx="9" cy="19" r="1.5"/><circle cx="15" cy="19" r="1.5"/>
       </svg>
     );
 
@@ -519,28 +509,25 @@
           {id:6,text:"Hit 4 gym sessions this week",                     type:"week",completed:false,difficulty:"medium",attribute:"strength",    xp:80, gold:40,notes:""},
         ];
       });
-      const [gymLogs,      setGymLogs]      = useState(()=>JSON.parse(localStorage.getItem('lq_gymlogs_adi_v4')) ||[]);
-      const [exercisePRs,  setExercisePRs]  = useState(()=>JSON.parse(localStorage.getItem('lq_prs_adi_v4'))    ||{});
+      const [gymLogs,      setGymLogs]      = useState(()=>JSON.parse(localStorage.getItem('lq_gymlogs_adi_v4'))||[]);
+      const [exercisePRs,  setExercisePRs]  = useState(()=>JSON.parse(localStorage.getItem('lq_prs_adi_v4'))||{});
       const [rewards,      setRewards]      = useState(()=>JSON.parse(localStorage.getItem('lq_rewards_adi_v4'))||[
-        {id:1,text:"Watch 1 episode of anime/show guilt-free", cost:30 },
-        {id:2,text:"Indulge in a clean cheat meal",             cost:60 },
-        {id:3,text:"Unlock personal luxury hobby item",         cost:140},
+        {id:1,text:"Watch 1 episode of anime/show guilt-free", cost:30},
+        {id:2,text:"Indulge in a clean cheat meal",            cost:60},
+        {id:3,text:"Unlock personal luxury hobby item",        cost:140},
       ]);
-      const [dailyHistory,  setDailyHistory]  = useState(()=>JSON.parse(localStorage.getItem('lq_history_adi_v4'))    ||{});
-      const [statMilestones,setStatMilestones]= useState(()=>JSON.parse(localStorage.getItem('lq_milestones_adi_v4'))||[]);
-      /* noteHistory: { [date]: [ { questText, note } ] }  — archived on midnight reset */
-      const [noteHistory,   setNoteHistory]   = useState(()=>JSON.parse(localStorage.getItem('lq_notehistory_v4'))    ||{});
-      /* improvementLog: { [date]: string[] } */
-      const [improvementLog,setImprovementLog]= useState(()=>JSON.parse(localStorage.getItem('lq_improve_v4'))        ||{});
+      const [dailyHistory,   setDailyHistory]   = useState(()=>JSON.parse(localStorage.getItem('lq_history_adi_v4'))||{});
+      const [statMilestones, setStatMilestones] = useState(()=>JSON.parse(localStorage.getItem('lq_milestones_adi_v4'))||[]);
+      const [noteHistory,    setNoteHistory]    = useState(()=>JSON.parse(localStorage.getItem('lq_notehistory_v4'))||{});
+      const [improvementLog, setImprovementLog] = useState(()=>JSON.parse(localStorage.getItem('lq_improve_v4'))||{});
 
       const [newImprovementText, setNewImprovementText] = useState("");
-      const [journalViewDate,    setJournalViewDate]    = useState(null); /* null = today */
+      const [journalViewDate,    setJournalViewDate]    = useState(null);
       const [aiInsightLoading,   setAiInsightLoading]   = useState(false);
       const [aiInsight,          setAiInsight]          = useState("");
-
-      const [aiInputPrompt,  setAiInputPrompt]  = useState("");
-      const [isAiGenerating, setIsAiGenerating] = useState(false);
-      const [isVisionParsing,setIsVisionParsing]= useState(false);
+      const [aiInputPrompt,      setAiInputPrompt]      = useState("");
+      const [isAiGenerating,     setIsAiGenerating]     = useState(false);
+      const [isVisionParsing,    setIsVisionParsing]    = useState(false);
       const fileInputRef = useRef(null);
       const [newQuestText,       setNewQuestText]       = useState("");
       const [newQuestType,       setNewQuestType]       = useState("day");
@@ -549,12 +536,10 @@
       const [customRewardName,   setCustomRewardName]   = useState("");
       const [customRewardCost,   setCustomRewardCost]   = useState(40);
 
-      /* ── DIM MODE body class sync ───────────────────────── */
-      useEffect(()=>{
-        document.body.classList.toggle('dim', dimMode);
-      },[dimMode]);
+      /* ── DIM MODE body class ── */
+      useEffect(()=>{ document.body.classList.toggle('dim', dimMode); },[dimMode]);
 
-      /* ── KEYBOARD SHORTCUTS ─────────────────────────────── */
+      /* ── KEYBOARD SHORTCUTS ── */
       useEffect(()=>{
         const tabIds=['dashboard','quests','gym','shop','hero','journal'];
         const handle = (e) => {
@@ -567,32 +552,23 @@
         return ()=>window.removeEventListener('keydown',handle);
       },[]);
 
-      /* ── MIDNIGHT RESET + STREAK ENGINE ─────────────────── */
+      /* ── MIDNIGHT RESET + STREAK ── */
       useEffect(()=>{
-        const today   = todayStr();
-        const yest    = yesterdayStr();
-        const lastReset = localStorage.getItem('lq_last_reset_date');
+        const today=todayStr(), yest=yesterdayStr();
+        const lastReset=localStorage.getItem('lq_last_reset_date');
         if (lastReset!==today) {
-          const dailyQuests = quests.filter(q=>q.type==='day');
-          const allDone     = dailyQuests.length>0 && dailyQuests.every(q=>q.completed);
-          const consecutive = lastReset===yest;
-          const newStreak   = (consecutive && allDone) ? hero.streak+1 : 0;
+          const dailyQuests=quests.filter(q=>q.type==='day');
+          const allDone=dailyQuests.length>0&&dailyQuests.every(q=>q.completed);
+          const consecutive=lastReset===yest;
+          const newStreak=(consecutive&&allDone)?hero.streak+1:0;
           setHero(h=>({...h,streak:newStreak}));
-
-          /* ── Archive quest notes before clearing ── */
           if (lastReset) {
-            const notedQuests = quests.filter(q=>q.notes&&q.notes.trim());
-            if (notedQuests.length>0) {
-              setNoteHistory(prev=>({
-                ...prev,
-                [lastReset]: notedQuests.map(q=>({questText:q.text,note:q.notes,completed:q.completed,attribute:q.attribute}))
-              }));
-            }
+            const notedQuests=quests.filter(q=>q.notes&&q.notes.trim());
+            if (notedQuests.length>0) setNoteHistory(prev=>({...prev,[lastReset]:notedQuests.map(q=>({questText:q.text,note:q.notes,completed:q.completed,attribute:q.attribute}))}));
           }
-
-          const isWeeklyReset  = new Date().getDay()===0;
-          const lastWeekly     = localStorage.getItem('lq_last_weekly_reset');
-          if (isWeeklyReset && lastWeekly!==today) {
+          const isWeeklyReset=new Date().getDay()===0;
+          const lastWeekly=localStorage.getItem('lq_last_weekly_reset');
+          if (isWeeklyReset&&lastWeekly!==today) {
             setQuests(prev=>prev.map(q=>({...q,completed:false,notes:""})));
             localStorage.setItem('lq_last_weekly_reset',today);
             setTimeout(()=>triggerToast("🗓️ Weekly reset — all quests refreshed."),800);
@@ -605,135 +581,103 @@
         }
       },[]);
 
-      /* ── PERSIST ────────────────────────────────────────── */
+      /* ── PERSIST ── */
       useEffect(()=>{
-        localStorage.setItem('lq_hero_adi_v4',    JSON.stringify(hero));
-        localStorage.setItem('lq_quests_adi_v4',  JSON.stringify(quests));
-        localStorage.setItem('lq_gymlogs_adi_v4', JSON.stringify(gymLogs));
-        localStorage.setItem('lq_rewards_adi_v4', JSON.stringify(rewards));
-        localStorage.setItem('lq_prs_adi_v4',     JSON.stringify(exercisePRs));
-        localStorage.setItem('lq_history_adi_v4', JSON.stringify(dailyHistory));
+        localStorage.setItem('lq_hero_adi_v4',      JSON.stringify(hero));
+        localStorage.setItem('lq_quests_adi_v4',    JSON.stringify(quests));
+        localStorage.setItem('lq_gymlogs_adi_v4',   JSON.stringify(gymLogs));
+        localStorage.setItem('lq_rewards_adi_v4',   JSON.stringify(rewards));
+        localStorage.setItem('lq_prs_adi_v4',       JSON.stringify(exercisePRs));
+        localStorage.setItem('lq_history_adi_v4',   JSON.stringify(dailyHistory));
         localStorage.setItem('lq_milestones_adi_v4',JSON.stringify(statMilestones));
-        localStorage.setItem('lq_notehistory_v4', JSON.stringify(noteHistory));
-        localStorage.setItem('lq_improve_v4',     JSON.stringify(improvementLog));
+        localStorage.setItem('lq_notehistory_v4',   JSON.stringify(noteHistory));
+        localStorage.setItem('lq_improve_v4',       JSON.stringify(improvementLog));
       },[hero,quests,gymLogs,rewards,exercisePRs,dailyHistory,statMilestones,noteHistory,improvementLog]);
 
       const triggerToast = (msg)=>{ setToastMsg(msg); setTimeout(()=>setToastMsg(""),4500); };
 
-      /* ── QUEST TOGGLE ───────────────────────────────────── */
+      /* ── QUEST TOGGLE ── */
       const handleQuestToggle = (id) => {
         playSound('complete');
         setQuests(prev=>prev.map(q=>{
           if (q.id!==id) return q;
-          const completing = !q.completed;
-          const xpChange   = completing?q.xp:-q.xp;
-          const goldChange = completing?q.gold:-q.gold;
-
-          if (completing) {
-            const today=todayStr();
-            setDailyHistory(h=>({...h,[today]:{xp:(h[today]?.xp||0)+q.xp,gold:(h[today]?.gold||0)+q.gold}}));
-          }
-
+          const completing=!q.completed, xpChange=completing?q.xp:-q.xp, goldChange=completing?q.gold:-q.gold;
+          if (completing) { const today=todayStr(); setDailyHistory(h=>({...h,[today]:{xp:(h[today]?.xp||0)+q.xp,gold:(h[today]?.gold||0)+q.gold}})); }
           setHero(h=>{
             let nXp=h.xp+xpChange, nGold=Math.max(0,h.gold+goldChange);
-            let nLvl=h.level, tXp=h.nextLevelXp;
-            let rolledLvl=false;
-            if(nXp>=tXp){ nXp-=tXp;nLvl++;tXp=nLvl*300;rolledLvl=true;playSound('levelup');setLevelUpModal(true);setShowConfetti(true); }
+            let nLvl=h.level, tXp=h.nextLevelXp, rolledLvl=false;
+            if(nXp>=tXp){nXp-=tXp;nLvl++;tXp=nLvl*300;rolledLvl=true;playSound('levelup');setLevelUpModal(true);setShowConfetti(true);}
             else if(nXp<0) nXp=0;
-
-            const oldStats={...h.stats};
-            const nextStats={...h.stats};
-            if(completing && q.attribute) nextStats[q.attribute]=(nextStats[q.attribute]||10)+(q.difficulty==='hard'?1.0:0.4);
-
-            if(completing){
-              const newMs=getNewMilestones(oldStats,nextStats);
-              if(newMs.length>0) setStatMilestones(prev=>[...newMs,...prev].slice(0,50));
-            }
+            const oldStats={...h.stats}, nextStats={...h.stats};
+            if(completing&&q.attribute) nextStats[q.attribute]=(nextStats[q.attribute]||10)+(q.difficulty==='hard'?1.0:0.4);
+            if(completing){const newMs=getNewMilestones(oldStats,nextStats);if(newMs.length>0)setStatMilestones(prev=>[...newMs,...prev].slice(0,50));}
             return {...h,xp:Math.round(nXp),gold:nGold,level:nLvl,nextLevelXp:tXp,stats:nextStats,statPoints:rolledLvl?h.statPoints+3:h.statPoints};
           });
-
-          if(completing) triggerToast(`Quest completed — +${q.xp} XP · +${q.gold}g`);
+          if(completing) triggerToast(`Quest complete — +${q.xp} XP · +${q.gold}g`);
           return {...q,completed:completing};
         }));
       };
 
-      /* ── QUEST NOTES ────────────────────────────────────── */
-      const updateQuestNotes = (id, notes) => {
-        setQuests(prev=>prev.map(q=>q.id===id?{...q,notes}:q));
-      };
+      const updateQuestNotes = (id, notes) => setQuests(prev=>prev.map(q=>q.id===id?{...q,notes}:q));
 
-      /* ── DRAG REORDER ───────────────────────────────────── */
+      /* ── DRAG REORDER ── */
       const handleDragStart = (e, id) => { setDragQuestId(id); e.dataTransfer.effectAllowed='move'; };
       const handleDragOver  = (e, id) => { e.preventDefault(); setDragOverId(id); };
       const handleDrop      = (e, targetId) => {
         e.preventDefault();
-        if(!dragQuestId||dragQuestId===targetId){ setDragQuestId(null);setDragOverId(null);return; }
+        if(!dragQuestId||dragQuestId===targetId){setDragQuestId(null);setDragOverId(null);return;}
         setQuests(prev=>{
           const items=[...prev];
-          const from=items.findIndex(q=>q.id===dragQuestId);
-          const to  =items.findIndex(q=>q.id===targetId);
+          const from=items.findIndex(q=>q.id===dragQuestId), to=items.findIndex(q=>q.id===targetId);
           if(from<0||to<0) return prev;
-          const [moved]=items.splice(from,1);
-          items.splice(to,0,moved);
-          return items;
+          const [moved]=items.splice(from,1); items.splice(to,0,moved); return items;
         });
         setDragQuestId(null); setDragOverId(null);
       };
       const handleDragEnd = ()=>{ setDragQuestId(null); setDragOverId(null); };
 
-      /* ── QUEST ADD / DELETE ─────────────────────────────── */
+      /* ── QUEST ADD / DELETE ── */
       const handleManualQuestAdd = (e) => {
-        e.preventDefault();
-        if(!newQuestText.trim()) return;
-        const calcXp = newQuestDifficulty==='easy'?20:newQuestDifficulty==='medium'?40:80;
-        const baseXp = newQuestType==='week'?calcXp*2:calcXp;
+        e.preventDefault(); if(!newQuestText.trim()) return;
+        const calcXp=newQuestDifficulty==='easy'?20:newQuestDifficulty==='medium'?40:80;
+        const baseXp=newQuestType==='week'?calcXp*2:calcXp;
         const q={id:Date.now(),text:newQuestText,type:newQuestType,completed:false,difficulty:newQuestDifficulty,attribute:newQuestAttr,xp:baseXp,gold:Math.round(baseXp*0.4),notes:""};
         setQuests([q,...quests]); setNewQuestText("");
         triggerToast(`Quest forged — ${newQuestType==='week'?'weekly':'daily'} added to board.`);
       };
       const deleteQuest = (id) => setQuests(prev=>prev.filter(q=>q.id!==id));
 
-      /* ── GYM ────────────────────────────────────────────── */
+      /* ── GYM ── */
       const triggerPresetWorkoutLog = (dayName) => {
         const preset=PRESET_WORKOUTS[dayName]; if(!preset) return;
-        const {newPRNames,updatedPRs}=checkAndUpdatePRs(preset.exercises,exercisePRs);
+        const{newPRNames,updatedPRs}=checkAndUpdatePRs(preset.exercises,exercisePRs);
         setExercisePRs(updatedPRs);
         const newLog={id:Date.now(),date:todayStr(),workoutName:`${preset.name} (${dayName})`,exercises:preset.exercises,prExercises:newPRNames};
-        setGymLogs([newLog,...gymLogs]);
-        setHero(h=>({...h,xp:h.xp+60,gold:h.gold+20}));
-        if(newPRNames.length>0){ playSound('pr'); triggerToast(`🏆 PR: ${newPRNames.join(', ')} — +60 XP · +20g`); }
+        setGymLogs([newLog,...gymLogs]); setHero(h=>({...h,xp:h.xp+60,gold:h.gold+20}));
+        if(newPRNames.length>0){playSound('pr');triggerToast(`🏆 PR: ${newPRNames.join(', ')} — +60 XP · +20g`);}
         else triggerToast(`Split logged: ${preset.name} — +60 XP · +20g`);
       };
       const deleteGymLog = (id) => { setGymLogs(prev=>prev.filter(l=>l.id!==id)); triggerToast("Session removed."); };
 
-      /* ── WEEKLY VOLUME CALC ─────────────────────────────── */
-      const weeklyVolume = React.useMemo(()=>{
-        const ws=getWeekStart();
-        const thisWeek=gymLogs.filter(l=>l.date>=ws);
-        const byGroup={};
-        thisWeek.forEach(log=>{
-          (log.exercises||[]).forEach(ex=>{
-            const group=MUSCLE_MAP[ex.name]||'Other';
-            const vol=(ex.sets||[]).reduce((sum,s)=>sum+((Number(s.reps)||0)*(Number(s.weight)||0)),0);
-            byGroup[group]=(byGroup[group]||0)+vol;
-          });
-        });
+      /* ── WEEKLY VOLUME ── */
+      const weeklyVolume = useMemo(()=>{
+        const ws=getWeekStart(); const thisWeek=gymLogs.filter(l=>l.date>=ws); const byGroup={};
+        thisWeek.forEach(log=>(log.exercises||[]).forEach(ex=>{
+          const group=MUSCLE_MAP[ex.name]||'Other';
+          const vol=(ex.sets||[]).reduce((sum,s)=>sum+((Number(s.reps)||0)*(Number(s.weight)||0)),0);
+          byGroup[group]=(byGroup[group]||0)+vol;
+        }));
         return byGroup;
       },[gymLogs]);
 
-      /* ── MISC ───────────────────────────────────────────── */
-      const handleStatBoost = (s) => {
-        if(hero.statPoints<=0) return;
-        setHero(h=>({...h,statPoints:h.statPoints-1,stats:{...h.stats,[s]:h.stats[s]+1}}));
-      };
+      /* ── MISC ── */
+      const handleStatBoost = (s) => { if(hero.statPoints<=0) return; setHero(h=>({...h,statPoints:h.statPoints-1,stats:{...h.stats,[s]:h.stats[s]+1}})); };
       const purchaseReward = (id,cost,title) => {
-        if(hero.gold<cost){ triggerToast("Insufficient gold balance."); return; }
-        setHero(h=>({...h,gold:h.gold-cost}));
-        triggerToast(`Redeemed: ${title}`);
+        if(hero.gold<cost){triggerToast("Insufficient gold balance.");return;}
+        setHero(h=>({...h,gold:h.gold-cost})); triggerToast(`Redeemed: ${title}`);
       };
       const handleAddReward = (e) => {
-        e.preventDefault();
-        if(!customRewardName.trim()) return;
+        e.preventDefault(); if(!customRewardName.trim()) return;
         setRewards([{id:Date.now(),text:customRewardName,cost:Number(customRewardCost)},...rewards]);
         setCustomRewardName(""); triggerToast("Reward stocked in the merchant store.");
       };
@@ -741,7 +685,7 @@
 
       const loadApiKey = () => {
         let key=localStorage.getItem("adi_gemini_key");
-        if(!key){ key=prompt("Enter your Gemini API key:"); if(key) localStorage.setItem("adi_gemini_key",key.trim()); }
+        if(!key){key=prompt("Enter your Gemini API key:");if(key)localStorage.setItem("adi_gemini_key",key.trim());}
         return key?key.trim():null;
       };
 
@@ -754,15 +698,12 @@
             method:"POST",headers:{"Content-Type":"application/json"},
             body:JSON.stringify({contents:[{parts:[{text:`Decompose this goal into 2-4 specific JSON daily sub-quests for Adi: "${aiInputPrompt}". Schema: {"quests":[{"text":"Task","type":"day","difficulty":"medium","attribute":"intelligence","xp":30,"gold":12}]}. Raw JSON only.`}]}],generationConfig:{responseMimeType:"application/json"}})
           });
-          if(!res.ok){ const d=await res.json();triggerToast(`API Error: ${d.error?.message}`);setIsAiGenerating(false);return; }
+          if(!res.ok){const d=await res.json();triggerToast(`API Error: ${d.error?.message}`);setIsAiGenerating(false);return;}
           const result=await res.json();
           const data=JSON.parse(result.candidates[0].content.parts[0].text);
-          if(data.quests){
-            setQuests([...data.quests.map((q,i)=>({...q,id:Date.now()+i,completed:false,notes:""})),...quests]);
-            setAiInputPrompt(""); triggerToast(`AI decomposed into ${data.quests.length} micro-quests.`);
-          }
-        } catch(e){ triggerToast(`Error: ${e.message}`); }
-        finally{ setIsAiGenerating(false); }
+          if(data.quests){setQuests([...data.quests.map((q,i)=>({...q,id:Date.now()+i,completed:false,notes:""})),...quests]);setAiInputPrompt("");triggerToast(`AI decomposed into ${data.quests.length} micro-quests.`);}
+        }catch(e){triggerToast(`Error: ${e.message}`);}
+        finally{setIsAiGenerating(false);}
       };
 
       const handleHevyUpload = async (e) => {
@@ -775,56 +716,46 @@
             const b64=reader.result.split(',')[1];
             const res=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,{
               method:"POST",headers:{"Content-Type":"application/json"},
-              body:JSON.stringify({contents:[{role:"user",parts:[
-                {text:`Parse this Hevy workout screenshot. Return ONLY JSON: {"workoutName":"name","date":"2026-05-26","exercises":[{"name":"Exercise","sets":[{"reps":10,"weight":135}]}]}`},
-                {inlineData:{mimeType:file.type,data:b64}}
-              ]}],generationConfig:{responseMimeType:"application/json"}})
+              body:JSON.stringify({contents:[{role:"user",parts:[{text:`Parse this Hevy workout screenshot. Return ONLY JSON: {"workoutName":"name","date":"2026-05-26","exercises":[{"name":"Exercise","sets":[{"reps":10,"weight":135}]}]}`},{inlineData:{mimeType:file.type,data:b64}}]}],generationConfig:{responseMimeType:"application/json"}})
             });
-            if(!res.ok){ const d=await res.json();triggerToast(`Vision Error: ${d.error?.message}`);setIsVisionParsing(false);return; }
+            if(!res.ok){const d=await res.json();triggerToast(`Vision Error: ${d.error?.message}`);setIsVisionParsing(false);return;}
             const result=await res.json();
             const parsed=JSON.parse(result.candidates[0].content.parts[0].text);
             const freshPRs=JSON.parse(localStorage.getItem('lq_prs_adi_v4')||'{}');
             const{newPRNames,updatedPRs}=checkAndUpdatePRs(parsed.exercises||[],freshPRs);
             setExercisePRs(updatedPRs);
             const newLog={id:Date.now(),date:parsed.date||todayStr(),workoutName:`${parsed.workoutName} (Hevy Sync)`,exercises:parsed.exercises||[],prExercises:newPRNames};
-            setGymLogs(prev=>[newLog,...prev]);
-            setHero(h=>({...h,xp:h.xp+85,gold:h.gold+35}));
-            if(newPRNames.length>0){ playSound('pr'); triggerToast(`Hevy parsed — +85 XP · +35g · 🏆 PR: ${newPRNames.join(', ')}`); }
+            setGymLogs(prev=>[newLog,...prev]); setHero(h=>({...h,xp:h.xp+85,gold:h.gold+35}));
+            if(newPRNames.length>0){playSound('pr');triggerToast(`Hevy parsed — +85 XP · +35g · 🏆 PR: ${newPRNames.join(', ')}`);}
             else triggerToast("Hevy parsed — +85 XP · +35g");
-          }catch(err){ triggerToast(`Vision failed: ${err.message}`); }
-          finally{ setIsVisionParsing(false); }
+          }catch(err){triggerToast(`Vision failed: ${err.message}`);}
+          finally{setIsVisionParsing(false);}
         };
         reader.readAsDataURL(file);
       };
 
-      const triggerReset = () => {
-        if(confirm("Nuke all data? Resets everything.")) { localStorage.clear(); window.location.reload(); }
-      };
+      const triggerReset = () => { if(confirm("Nuke all data? Resets everything.")) { localStorage.clear(); window.location.reload(); } };
 
-      /* ── IMPROVEMENT LOG ────────────────────────────────── */
+      /* ── IMPROVEMENT LOG ── */
       const addImprovementEntry = () => {
         if(!newImprovementText.trim()) return;
         const today=todayStr();
         setImprovementLog(prev=>({...prev,[today]:[...(prev[today]||[]),newImprovementText.trim()]}));
-        setNewImprovementText("");
-        triggerToast("Improvement logged.");
+        setNewImprovementText(""); triggerToast("Improvement logged.");
       };
       const deleteImprovementEntry = (date,idx) => {
         setImprovementLog(prev=>{
           const updated=[...(prev[date]||[])]; updated.splice(idx,1);
-          if(updated.length===0){ const n={...prev}; delete n[date]; return n; }
+          if(updated.length===0){const n={...prev};delete n[date];return n;}
           return {...prev,[date]:updated};
         });
       };
 
-      /* Word frequency for improvement insights */
       const getTopThemes = () => {
         const stopWords=new Set(['a','an','the','to','i','my','and','or','for','in','on','at','is','it','be','of','with','that','this','want','need','more','better','less']);
         const freq={};
         Object.values(improvementLog).flat().forEach(entry=>{
-          entry.toLowerCase().replace(/[^a-z\s]/g,'').split(/\s+/).forEach(w=>{
-            if(w.length>2&&!stopWords.has(w)) freq[w]=(freq[w]||0)+1;
-          });
+          entry.toLowerCase().replace(/[^a-z\s]/g,'').split(/\s+/).forEach(w=>{if(w.length>2&&!stopWords.has(w))freq[w]=(freq[w]||0)+1;});
         });
         return Object.entries(freq).sort((a,b)=>b[1]-a[1]).slice(0,12);
       };
@@ -832,7 +763,7 @@
       const generateAiInsight = async () => {
         const apiKey=loadApiKey(); if(!apiKey) return;
         const allEntries=Object.entries(improvementLog).map(([d,items])=>`${d}: ${items.join('; ')}`).join('\n');
-        if(!allEntries.trim()){ triggerToast("No improvement entries yet."); return; }
+        if(!allEntries.trim()){triggerToast("No improvement entries yet.");return;}
         setAiInsightLoading(true); setAiInsight("");
         try{
           const res=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,{
@@ -842,11 +773,11 @@
           const result=await res.json();
           const data=JSON.parse(result.candidates[0].content.parts[0].text);
           if(data.insights) setAiInsight(data.insights);
-        }catch(e){ triggerToast(`Insight failed: ${e.message}`); }
-        finally{ setAiInsightLoading(false); }
+        }catch(e){triggerToast(`Insight failed: ${e.message}`);}
+        finally{setAiInsightLoading(false);}
       };
 
-      /* ── DERIVED ────────────────────────────────────────── */
+      /* ── DERIVED ── */
       const codingQuest = quests.find(q=>q.text.includes("8 Hours"))||{};
       const readQuest   = quests.find(q=>q.text.includes("Read book"))||{};
       const completedCount = quests.filter(q=>q.completed).length;
@@ -865,76 +796,68 @@
         {id:'journal',  label:'Journal'},
       ];
 
-      /* ── QUEST ROW (reusable) ───────────────────────────── */
-      const QuestRow = ({q,showDragHandle=false})=>(
+      /* ── QUEST ROW ── */
+      const QuestRow = ({q, showDragHandle=false}) => (
         <div
-          className={`rounded-xl border transition-all duration-200 ${q.completed?'border-zinc-900/40 opacity-40':'border-zinc-900/80'} ${dragQuestId===q.id?'quest-dragging':''} ${dragOverId===q.id&&dragQuestId!==q.id?'quest-drag-over':''}`}
+          className={`rounded-2xl border transition-all duration-200 ${q.completed?'border-zinc-900/30 opacity-40':'border-zinc-800/60'} ${dragQuestId===q.id?'quest-dragging':''} ${dragOverId===q.id&&dragQuestId!==q.id?'quest-drag-over':''}`}
           style={{background:q.completed?'var(--bg-empty)':'var(--bg-card)',transition:'background 0.35s ease'}}
           draggable={showDragHandle}
           onDragStart={showDragHandle?e=>handleDragStart(e,q.id):undefined}
           onDragOver={showDragHandle?e=>handleDragOver(e,q.id):undefined}
           onDrop={showDragHandle?e=>handleDrop(e,q.id):undefined}
           onDragEnd={handleDragEnd}>
-          <div className="px-4 py-3.5 flex items-center gap-3">
+          <div className="px-5 py-4 flex items-center gap-3.5">
             {showDragHandle && <DragHandle/>}
             <input type="checkbox" className="quest-check" checked={q.completed} onChange={()=>handleQuestToggle(q.id)}/>
-            <span className={`text-xs font-mono flex-1 leading-relaxed ${q.completed?'line-through text-zinc-600':'text-zinc-300'}`}>{q.text}</span>
-            <div className="flex items-center gap-1.5 flex-shrink-0">
-              {q.type==='week' && <span className="text-[9px] font-mono font-semibold px-1.5 py-0.5 rounded badge-weekly">WK</span>}
-              <span className={`text-[9px] font-mono font-semibold px-1.5 py-0.5 rounded ${attrClass(q.attribute)}`}>{attrLabel(q.attribute)}</span>
-              <span className={`text-[9px] font-mono font-semibold px-1.5 py-0.5 rounded ${diffClass(q.difficulty)}`}>{q.difficulty.charAt(0).toUpperCase()}</span>
-              <span className="text-[10px] font-mono text-zinc-600">+{q.xp}</span>
+            <span className={`text-sm flex-1 leading-relaxed ${q.completed?'line-through text-zinc-600':'text-zinc-200'}`}>{q.text}</span>
+            <div className="flex items-center gap-2 flex-shrink-0">
+              {q.type==='week' && <span className="text-[10px] font-mono font-semibold px-2 py-1 rounded-lg badge-weekly">WK</span>}
+              <span className={`text-[10px] font-mono font-semibold px-2 py-1 rounded-lg ${attrClass(q.attribute)}`}>{attrLabel(q.attribute)}</span>
+              <span className={`text-[10px] font-mono font-semibold px-2 py-1 rounded-lg ${diffClass(q.difficulty)}`}>{q.difficulty.charAt(0).toUpperCase()}</span>
+              <span className="text-xs font-mono text-zinc-500">+{q.xp}</span>
               <button onClick={()=>setExpandedQuestId(expandedQuestId===q.id?null:q.id)}
-                className="p-1 rounded hover:bg-zinc-900 transition-colors text-zinc-600 hover:text-zinc-400">
+                className="p-1.5 rounded-lg hover:bg-zinc-900 transition-colors text-zinc-600 hover:text-zinc-400">
                 <ChevronIcon open={expandedQuestId===q.id}/>
               </button>
-              <button onClick={()=>deleteQuest(q.id)} className="p-1 rounded hover:bg-zinc-900 transition-colors"><TrashIcon/></button>
+              <button onClick={()=>deleteQuest(q.id)} className="p-1.5 rounded-lg hover:bg-zinc-900 transition-colors"><TrashIcon/></button>
             </div>
           </div>
           <div className={`notes-expand ${expandedQuestId===q.id?'open':''}`}>
-            <div className="px-4 pb-3 pt-0 border-t border-zinc-900/50">
-              <textarea
-                className="notes-textarea mt-2"
-                value={q.notes||""}
-                onChange={e=>updateQuestNotes(q.id,e.target.value)}
-                placeholder="Notes, subtasks, context… (auto-saved)"
-                rows={3}
-              />
+            <div className="px-5 pb-4 pt-0 border-t border-zinc-900/50">
+              <textarea className="notes-textarea mt-3" value={q.notes||""} onChange={e=>updateQuestNotes(q.id,e.target.value)} placeholder="Notes, subtasks, context… (auto-saved)" rows={3}/>
             </div>
           </div>
         </div>
       );
 
-      /* ── RENDER ─────────────────────────────────────────── */
+      /* ── RENDER ── */
       return (
         <div className="min-h-screen flex flex-col relative" style={{zIndex:1}}>
-
           <ConfettiCanvas active={showConfetti} onDone={()=>setShowConfetti(false)}/>
 
           {/* HEADER */}
           <header className="header-glass sticky top-0 z-40">
-            <div className="max-w-4xl mx-auto px-5 py-3.5">
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-2.5">
-                  <div className="neon-dot"></div>
-                  <span className="text-[11px] font-mono font-semibold tracking-[0.2em] text-zinc-200">ADI // LIFEQUEST OS</span>
+            <div className="max-w-4xl mx-auto px-6 py-4">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="neon-dot"/>
+                  <span className="font-mono text-xs font-semibold tracking-[0.22em] text-zinc-200">ADI // LIFEQUEST OS</span>
                 </div>
-                <div className="flex items-center gap-3 text-[11px] font-mono">
-                  <span className="level-badge px-2 py-0.5 rounded-md font-semibold">LVL {hero.level}</span>
-                  <div className="h-3.5 w-px bg-zinc-800"></div>
-                  <span className="gold-badge font-semibold">{hero.gold}<span className="text-zinc-600 font-normal">g</span></span>
-                  <div className="h-3.5 w-px bg-zinc-800"></div>
-                  <span className={`flex items-center gap-1 font-semibold ${hero.streak>0?'text-orange-400':'text-zinc-600'}`}>
-                    {hero.streak>0?'🔥':'○'} {hero.streak}<span className="text-zinc-700 font-normal">d</span>
+                <div className="flex items-center gap-4">
+                  <span className="level-badge px-3 py-1 rounded-lg font-mono text-xs font-semibold">LVL {hero.level}</span>
+                  <div className="h-4 w-px bg-zinc-800"/>
+                  <span className="gold-badge font-mono text-sm font-semibold">{hero.gold}<span className="text-zinc-600 font-normal text-xs ml-0.5">g</span></span>
+                  <div className="h-4 w-px bg-zinc-800"/>
+                  <span className={`flex items-center gap-1.5 font-mono text-sm font-semibold ${hero.streak>0?'text-orange-400':'text-zinc-600'}`}>
+                    {hero.streak>0?'🔥':'○'} {hero.streak}<span className="text-zinc-700 font-normal text-xs">d</span>
                   </span>
                   {hero.statPoints>0 && (
-                    <span className="flex items-center gap-1 text-violet-400 font-semibold animate-pulse ml-1">
+                    <span className="flex items-center gap-1 text-violet-400 font-semibold font-mono text-xs animate-pulse ml-1">
                       <BoltIcon/>{hero.statPoints}
                     </span>
                   )}
-                  <button onClick={()=>setDimMode(m=>!m)} title="Toggle dim mode (D)"
-                    className={`dim-toggle ${dimMode?'active':''}`}>
-                    <svg className="w-3 h-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+                  <button onClick={()=>setDimMode(m=>!m)} title="Toggle dim mode (D)" className={`dim-toggle ${dimMode?'active':''}`}>
+                    <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
                       {dimMode
                         ?<path strokeLinecap="round" strokeLinejoin="round" d="M12 3v1m0 16v1m8-9h1M3 12H2m14.95 4.95l.707.707M6.343 6.343l-.707-.707M17.657 6.343l.707-.707M6.343 17.657l-.707.707M12 7a5 5 0 110 10A5 5 0 0112 7z"/>
                         :<path strokeLinecap="round" strokeLinejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9 9 0 008.354-5.646z"/>
@@ -944,14 +867,18 @@
                   </button>
                 </div>
               </div>
-              <div className="flex items-center gap-3 mb-3">
+
+              {/* XP Bar */}
+              <div className="flex items-center gap-4 mb-4">
                 <div className="flex-1"><XpBar xp={hero.xp} max={hero.nextLevelXp}/></div>
-                <span className="text-[10px] font-mono text-zinc-600 whitespace-nowrap">{hero.xp} / {hero.nextLevelXp} XP</span>
+                <span className="font-mono text-xs text-zinc-500 whitespace-nowrap">{hero.xp} / {hero.nextLevelXp} XP</span>
               </div>
-              <div className="flex gap-1">
+
+              {/* Tabs */}
+              <div className="flex gap-1.5">
                 {tabs.map((t,i)=>(
                   <button key={t.id} onClick={()=>setActiveTab(t.id)}
-                    className={`px-3 py-1.5 rounded-lg text-[11px] font-mono font-medium transition-all duration-150 ${activeTab===t.id?'tab-active':'tab-inactive'}`}
+                    className={`px-4 py-2 rounded-xl text-xs font-mono font-medium transition-all duration-150 ${activeTab===t.id?'tab-active':'tab-inactive'}`}
                     title={`Press ${i+1}`}>
                     {t.label}
                     {t.id==='hero'&&hero.statPoints>0&&<span className="ml-1 text-violet-400">·</span>}
@@ -963,32 +890,32 @@
 
           {/* TOAST */}
           {toastMsg && (
-            <div className="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 max-w-sm w-full px-4" style={{animation:'fadeSlideIn 0.2s ease-out both'}}>
-              <div className="glass rounded-xl border border-zinc-800/80 px-4 py-3 flex items-center gap-2.5 shadow-2xl">
-                <div className="neon-dot-green flex-shrink-0"></div>
-                <span className="text-xs font-mono text-zinc-300">{toastMsg}</span>
+            <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 max-w-sm w-full px-4" style={{animation:'fadeSlideIn 0.22s ease-out both'}}>
+              <div className="glass rounded-2xl border border-zinc-800/80 px-5 py-3.5 flex items-center gap-3 shadow-2xl">
+                <div className="neon-dot-green"/>
+                <span className="font-mono text-xs text-zinc-300">{toastMsg}</span>
               </div>
             </div>
           )}
 
-          <main className="max-w-4xl mx-auto px-5 py-7 w-full flex-grow">
+          <main className="max-w-4xl mx-auto px-6 py-8 w-full flex-grow">
 
-            {/* ══ OVERVIEW TAB ═══════════════════════════════ */}
+            {/* ══ OVERVIEW ══ */}
             {activeTab==='dashboard' && (
-              <div className="tab-section space-y-7">
+              <div className="tab-section space-y-6">
 
-                {/* Hero + stats */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  <Card className="sm:col-span-1 p-5 flex flex-col justify-between gap-4" glow>
+                {/* Hero + Stats */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <Card className="sm:col-span-1 p-6 flex flex-col justify-between gap-5" glow>
                     <div>
-                      <p className="text-[10px] font-mono text-zinc-600 uppercase tracking-widest mb-1">Active Hero</p>
-                      <h2 className="text-xl font-bold text-zinc-100 tracking-tight">{hero.name}</h2>
-                      <p className="text-xs text-zinc-500 font-mono">{hero.class}</p>
+                      <p className="section-label mb-1" style={{marginBottom:'4px'}}>Active Hero</p>
+                      <h2 className="font-display text-2xl font-700 text-zinc-100 tracking-tight mt-1">{hero.name}</h2>
+                      <p className="font-mono text-xs text-zinc-500 mt-0.5">{hero.class}</p>
                     </div>
-                    <div className="space-y-1.5">
+                    <div className="space-y-2">
                       <div className="flex justify-between items-center">
-                        <span className="text-[10px] font-mono text-zinc-600">Streak</span>
-                        <span className={`text-[10px] font-mono font-semibold ${hero.streak>0?'text-orange-400':'text-zinc-600'}`}>
+                        <span className="font-mono text-xs text-zinc-600">Streak</span>
+                        <span className={`font-mono text-xs font-semibold ${hero.streak>0?'text-orange-400':'text-zinc-600'}`}>
                           {hero.streak>0?`🔥 ${hero.streak}d`:'0d'}
                         </span>
                       </div>
@@ -996,18 +923,19 @@
                     </div>
                     <div className="space-y-2">
                       <div className="flex justify-between items-center">
-                        <span className="text-[10px] font-mono text-zinc-600">XP Progress</span>
-                        <span className="text-[10px] font-mono text-zinc-500">{xpPct}%</span>
+                        <span className="font-mono text-xs text-zinc-600">XP Progress</span>
+                        <span className="font-mono text-xs text-zinc-500">{xpPct}%</span>
                       </div>
                       <XpBar xp={hero.xp} max={hero.nextLevelXp}/>
                     </div>
                   </Card>
-                  <div className="sm:col-span-2 grid grid-cols-2 gap-3">
+
+                  <div className="sm:col-span-2 grid grid-cols-2 gap-4">
                     {Object.entries(hero.stats).map(([k,v])=>(
-                      <Card key={k} className="p-4 flex flex-col gap-2.5">
+                      <Card key={k} className="p-5 flex flex-col gap-3">
                         <div className="flex justify-between items-start">
-                          <span className="text-[10px] font-mono uppercase tracking-widest text-zinc-600">{k}</span>
-                          <span className="text-sm font-bold font-mono" style={{color:statColor(k)}}>{Math.floor(v)}</span>
+                          <span className="font-mono text-[10px] uppercase tracking-widest text-zinc-600">{k}</span>
+                          <span className="text-xl font-bold font-mono" style={{color:statColor(k)}}>{Math.floor(v)}</span>
                         </div>
                         <StatBar value={v} color={statColor(k)}/>
                       </Card>
@@ -1016,82 +944,95 @@
                 </div>
 
                 {/* Weekly XP Chart */}
-                <Card className="p-5">
-                  <div className="flex justify-between items-center mb-4">
+                <Card className="p-6">
+                  <div className="flex justify-between items-center mb-5">
                     <SectionLabel>7-Day XP Trend</SectionLabel>
-                    <span className="text-[10px] font-mono text-zinc-600">
+                    <span className="font-mono text-xs text-zinc-600">
                       {Object.values(dailyHistory).reduce((a,d)=>a+d.xp,0)} XP total
                     </span>
                   </div>
                   <WeeklyXpChart history={dailyHistory}/>
-                  <div className="flex justify-between mt-2">
-                    <span className="text-[10px] font-mono text-zinc-700">XP earned per day · today highlighted</span>
-                    <span className="text-[10px] font-mono text-zinc-600">
-                      {dailyHistory[todayStr()]?.xp||0} XP today
-                    </span>
+                  <div className="flex justify-between mt-3">
+                    <span className="font-mono text-[10px] text-zinc-700">XP earned per day · today highlighted</span>
+                    <span className="font-mono text-xs text-zinc-600">{dailyHistory[todayStr()]?.xp||0} XP today</span>
                   </div>
                 </Card>
 
                 {/* AI Decomposer */}
-                <Card className="p-5">
+                <Card className="p-6">
                   <SectionLabel>AI Goal Decomposer</SectionLabel>
-                  <div className="flex gap-2.5">
+                  <div className="flex gap-3">
                     <input type="text" value={aiInputPrompt} onChange={e=>setAiInputPrompt(e.target.value)}
                       onKeyDown={e=>e.key==='Enter'&&callAiAgent()}
                       placeholder="Enter a goal — e.g. 'Build a REST API', 'DSA tree problems'…"
-                      className="input-field flex-grow rounded-lg px-3.5 py-2.5 text-xs font-mono text-zinc-200 placeholder-zinc-700"/>
-                    <button onClick={callAiAgent} disabled={isAiGenerating} className="btn-primary rounded-lg px-5 text-xs font-mono whitespace-nowrap">
-                      {isAiGenerating?<span className="flex items-center gap-1.5"><svg className="animate-spin w-3 h-3" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>Parsing…</span>:'Split Goal'}
+                      className="input-field flex-grow rounded-xl px-4 py-3 placeholder-zinc-700"/>
+                    <button onClick={callAiAgent} disabled={isAiGenerating} className="btn-primary rounded-xl px-6 whitespace-nowrap font-mono">
+                      {isAiGenerating
+                        ?<span className="flex items-center gap-2"><svg className="animate-spin w-3.5 h-3.5" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>Parsing…</span>
+                        :'Split Goal'}
                     </button>
                   </div>
-                  <p className="text-[10px] text-zinc-700 font-mono mt-2">Powered by Gemini · Requires API key on first use</p>
+                  <p className="font-mono text-[10px] text-zinc-700 mt-2.5">Powered by Gemini · Requires API key on first use</p>
                 </Card>
 
-                {/* Quick status */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <Card className="p-4 flex items-center justify-between">
-                    <div className="flex items-center gap-3"><span className="text-base">💻</span><span className="text-xs font-mono text-zinc-400">8 Hours Intent Coding</span></div>
-                    <span className={`text-[10px] font-mono font-semibold px-2 py-0.5 rounded-md ${codingQuest.completed?'text-green-400 bg-green-400/8 border border-green-400/15':'text-zinc-600 bg-zinc-900 border border-zinc-800'}`}>{codingQuest.completed?'✓ Done':'Pending'}</span>
+                {/* Quick Status */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <Card className="p-5 flex items-center justify-between">
+                    <div className="flex items-center gap-3.5">
+                      <span className="text-xl">💻</span>
+                      <span className="text-sm text-zinc-300">8 Hours Intent Coding</span>
+                    </div>
+                    <span className={`font-mono text-xs font-semibold px-3 py-1.5 rounded-xl ${codingQuest.completed?'text-green-400 bg-green-400/8 border border-green-400/18':'text-zinc-600 bg-zinc-900 border border-zinc-800/60'}`}>
+                      {codingQuest.completed?'✓ Done':'Pending'}
+                    </span>
                   </Card>
-                  <Card className="p-4 flex items-center justify-between">
-                    <div className="flex items-center gap-3"><span className="text-base">📚</span><span className="text-xs font-mono text-zinc-400">Books over Scrolling</span></div>
-                    <span className={`text-[10px] font-mono font-semibold px-2 py-0.5 rounded-md ${readQuest.completed?'text-green-400 bg-green-400/8 border border-green-400/15':'text-zinc-600 bg-zinc-900 border border-zinc-800'}`}>{readQuest.completed?'✓ Done':'Pending'}</span>
+                  <Card className="p-5 flex items-center justify-between">
+                    <div className="flex items-center gap-3.5">
+                      <span className="text-xl">📚</span>
+                      <span className="text-sm text-zinc-300">Books over Scrolling</span>
+                    </div>
+                    <span className={`font-mono text-xs font-semibold px-3 py-1.5 rounded-xl ${readQuest.completed?'text-green-400 bg-green-400/8 border border-green-400/18':'text-zinc-600 bg-zinc-900 border border-zinc-800/60'}`}>
+                      {readQuest.completed?'✓ Done':'Pending'}
+                    </span>
                   </Card>
                 </div>
 
                 {/* Daily Ledger */}
                 <div>
-                  <div className="flex justify-between items-center mb-3">
+                  <div className="flex justify-between items-center mb-4">
                     <SectionLabel>Daily Ledger — {completedCount}/{quests.length} complete</SectionLabel>
-                    <button onClick={archiveCompletedDailies} className="text-[10px] font-mono text-zinc-600 hover:text-zinc-400 transition-colors underline underline-offset-2">Archive done</button>
+                    <button onClick={archiveCompletedDailies} className="font-mono text-xs text-zinc-600 hover:text-zinc-400 transition-colors underline underline-offset-2">Archive done</button>
                   </div>
                   {quests.length===0
                     ?<EmptyState icon="📋" title="No active quests" sub="Add some from the Quests tab."/>
-                    :<div className="space-y-2">{quests.map(q=><QuestRow key={q.id} q={q}/>)}</div>
+                    :<div className="space-y-2.5">{quests.map(q=><QuestRow key={q.id} q={q}/>)}</div>
                   }
                 </div>
 
-                {/* Keyboard hint */}
-                <div className="flex items-center gap-2 pt-2 flex-wrap">
-                  <span className="text-[10px] font-mono text-zinc-700">Shortcuts:</span>
-                  {['1','2','3','4','5'].map((k,i)=>(
-                    <span key={k} className="flex items-center gap-1"><kbd className="kbd">{k}</kbd><span className="text-[9px] font-mono text-zinc-700">{tabs[i].label}</span></span>
+                {/* Shortcuts */}
+                <div className="flex items-center gap-2.5 pt-1 flex-wrap">
+                  <span className="font-mono text-[10px] text-zinc-700">Shortcuts:</span>
+                  {tabs.slice(0,5).map((t,i)=>(
+                    <span key={t.id} className="flex items-center gap-1.5">
+                      <kbd className="kbd">{i+1}</kbd>
+                      <span className="font-mono text-[10px] text-zinc-700">{t.label}</span>
+                    </span>
                   ))}
-                  <kbd className="kbd ml-1">D</kbd><span className="text-[9px] font-mono text-zinc-700">dim</span>
-                  <kbd className="kbd">Esc</kbd><span className="text-[9px] font-mono text-zinc-700">close modal</span>
+                  <kbd className="kbd ml-1">D</kbd><span className="font-mono text-[10px] text-zinc-700">dim</span>
+                  <kbd className="kbd">Esc</kbd><span className="font-mono text-[10px] text-zinc-700">close</span>
                 </div>
               </div>
             )}
 
-            {/* ══ QUESTS TAB ══════════════════════════════════ */}
+            {/* ══ QUESTS TAB ══ */}
             {activeTab==='quests' && (
               <div className="tab-section space-y-6">
-                <Card className="p-5" glow>
+                <Card className="p-6" glow>
                   <SectionLabel>Forge Custom Quest</SectionLabel>
-                  <form onSubmit={handleManualQuestAdd} className="space-y-3.5">
+                  <form onSubmit={handleManualQuestAdd} className="space-y-4">
                     <input type="text" value={newQuestText} onChange={e=>setNewQuestText(e.target.value)}
                       placeholder="Describe the quest objective…"
-                      className="input-field w-full rounded-lg px-3.5 py-2.5 text-xs font-mono text-zinc-200 placeholder-zinc-700"/>
+                      className="input-field w-full rounded-xl px-4 py-3 placeholder-zinc-700"/>
                     <div className="grid grid-cols-3 gap-3">
                       {[
                         {val:newQuestType,      set:setNewQuestType,      opts:[['day','Daily'],['week','Weekly']]},
@@ -1099,27 +1040,27 @@
                         {val:newQuestAttr,      set:setNewQuestAttr,      opts:[['intelligence','Intellect'],['strength','Strength'],['willpower','Willpower'],['stamina','Stamina']]},
                       ].map((sel,i)=>(
                         <select key={i} value={sel.val} onChange={e=>sel.set(e.target.value)}
-                          className="input-field rounded-lg px-3 py-2 text-xs font-mono text-zinc-400 cursor-pointer">
+                          className="input-field rounded-xl px-3.5 py-3 font-mono cursor-pointer">
                           {sel.opts.map(([v,l])=><option key={v} value={v}>{l}</option>)}
                         </select>
                       ))}
                     </div>
-                    <p className="text-[10px] font-mono text-zinc-700">
+                    <p className="font-mono text-xs text-zinc-600">
                       {newQuestType==='week'?`Weekly · ${daysLeft===0?'resets tonight':`${daysLeft}d until reset`}`:'Daily · resets at midnight'}
                     </p>
-                    <button type="submit" className="btn-primary w-full rounded-lg py-2.5 text-xs font-mono">Add to Board</button>
+                    <button type="submit" className="btn-primary w-full rounded-xl py-3 font-mono">Add to Board</button>
                   </form>
                 </Card>
 
-                <p className="text-[10px] font-mono text-zinc-700 -mt-2">↕ Drag the grip icon to reorder · Click ∨ to add notes to any quest</p>
+                <p className="font-mono text-[11px] text-zinc-700 -mt-2">↕ Drag the grip icon to reorder · Click ∨ to add notes</p>
 
                 {weeklyQuests.length>0 && (
                   <div>
-                    <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center justify-between mb-4">
                       <SectionLabel>Weekly Quests — {weeklyQuests.filter(q=>q.completed).length}/{weeklyQuests.length}</SectionLabel>
-                      <span className="text-[10px] font-mono badge-weekly px-2 py-0.5 rounded-md">{daysLeft===0?'resets tonight':`${daysLeft}d left`}</span>
+                      <span className="font-mono text-xs badge-weekly px-2.5 py-1 rounded-lg">{daysLeft===0?'resets tonight':`${daysLeft}d left`}</span>
                     </div>
-                    <div className="space-y-2">{weeklyQuests.map(q=><QuestRow key={q.id} q={q} showDragHandle/>)}</div>
+                    <div className="space-y-2.5">{weeklyQuests.map(q=><QuestRow key={q.id} q={q} showDragHandle/>)}</div>
                   </div>
                 )}
 
@@ -1127,117 +1068,106 @@
                   <SectionLabel>Daily Quests — {dailyQuests.filter(q=>q.completed).length}/{dailyQuests.length}</SectionLabel>
                   {dailyQuests.length===0
                     ?<EmptyState icon="⚔️" title="No daily quests" sub="Forge a quest above or use the AI decomposer."/>
-                    :<div className="space-y-2">{dailyQuests.map(q=><QuestRow key={q.id} q={q} showDragHandle/>)}</div>
+                    :<div className="space-y-2.5">{dailyQuests.map(q=><QuestRow key={q.id} q={q} showDragHandle/>)}</div>
                   }
                 </div>
               </div>
             )}
 
-            {/* ══ GYM TAB ═════════════════════════════════════ */}
+            {/* ══ GYM TAB ══ */}
             {activeTab==='gym' && (
-              <div className="tab-section space-y-7">
-
-                {/* Weekly split */}
+              <div className="tab-section space-y-8">
                 <div>
                   <SectionLabel>Weekly Split — Tap to Log</SectionLabel>
                   <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
                     {Object.entries(PRESET_WORKOUTS).map(([day,data])=>(
                       <button key={day} onClick={()=>triggerPresetWorkoutLog(day)}
-                        className="day-card rounded-xl p-4 text-left space-y-2 group">
+                        className="day-card rounded-2xl p-5 text-left space-y-2.5 group">
                         <div className="flex justify-between items-center">
-                          <span className="text-[9px] font-mono text-zinc-700 uppercase tracking-widest">{day}</span>
-                          <span className="text-base opacity-60 group-hover:opacity-100 transition-opacity">{data.emoji}</span>
+                          <span className="font-mono text-[9px] text-zinc-700 uppercase tracking-widest">{day}</span>
+                          <span className="text-lg opacity-55 group-hover:opacity-100 transition-opacity">{data.emoji}</span>
                         </div>
-                        <p className="text-xs font-semibold text-zinc-300 leading-snug">{data.name}</p>
-                        <p className="text-[10px] font-mono text-zinc-600">{data.exercises.length} exercises</p>
+                        <p className="text-sm font-semibold text-zinc-200 leading-snug">{data.name}</p>
+                        <p className="font-mono text-[11px] text-zinc-600">{data.exercises.length} exercises</p>
                       </button>
                     ))}
                   </div>
                 </div>
 
-                {/* PR Board */}
                 {Object.keys(exercisePRs).length>0 && (
                   <div>
                     <SectionLabel>Personal Records 🏆</SectionLabel>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
                       {Object.entries(exercisePRs).sort((a,b)=>b[1]-a[1]).map(([name,weight])=>(
-                        <div key={name} className="rounded-xl px-3.5 py-3 flex items-center justify-between gap-2"
-                          style={{background:'var(--bg-day-card)',border:'1px solid rgba(251,191,36,0.12)',transition:'background 0.35s ease'}}>
-                          <span className="text-[10px] font-mono text-zinc-400 leading-snug truncate">{name}</span>
-                          <span className="text-[11px] font-bold font-mono text-yellow-400 flex-shrink-0">{weight}<span className="text-zinc-600 font-normal text-[9px]">lb</span></span>
+                        <div key={name} className="rounded-2xl px-4 py-3.5 flex items-center justify-between gap-2"
+                          style={{background:'var(--bg-day-card)',border:'1.5px solid rgba(251,191,36,0.14)',transition:'background 0.35s ease'}}>
+                          <span className="font-mono text-xs text-zinc-400 leading-snug truncate">{name}</span>
+                          <span className="text-sm font-bold font-mono text-yellow-400 flex-shrink-0">{weight}<span className="text-zinc-600 font-normal text-[10px]">lb</span></span>
                         </div>
                       ))}
                     </div>
                   </div>
                 )}
 
-                {/* Weekly Volume Summary */}
                 {Object.keys(weeklyVolume).length>0 && (
-                  <Card className="p-5">
-                    <div className="flex justify-between items-center mb-4">
+                  <Card className="p-6">
+                    <div className="flex justify-between items-center mb-5">
                       <SectionLabel>Weekly Volume</SectionLabel>
-                      <span className="text-[10px] font-mono text-zinc-600">
-                        {Object.values(weeklyVolume).reduce((a,b)=>a+b,0).toLocaleString()} lbs total
-                      </span>
+                      <span className="font-mono text-xs text-zinc-600">{Object.values(weeklyVolume).reduce((a,b)=>a+b,0).toLocaleString()} lbs total</span>
                     </div>
-                    <div className="space-y-3">
+                    <div className="space-y-3.5">
                       {Object.entries(weeklyVolume).sort((a,b)=>b[1]-a[1]).map(([group,vol])=>(
-                        <div key={group} className="flex items-center gap-3">
-                          <span className="text-[10px] font-mono w-20 flex-shrink-0"
-                            style={{color:MUSCLE_COLORS[group]||'#71717a'}}>{group}</span>
-                          <div className="vol-bar-bg">
-                            <div className="vol-bar-fill" style={{width:`${(vol/maxVolume)*100}%`,background:MUSCLE_COLORS[group]||'#52525b'}}/>
-                          </div>
-                          <span className="text-[10px] font-mono text-zinc-600 w-16 text-right flex-shrink-0">{vol.toLocaleString()} lbs</span>
+                        <div key={group} className="flex items-center gap-4">
+                          <span className="font-mono text-xs w-20 flex-shrink-0" style={{color:MUSCLE_COLORS[group]||'#6a6a78'}}>{group}</span>
+                          <div className="vol-bar-bg"><div className="vol-bar-fill" style={{width:`${(vol/maxVolume)*100}%`,background:MUSCLE_COLORS[group]||'#4a4a58'}}/></div>
+                          <span className="font-mono text-xs text-zinc-600 w-16 text-right flex-shrink-0">{vol.toLocaleString()} lbs</span>
                         </div>
                       ))}
                     </div>
                   </Card>
                 )}
 
-                {/* Hevy OCR */}
-                <Card className="p-6 text-center space-y-4">
-                  <div className="space-y-1">
-                    <p className="text-sm font-semibold text-zinc-200">Hevy Screenshot Parser</p>
-                    <p className="text-xs text-zinc-600 font-mono">Vision AI reads your Hevy workout summary and auto-catalogs it</p>
+                <Card className="p-7 text-center space-y-5">
+                  <div className="space-y-1.5">
+                    <p className="text-base font-semibold text-zinc-200">Hevy Screenshot Parser</p>
+                    <p className="font-mono text-xs text-zinc-600">Vision AI reads your Hevy workout summary and auto-catalogs it</p>
                   </div>
                   <button onClick={()=>fileInputRef.current.click()} disabled={isVisionParsing}
-                    className="btn-ghost rounded-lg px-5 py-2.5 text-xs font-mono inline-flex items-center gap-2">
+                    className="btn-ghost rounded-xl px-6 py-3 font-mono inline-flex items-center gap-2.5">
                     {isVisionParsing
-                      ?<><svg className="animate-spin w-3.5 h-3.5" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>Scanning…</>
-                      :<><svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/></svg>Upload Screenshot</>
+                      ?<><svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>Scanning…</>
+                      :<><svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/></svg>Upload Screenshot</>
                     }
                   </button>
                   <input type="file" accept="image/*" ref={fileInputRef} onChange={handleHevyUpload} className="hidden"/>
-                  <p className="text-[10px] font-mono text-zinc-700">+85 XP · +35g per parse · PR flags auto-detected · volume auto-tracked</p>
+                  <p className="font-mono text-[11px] text-zinc-700">+85 XP · +35g per parse · PR flags auto-detected · volume auto-tracked</p>
                 </Card>
 
-                {/* Logs */}
                 <div>
                   <SectionLabel>Workout Log — {gymLogs.length} sessions</SectionLabel>
                   {gymLogs.length===0
                     ?<EmptyState icon="🏛️" title="No sessions logged yet" sub="Tap a split above or upload a Hevy screenshot."/>
                     :<div className="space-y-3">
                       {gymLogs.map(log=>(
-                        <Card key={log.id} className="p-4 space-y-3">
-                          <div className="flex justify-between items-start border-b border-zinc-900/60 pb-2.5">
-                            <div className="flex items-center gap-2">
-                              <span className="text-xs font-semibold text-zinc-300">{log.workoutName}</span>
-                              {log.prExercises&&log.prExercises.length>0&&<span className="text-[9px] font-bold px-1.5 py-0.5 rounded badge-pr">🏆 PR</span>}
+                        <Card key={log.id} className="p-5 space-y-4">
+                          <div className="flex justify-between items-start border-b border-zinc-900/60 pb-3">
+                            <div className="flex items-center gap-2.5">
+                              <span className="text-sm font-semibold text-zinc-200">{log.workoutName}</span>
+                              {log.prExercises&&log.prExercises.length>0&&<span className="font-mono text-[9px] font-bold px-2 py-0.5 rounded-lg badge-pr">🏆 PR</span>}
                             </div>
-                            <div className="flex items-center gap-2">
-                              <span className="text-[10px] font-mono text-zinc-600">{log.date}</span>
-                              <button onClick={()=>deleteGymLog(log.id)} className="p-1 rounded hover:bg-zinc-900 transition-colors"><TrashIcon/></button>
+                            <div className="flex items-center gap-2.5">
+                              <span className="font-mono text-xs text-zinc-600">{log.date}</span>
+                              <button onClick={()=>deleteGymLog(log.id)} className="p-1.5 rounded-lg hover:bg-zinc-900 transition-colors"><TrashIcon/></button>
                             </div>
                           </div>
-                          <div className="space-y-1.5">
+                          <div className="space-y-2">
                             {log.exercises.map((ex,i)=>(
                               <div key={i} className="flex justify-between items-center">
-                                <span className="text-[11px] font-mono text-zinc-500 flex items-center gap-1.5">
+                                <span className="font-mono text-xs text-zinc-500 flex items-center gap-2">
                                   {ex.name}
-                                  {log.prExercises?.includes(ex.name)&&<span className="text-[8px] font-bold px-1 py-0.5 rounded badge-pr">PR</span>}
+                                  {log.prExercises?.includes(ex.name)&&<span className="font-mono text-[8px] font-bold px-1.5 py-0.5 rounded badge-pr">PR</span>}
                                 </span>
-                                <span className="text-[10px] font-mono text-zinc-600">{ex.sets.map(s=>`${s.reps}×${s.weight}lbs`).join('  ')}</span>
+                                <span className="font-mono text-xs text-zinc-600">{ex.sets.map(s=>`${s.reps}×${s.weight}lbs`).join('  ')}</span>
                               </div>
                             ))}
                           </div>
@@ -1249,40 +1179,42 @@
               </div>
             )}
 
-            {/* ══ STORE TAB ═══════════════════════════════════ */}
+            {/* ══ STORE TAB ══ */}
             {activeTab==='shop' && (
               <div className="tab-section space-y-6">
-                <Card className="p-5 flex items-center justify-between" glow>
+                <Card className="p-6 flex items-center justify-between" glow>
                   <div>
-                    <p className="text-[10px] font-mono text-zinc-600 uppercase tracking-widest mb-1">Gold Balance</p>
-                    <p className="text-2xl font-bold gold-badge font-mono">{hero.gold}<span className="text-sm font-normal text-zinc-600 ml-1">g</span></p>
+                    <p className="section-label mb-1" style={{marginBottom:'4px'}}>Gold Balance</p>
+                    <p className="font-display text-3xl font-bold gold-badge mt-1">{hero.gold}<span className="text-base font-normal text-zinc-600 ml-1.5">g</span></p>
                   </div>
                   <div className="text-right">
-                    <p className="text-[10px] font-mono text-zinc-600 uppercase tracking-widest mb-1">Earned Today</p>
-                    <p className="text-xs font-mono text-zinc-500">{dailyHistory[todayStr()]?.gold||0}g from quests</p>
+                    <p className="section-label mb-1" style={{marginBottom:'4px'}}>Earned Today</p>
+                    <p className="font-mono text-sm text-zinc-500 mt-1">{dailyHistory[todayStr()]?.gold||0}g from quests</p>
                   </div>
                 </Card>
-                <Card className="p-5">
+
+                <Card className="p-6">
                   <SectionLabel>Stock New Reward</SectionLabel>
-                  <form onSubmit={handleAddReward} className="flex gap-2.5">
+                  <form onSubmit={handleAddReward} className="flex gap-3">
                     <input type="text" value={customRewardName} onChange={e=>setCustomRewardName(e.target.value)}
                       placeholder="Reward description…"
-                      className="input-field flex-grow rounded-lg px-3.5 py-2.5 text-xs font-mono text-zinc-200 placeholder-zinc-700"/>
+                      className="input-field flex-grow rounded-xl px-4 py-3 placeholder-zinc-700"/>
                     <input type="number" value={customRewardCost} onChange={e=>setCustomRewardCost(e.target.value)}
-                      className="input-field w-20 rounded-lg px-3 text-xs font-mono text-zinc-400 text-center"/>
-                    <button type="submit" className="btn-primary rounded-lg px-4 text-xs font-mono whitespace-nowrap">Add</button>
+                      className="input-field w-20 rounded-xl px-3 font-mono text-center"/>
+                    <button type="submit" className="btn-primary rounded-xl px-5 font-mono whitespace-nowrap">Add</button>
                   </form>
                 </Card>
+
                 <div>
                   <SectionLabel>Merchant Inventory</SectionLabel>
                   {rewards.length===0
                     ?<EmptyState icon="🏪" title="Store is empty" sub="Stock some rewards above."/>
                     :<div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       {rewards.map(r=>(
-                        <div key={r.id} className="reward-card rounded-xl p-4 flex items-center justify-between gap-3">
-                          <span className="text-xs font-mono text-zinc-300 leading-relaxed">{r.text}</span>
+                        <div key={r.id} className="reward-card rounded-2xl p-5 flex items-center justify-between gap-4">
+                          <span className="text-sm text-zinc-200 leading-relaxed">{r.text}</span>
                           <button onClick={()=>purchaseReward(r.id,r.cost,r.text)}
-                            className={`flex-shrink-0 rounded-lg px-3 py-1.5 text-[11px] font-mono font-semibold transition-all ${hero.gold>=r.cost?'gold-badge bg-yellow-400/8 border border-yellow-400/20 hover:bg-yellow-400/15 cursor-pointer':'text-zinc-700 bg-zinc-900 border border-zinc-800 cursor-not-allowed opacity-50'}`}>
+                            className={`flex-shrink-0 rounded-xl px-4 py-2 font-mono text-xs font-semibold transition-all ${hero.gold>=r.cost?'gold-badge bg-yellow-400/8 border border-yellow-400/22 hover:bg-yellow-400/16 cursor-pointer':'text-zinc-700 bg-zinc-900 border border-zinc-800 cursor-not-allowed opacity-50'}`}>
                             {r.cost}g
                           </button>
                         </div>
@@ -1293,53 +1225,53 @@
               </div>
             )}
 
-            {/* ══ HERO / MATRIX TAB ═══════════════════════════ */}
+            {/* ══ HERO / MATRIX TAB ══ */}
             {activeTab==='hero' && (
               <div className="tab-section space-y-6">
-                <Card className="p-5" glow>
+                <Card className="p-6" glow>
                   <div className="flex justify-between items-start">
                     <div>
-                      <p className="text-[10px] font-mono text-zinc-600 uppercase tracking-widest mb-1">Character Matrix</p>
-                      <h2 className="text-lg font-bold text-zinc-100">Adi <span className="text-zinc-600 text-sm font-normal">— {hero.class}</span></h2>
+                      <p className="section-label mb-1" style={{marginBottom:'4px'}}>Character Matrix</p>
+                      <h2 className="font-display text-2xl font-bold text-zinc-100 mt-1">Adi <span className="text-zinc-500 text-lg font-normal">— {hero.class}</span></h2>
                     </div>
-                    <div className="level-badge px-3 py-1.5 rounded-lg text-right">
-                      <p className="text-[10px] font-mono text-violet-500 uppercase tracking-widest">Level</p>
-                      <p className="text-xl font-bold text-violet-300 font-mono leading-tight">{hero.level}</p>
+                    <div className="level-badge px-4 py-2.5 rounded-xl text-right">
+                      <p className="font-mono text-[10px] text-violet-500 uppercase tracking-widest">Level</p>
+                      <p className="font-display text-2xl font-bold text-violet-300 leading-tight">{hero.level}</p>
                     </div>
                   </div>
-                  <div className="mt-4 space-y-1.5">
+                  <div className="mt-5 space-y-2">
                     <div className="flex justify-between items-center">
-                      <span className="text-[10px] font-mono text-zinc-600">Current streak</span>
-                      <span className={`text-[11px] font-mono font-bold ${hero.streak>0?'text-orange-400':'text-zinc-600'}`}>
+                      <span className="font-mono text-xs text-zinc-600">Current streak</span>
+                      <span className={`font-mono text-sm font-bold ${hero.streak>0?'text-orange-400':'text-zinc-600'}`}>
                         {hero.streak>0?`🔥 ${hero.streak} day${hero.streak>1?'s':''}`:'No active streak'}
                       </span>
                     </div>
                     <StreakBar streak={hero.streak} cap={30}/>
-                    <p className="text-[10px] font-mono text-zinc-700">Complete all daily quests before midnight to extend your streak</p>
+                    <p className="font-mono text-[11px] text-zinc-700 pt-1">Complete all daily quests before midnight to extend your streak</p>
                   </div>
                   {hero.statPoints>0 && (
-                    <div className="mt-4 flex items-center gap-2 p-3 rounded-lg" style={{background:'rgba(124,58,237,0.08)',border:'1px solid rgba(124,58,237,0.2)'}}>
-                      <BoltIcon/><span className="text-xs font-mono text-violet-300 font-semibold">{hero.statPoints} unallocated matrix shard{hero.statPoints>1?'s':''} available</span>
+                    <div className="mt-5 flex items-center gap-2.5 p-4 rounded-xl" style={{background:'rgba(124,58,237,0.09)',border:'1.5px solid rgba(124,58,237,0.22)'}}>
+                      <BoltIcon/>
+                      <span className="font-mono text-sm text-violet-300 font-semibold">{hero.statPoints} unallocated matrix shard{hero.statPoints>1?'s':''} available</span>
                     </div>
                   )}
                 </Card>
 
-                {/* Attribute Matrix */}
                 <div>
                   <SectionLabel>Attribute Matrix</SectionLabel>
-                  <div className="space-y-2.5">
+                  <div className="space-y-3">
                     {Object.entries(hero.stats).map(([stat,val])=>(
-                      <Card key={stat} className="px-5 py-4 flex items-center gap-5">
-                        <div className="w-20 flex-shrink-0">
-                          <span className="text-xs font-mono font-semibold capitalize" style={{color:statColor(stat)}}>{stat}</span>
+                      <Card key={stat} className="px-6 py-5 flex items-center gap-5">
+                        <div className="w-24 flex-shrink-0">
+                          <span className="text-sm font-semibold capitalize" style={{color:statColor(stat)}}>{stat}</span>
                         </div>
                         <StatBar value={val} color={statColor(stat)}/>
                         <div className="flex items-center gap-3 flex-shrink-0">
-                          <span className="text-sm font-bold font-mono w-8 text-right" style={{color:statColor(stat)}}>{Math.floor(val)}</span>
+                          <span className="text-xl font-bold font-mono w-10 text-right" style={{color:statColor(stat)}}>{Math.floor(val)}</span>
                           {hero.statPoints>0 && (
                             <button onClick={()=>handleStatBoost(stat)}
-                              className="text-[10px] font-mono font-semibold px-2.5 py-1 rounded-lg transition-all"
-                              style={{background:'rgba(124,58,237,0.1)',border:'1px solid rgba(124,58,237,0.25)',color:'#a78bfa'}}
+                              className="font-mono text-xs font-semibold px-3 py-1.5 rounded-xl transition-all"
+                              style={{background:'rgba(124,58,237,0.1)',border:'1.5px solid rgba(124,58,237,0.28)',color:'#a78bfa'}}
                               onMouseEnter={e=>e.currentTarget.style.background='rgba(124,58,237,0.2)'}
                               onMouseLeave={e=>e.currentTarget.style.background='rgba(124,58,237,0.1)'}>
                               +1
@@ -1351,217 +1283,171 @@
                   </div>
                 </div>
 
-                {/* Stat Milestone Log */}
                 {statMilestones.length>0 && (
                   <div>
                     <SectionLabel>Stat Milestone Log</SectionLabel>
-                    <div className="space-y-1.5">
+                    <div className="space-y-2">
                       {statMilestones.slice(0,12).map((m,i)=>(
-                        <div key={i} className="milestone-chip rounded-lg px-3.5 py-2.5 flex items-center justify-between">
-                          <div className="flex items-center gap-2.5">
-                            <span className={`text-[9px] font-mono font-bold px-1.5 py-0.5 rounded ${attrClass(m.stat)}`}>{attrLabel(m.stat)}</span>
-                            <span className="text-xs font-mono text-zinc-400">
-                              <span style={{color:statColor(m.stat)}} className="font-bold">{m.stat}</span> reached <span className="font-bold text-zinc-300">{m.milestone}</span>
+                        <div key={i} className="milestone-chip rounded-xl px-4 py-3 flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <span className={`font-mono text-[10px] font-bold px-2 py-0.5 rounded-lg ${attrClass(m.stat)}`}>{attrLabel(m.stat)}</span>
+                            <span className="text-sm">
+                              <span style={{color:statColor(m.stat)}} className="font-semibold">{m.stat}</span>
+                              {' '}reached <span className="font-bold text-zinc-200">{m.milestone}</span>
                             </span>
                           </div>
-                          <span className="text-[10px] font-mono text-zinc-600">{m.date}</span>
+                          <span className="font-mono text-xs text-zinc-600">{m.date}</span>
                         </div>
                       ))}
                     </div>
-                    {statMilestones.length>12 && (
-                      <p className="text-[10px] font-mono text-zinc-700 mt-2 text-center">+{statMilestones.length-12} older milestones in history</p>
-                    )}
                   </div>
                 )}
-                {statMilestones.length===0 && (
-                  <EmptyState icon="📈" title="No milestones yet" sub="Complete quests to raise your stats and unlock milestone records."/>
-                )}
+                {statMilestones.length===0 && <EmptyState icon="📈" title="No milestones yet" sub="Complete quests to raise your stats and unlock milestone records."/>}
 
-                {/* Config */}
-                <Card className="p-5 space-y-5">
+                <Card className="p-6 space-y-6">
                   <div>
                     <SectionLabel>API Configuration</SectionLabel>
-                    <button onClick={()=>{localStorage.removeItem("adi_gemini_key");triggerToast("API key purged.");}} className="btn-ghost rounded-lg px-4 py-2 text-xs font-mono">Purge Cached API Key</button>
+                    <button onClick={()=>{localStorage.removeItem("adi_gemini_key");triggerToast("API key purged.");}} className="btn-ghost rounded-xl px-5 py-2.5 font-mono">Purge Cached API Key</button>
                   </div>
-                  <div className="border-t border-zinc-900/60 pt-4">
-                    <p className="text-[10px] font-mono text-red-500/60 uppercase tracking-widest mb-2">Danger Zone</p>
-                    <button onClick={triggerReset} className="btn-danger rounded-lg px-4 py-2 text-xs font-mono">Hard Reset All Data</button>
-                    <p className="text-[10px] text-zinc-700 font-mono mt-2">Wipes all quests, logs, PRs, rewards, history, and hero data.</p>
+                  <div className="border-t border-zinc-900/60 pt-5">
+                    <p className="font-mono text-[10px] text-red-500/60 uppercase tracking-widest mb-3">Danger Zone</p>
+                    <button onClick={triggerReset} className="btn-danger rounded-xl px-5 py-2.5 font-mono">Hard Reset All Data</button>
+                    <p className="font-mono text-[11px] text-zinc-700 mt-2.5">Wipes all quests, logs, PRs, rewards, history, and hero data.</p>
                   </div>
                 </Card>
               </div>
             )}
 
-            {/* ══ JOURNAL TAB ═════════════════════════════════ */}
+            {/* ══ JOURNAL TAB ══ */}
             {activeTab==='journal' && (
               <div className="tab-section space-y-7">
-
-                {/* ── Today's Improvement Log ── */}
-                <Card className="p-5" glow>
+                <Card className="p-6" glow>
                   <div className="flex items-center justify-between mb-1">
                     <SectionLabel>Today's Improvement Log</SectionLabel>
-                    <span className="text-[10px] font-mono text-zinc-600">{todayStr()}</span>
+                    <span className="font-mono text-xs text-zinc-600">{todayStr()}</span>
                   </div>
-                  <p className="text-[11px] font-mono text-zinc-600 mb-4 -mt-2">
-                    What do you want to get better at today? Log it and track the patterns over time.
-                  </p>
-                  <div className="flex gap-2.5">
-                    <input
-                      type="text"
-                      value={newImprovementText}
-                      onChange={e=>setNewImprovementText(e.target.value)}
+                  <p className="text-sm text-zinc-500 mb-5 leading-relaxed">What do you want to get better at today? Log it and track the patterns over time.</p>
+                  <div className="flex gap-3">
+                    <input type="text" value={newImprovementText} onChange={e=>setNewImprovementText(e.target.value)}
                       onKeyDown={e=>e.key==='Enter'&&addImprovementEntry()}
                       placeholder="e.g. Stay off phone during deep work, finish tasks before starting new ones…"
-                      className="input-field flex-grow rounded-lg px-3.5 py-2.5 text-xs font-mono text-zinc-200 placeholder-zinc-700"
-                    />
-                    <button onClick={addImprovementEntry} className="btn-primary rounded-lg px-4 text-xs font-mono whitespace-nowrap">Log</button>
+                      className="input-field flex-grow rounded-xl px-4 py-3 placeholder-zinc-700"/>
+                    <button onClick={addImprovementEntry} className="btn-primary rounded-xl px-5 font-mono whitespace-nowrap">Log</button>
                   </div>
-
-                  {/* Today's entries */}
                   {(improvementLog[todayStr()]||[]).length>0 && (
-                    <div className="mt-4 space-y-2">
+                    <div className="mt-5 space-y-2.5">
                       {(improvementLog[todayStr()]||[]).map((entry,i)=>(
-                        <div key={i} className="flex items-start gap-3 rounded-lg px-3.5 py-2.5"
-                          style={{background:'var(--bg-input)',border:'1px solid var(--border-base)'}}>
-                          <span className="text-violet-500 mt-0.5 flex-shrink-0 text-[10px] font-mono font-bold">{String(i+1).padStart(2,'0')}</span>
-                          <span className="text-xs font-mono text-zinc-300 flex-1 leading-relaxed">{entry}</span>
-                          <button onClick={()=>deleteImprovementEntry(todayStr(),i)}
-                            className="flex-shrink-0 p-0.5 rounded hover:bg-zinc-900 transition-colors mt-0.5">
-                            <TrashIcon/>
-                          </button>
+                        <div key={i} className="flex items-start gap-3.5 rounded-xl px-4 py-3.5"
+                          style={{background:'var(--bg-input)',border:'1.5px solid var(--border-base)'}}>
+                          <span className="text-violet-500 mt-0.5 flex-shrink-0 font-mono font-bold text-[11px]">{String(i+1).padStart(2,'0')}</span>
+                          <span className="text-sm text-zinc-200 flex-1 leading-relaxed">{entry}</span>
+                          <button onClick={()=>deleteImprovementEntry(todayStr(),i)} className="flex-shrink-0 p-1 rounded-lg hover:bg-zinc-900 transition-colors mt-0.5"><TrashIcon/></button>
                         </div>
                       ))}
                     </div>
                   )}
                   {(improvementLog[todayStr()]||[]).length===0 && (
-                    <p className="mt-3 text-[10px] font-mono text-zinc-700 text-center py-2">Nothing logged yet today — set your first intention above.</p>
+                    <p className="mt-4 font-mono text-xs text-zinc-700 text-center py-2">Nothing logged yet today — set your first intention above.</p>
                   )}
                 </Card>
 
-                {/* ── Pattern Insights ── */}
                 {Object.keys(improvementLog).length>0 && (
-                  <Card className="p-5">
-                    <div className="flex items-center justify-between mb-4">
+                  <Card className="p-6">
+                    <div className="flex items-center justify-between mb-5">
                       <SectionLabel>Recurring Themes</SectionLabel>
                       <button onClick={generateAiInsight} disabled={aiInsightLoading}
-                        className="btn-ghost rounded-lg px-3 py-1.5 text-[10px] font-mono inline-flex items-center gap-1.5">
+                        className="btn-ghost rounded-xl px-4 py-2 font-mono text-xs inline-flex items-center gap-2">
                         {aiInsightLoading
-                          ?<><svg className="animate-spin w-2.5 h-2.5" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>Analyzing…</>
-                          :<>✦ AI Insights</>
+                          ?<><svg className="animate-spin w-3 h-3" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>Analyzing…</>
+                          :'✦ AI Insights'
                         }
                       </button>
                     </div>
-
-                    {/* Word frequency chips */}
-                    <div className="flex flex-wrap gap-2 mb-4">
+                    <div className="flex flex-wrap gap-2 mb-5">
                       {getTopThemes().map(([word,count])=>(
-                        <span key={word} className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-mono"
+                        <span key={word} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-mono text-[11px]"
                           style={{
                             background:`rgba(124,58,237,${Math.min(0.18,0.05+count*0.04)})`,
-                            border:`1px solid rgba(124,58,237,${Math.min(0.35,0.1+count*0.07)})`,
+                            border:`1.5px solid rgba(124,58,237,${Math.min(0.35,0.1+count*0.07)})`,
                             color:`rgba(167,139,250,${Math.min(1,0.6+count*0.1)})`,
-                            fontSize: `${Math.min(12,9+count)}px`
                           }}>
-                          {word}
-                          <span className="text-violet-700 text-[9px]">×{count}</span>
+                          {word}<span className="text-violet-700 text-[9px]">×{count}</span>
                         </span>
                       ))}
                     </div>
-
-                    {/* AI insights */}
-                    {Array.isArray(aiInsight) && aiInsight.length>0 && (
-                      <div className="space-y-2 border-t border-zinc-900/60 pt-4">
-                        <p className="text-[10px] font-mono text-violet-500 uppercase tracking-widest mb-3">AI Analysis</p>
+                    {Array.isArray(aiInsight)&&aiInsight.length>0&&(
+                      <div className="space-y-2.5 border-t border-zinc-900/60 pt-5">
+                        <p className="font-mono text-xs text-violet-500 uppercase tracking-widest mb-4">AI Analysis</p>
                         {aiInsight.map((insight,i)=>(
-                          <div key={i} className="flex gap-3 rounded-lg px-3.5 py-3"
-                            style={{background:'rgba(124,58,237,0.06)',border:'1px solid rgba(124,58,237,0.12)'}}>
-                            <span className="text-violet-600 font-bold font-mono text-[10px] flex-shrink-0 mt-0.5">{i+1}.</span>
-                            <span className="text-xs font-mono text-zinc-300 leading-relaxed">{insight}</span>
+                          <div key={i} className="flex gap-3.5 rounded-xl px-4 py-3.5"
+                            style={{background:'rgba(124,58,237,0.07)',border:'1.5px solid rgba(124,58,237,0.14)'}}>
+                            <span className="text-violet-600 font-bold font-mono text-xs flex-shrink-0 mt-0.5">{i+1}.</span>
+                            <span className="text-sm text-zinc-200 leading-relaxed">{insight}</span>
                           </div>
                         ))}
                       </div>
                     )}
-                    <p className="text-[10px] font-mono text-zinc-700 mt-3">
+                    <p className="font-mono text-[11px] text-zinc-700 mt-4">
                       {Object.values(improvementLog).flat().length} entries across {Object.keys(improvementLog).length} day{Object.keys(improvementLog).length!==1?'s':''} · AI insights require Gemini API key
                     </p>
                   </Card>
                 )}
 
-                {/* ── Quest Note Archive ── */}
                 <div>
-                  <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center justify-between mb-4">
                     <SectionLabel>Quest Note Archive</SectionLabel>
-                    <span className="text-[10px] font-mono text-zinc-600">{Object.keys(noteHistory).length} day{Object.keys(noteHistory).length!==1?'s':''} archived</span>
+                    <span className="font-mono text-xs text-zinc-600">{Object.keys(noteHistory).length} day{Object.keys(noteHistory).length!==1?'s':''} archived</span>
                   </div>
-
-                  {Object.keys(noteHistory).length===0 ? (
-                    <EmptyState icon="📓" title="No archived notes yet"
-                      sub="Add notes to quests via the ∨ chevron — they'll be saved here automatically at midnight reset."/>
-                  ) : (
-                    <div className="space-y-3">
+                  {Object.keys(noteHistory).length===0
+                    ?<EmptyState icon="📓" title="No archived notes yet" sub="Add notes to quests via the ∨ chevron — they'll be saved here automatically at midnight reset."/>
+                    :<div className="space-y-3">
                       {Object.entries(noteHistory).sort((a,b)=>b[0].localeCompare(a[0])).slice(0,14).map(([date,entries])=>(
                         <Card key={date} className="overflow-hidden">
-                          <button
-                            onClick={()=>setJournalViewDate(journalViewDate===date?null:date)}
-                            className="w-full px-4 py-3 flex items-center justify-between hover:bg-zinc-900/30 transition-colors">
-                            <div className="flex items-center gap-3">
-                              <span className="text-[10px] font-mono font-semibold text-zinc-400">{date}</span>
-                              <span className="text-[9px] font-mono text-zinc-600">
-                                {entries.length} note{entries.length!==1?'s':''} · {entries.filter(e=>e.completed).length} completed
-                              </span>
+                          <button onClick={()=>setJournalViewDate(journalViewDate===date?null:date)}
+                            className="w-full px-5 py-4 flex items-center justify-between hover:bg-zinc-900/30 transition-colors">
+                            <div className="flex items-center gap-3.5">
+                              <span className="font-mono text-sm font-semibold text-zinc-300">{date}</span>
+                              <span className="font-mono text-xs text-zinc-600">{entries.length} note{entries.length!==1?'s':''} · {entries.filter(e=>e.completed).length} completed</span>
                             </div>
                             <ChevronIcon open={journalViewDate===date}/>
                           </button>
-                          {journalViewDate===date && (
-                            <div className="border-t border-zinc-900/60 px-4 pb-4 space-y-3 pt-3">
+                          {journalViewDate===date&&(
+                            <div className="border-t border-zinc-900/60 px-5 pb-5 space-y-4 pt-4">
                               {entries.map((e,i)=>(
-                                <div key={i} className="space-y-1">
-                                  <div className="flex items-center gap-2">
-                                    <span className={`text-[9px] font-mono font-bold px-1.5 py-0.5 rounded ${attrClass(e.attribute)}`}>{attrLabel(e.attribute)}</span>
-                                    <span className={`text-[10px] font-mono ${e.completed?'text-green-400':'text-zinc-500'}`}>
-                                      {e.completed?'✓ ':''}{e.questText}
-                                    </span>
+                                <div key={i} className="space-y-1.5">
+                                  <div className="flex items-center gap-2.5">
+                                    <span className={`font-mono text-[10px] font-bold px-2 py-0.5 rounded-lg ${attrClass(e.attribute)}`}>{attrLabel(e.attribute)}</span>
+                                    <span className={`text-sm ${e.completed?'text-green-400':'text-zinc-500'}`}>{e.completed?'✓ ':''}{e.questText}</span>
                                   </div>
-                                  <p className="text-[11px] font-mono text-zinc-500 leading-relaxed pl-10 italic">
-                                    "{e.note}"
-                                  </p>
+                                  <p className="font-mono text-xs text-zinc-500 leading-relaxed pl-14 italic">"{e.note}"</p>
                                 </div>
                               ))}
                             </div>
                           )}
                         </Card>
                       ))}
-                      {Object.keys(noteHistory).length>14 && (
-                        <p className="text-[10px] font-mono text-zinc-700 text-center">+{Object.keys(noteHistory).length-14} older entries</p>
-                      )}
                     </div>
-                  )}
+                  }
                 </div>
 
-                {/* ── Past Improvement Entries ── */}
-                {Object.keys(improvementLog).filter(d=>d!==todayStr()).length>0 && (
+                {Object.keys(improvementLog).filter(d=>d!==todayStr()).length>0&&(
                   <div>
                     <SectionLabel>Past Improvement Entries</SectionLabel>
-                    <div className="space-y-2">
-                      {Object.entries(improvementLog)
-                        .filter(([d])=>d!==todayStr())
-                        .sort((a,b)=>b[0].localeCompare(a[0]))
-                        .slice(0,10)
-                        .map(([date,entries])=>(
-                          <div key={date} className="rounded-xl px-4 py-3 space-y-1.5"
-                            style={{background:'var(--bg-card)',border:'1px solid var(--border-card)'}}>
-                            <p className="text-[9px] font-mono text-zinc-600 uppercase tracking-widest">{date}</p>
-                            {entries.map((entry,i)=>(
-                              <p key={i} className="text-[11px] font-mono text-zinc-400 leading-relaxed flex gap-2">
-                                <span className="text-violet-700 flex-shrink-0">—</span>{entry}
-                              </p>
-                            ))}
-                          </div>
-                        ))}
+                    <div className="space-y-2.5">
+                      {Object.entries(improvementLog).filter(([d])=>d!==todayStr()).sort((a,b)=>b[0].localeCompare(a[0])).slice(0,10).map(([date,entries])=>(
+                        <div key={date} className="rounded-2xl px-5 py-4 space-y-2"
+                          style={{background:'var(--bg-card)',border:'1.5px solid var(--border-card)'}}>
+                          <p className="font-mono text-[10px] text-zinc-600 uppercase tracking-widest">{date}</p>
+                          {entries.map((entry,i)=>(
+                            <p key={i} className="text-sm text-zinc-400 leading-relaxed flex gap-2.5">
+                              <span className="text-violet-700 flex-shrink-0">—</span>{entry}
+                            </p>
+                          ))}
+                        </div>
+                      ))}
                     </div>
                   </div>
                 )}
-
               </div>
             )}
 
@@ -1569,23 +1455,24 @@
 
           {/* LEVEL UP MODAL */}
           {levelUpModal && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{background:'rgba(9,9,11,0.9)',backdropFilter:'blur(16px)'}}>
-              <div className="max-w-sm w-full rounded-2xl p-7 text-center space-y-5 glow-border"
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4"
+              style={{background:'rgba(10,10,13,0.92)',backdropFilter:'blur(18px)'}}>
+              <div className="max-w-sm w-full rounded-3xl p-8 text-center space-y-6 glow-border"
                 style={{background:'var(--bg-card)',animation:'scaleIn 0.25s ease-out both'}}>
-                <div className="mx-auto w-16 h-16 rounded-full flex items-center justify-center mb-1"
-                  style={{background:'radial-gradient(circle, rgba(124,58,237,0.2) 0%, transparent 70%)',border:'1px solid rgba(124,58,237,0.3)'}}>
-                  <span className="text-2xl">⚡</span>
+                <div className="mx-auto w-18 h-18 rounded-full flex items-center justify-center mb-2"
+                  style={{width:'72px',height:'72px',background:'radial-gradient(circle, rgba(124,58,237,0.2) 0%, transparent 70%)',border:'1.5px solid rgba(124,58,237,0.3)'}}>
+                  <span className="text-3xl">⚡</span>
                 </div>
                 <div>
-                  <p className="text-[10px] font-mono text-violet-500 uppercase tracking-widest mb-1">Matrix Upgrade</p>
-                  <h3 className="text-xl font-bold text-zinc-100">Level {hero.level} Reached</h3>
-                  <p className="text-xs text-zinc-500 font-mono mt-2 leading-relaxed">3 attribute shards earned. Allocate them in the Matrix tab to sharpen your stats.</p>
+                  <p className="font-mono text-xs text-violet-500 uppercase tracking-widest mb-2">Matrix Upgrade</p>
+                  <h3 className="font-display text-2xl font-bold text-zinc-100">Level {hero.level} Reached</h3>
+                  <p className="text-sm text-zinc-500 mt-3 leading-relaxed">3 attribute shards earned. Allocate them in the Matrix tab to sharpen your stats.</p>
                 </div>
-                <div className="flex gap-2">
-                  <button onClick={()=>setLevelUpModal(false)} className="btn-ghost flex-1 rounded-xl py-3 text-sm font-mono">Dismiss</button>
-                  <button onClick={()=>{setLevelUpModal(false);setActiveTab('hero');}} className="btn-primary flex-1 rounded-xl py-3 text-sm font-mono">Open Matrix</button>
+                <div className="flex gap-3">
+                  <button onClick={()=>setLevelUpModal(false)} className="btn-ghost flex-1 rounded-2xl py-3.5 font-mono">Dismiss</button>
+                  <button onClick={()=>{setLevelUpModal(false);setActiveTab('hero');}} className="btn-primary flex-1 rounded-2xl py-3.5 font-mono">Open Matrix</button>
                 </div>
-                <p className="text-[10px] font-mono text-zinc-700">Press <kbd className="kbd">Esc</kbd> to close</p>
+                <p className="font-mono text-xs text-zinc-700">Press <kbd className="kbd">Esc</kbd> to close</p>
               </div>
             </div>
           )}
