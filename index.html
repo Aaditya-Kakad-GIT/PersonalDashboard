@@ -225,6 +225,10 @@
     /* Keyboard hint */
     .kbd { display:inline-flex;align-items:center;justify-content:center;padding:1px 5px;border-radius:4px;font-size:9px;font-family:'Geist Mono',monospace;background:rgba(39,39,42,0.6);border:1px solid rgba(63,63,70,0.5);color:#52525b; }
 
+    /* Journal theme chip hover */
+    .theme-chip { transition: transform 0.15s ease; }
+    .theme-chip:hover { transform: scale(1.04); }
+
     /* Dim mode toggle pill */
     .dim-toggle {
       display: inline-flex; align-items: center; gap: 5px;
@@ -524,6 +528,15 @@
       ]);
       const [dailyHistory,  setDailyHistory]  = useState(()=>JSON.parse(localStorage.getItem('lq_history_adi_v4'))    ||{});
       const [statMilestones,setStatMilestones]= useState(()=>JSON.parse(localStorage.getItem('lq_milestones_adi_v4'))||[]);
+      /* noteHistory: { [date]: [ { questText, note } ] }  — archived on midnight reset */
+      const [noteHistory,   setNoteHistory]   = useState(()=>JSON.parse(localStorage.getItem('lq_notehistory_v4'))    ||{});
+      /* improvementLog: { [date]: string[] } */
+      const [improvementLog,setImprovementLog]= useState(()=>JSON.parse(localStorage.getItem('lq_improve_v4'))        ||{});
+
+      const [newImprovementText, setNewImprovementText] = useState("");
+      const [journalViewDate,    setJournalViewDate]    = useState(null); /* null = today */
+      const [aiInsightLoading,   setAiInsightLoading]   = useState(false);
+      const [aiInsight,          setAiInsight]          = useState("");
 
       const [aiInputPrompt,  setAiInputPrompt]  = useState("");
       const [isAiGenerating, setIsAiGenerating] = useState(false);
@@ -543,10 +556,10 @@
 
       /* ── KEYBOARD SHORTCUTS ─────────────────────────────── */
       useEffect(()=>{
-        const tabIds=['dashboard','quests','gym','shop','hero'];
+        const tabIds=['dashboard','quests','gym','shop','hero','journal'];
         const handle = (e) => {
           if (e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA'||e.target.tagName==='SELECT') return;
-          if (e.key>='1'&&e.key<='5') setActiveTab(tabIds[parseInt(e.key)-1]);
+          if (e.key>='1'&&e.key<='6') setActiveTab(tabIds[parseInt(e.key)-1]);
           if (e.key==='Escape') { setLevelUpModal(false); setShowConfetti(false); }
           if (e.key==='d'||e.key==='D') setDimMode(m=>!m);
         };
@@ -566,14 +579,25 @@
           const newStreak   = (consecutive && allDone) ? hero.streak+1 : 0;
           setHero(h=>({...h,streak:newStreak}));
 
+          /* ── Archive quest notes before clearing ── */
+          if (lastReset) {
+            const notedQuests = quests.filter(q=>q.notes&&q.notes.trim());
+            if (notedQuests.length>0) {
+              setNoteHistory(prev=>({
+                ...prev,
+                [lastReset]: notedQuests.map(q=>({questText:q.text,note:q.notes,completed:q.completed,attribute:q.attribute}))
+              }));
+            }
+          }
+
           const isWeeklyReset  = new Date().getDay()===0;
           const lastWeekly     = localStorage.getItem('lq_last_weekly_reset');
           if (isWeeklyReset && lastWeekly!==today) {
-            setQuests(prev=>prev.map(q=>({...q,completed:false})));
+            setQuests(prev=>prev.map(q=>({...q,completed:false,notes:""})));
             localStorage.setItem('lq_last_weekly_reset',today);
             setTimeout(()=>triggerToast("🗓️ Weekly reset — all quests refreshed."),800);
           } else {
-            setQuests(prev=>prev.map(q=>q.type==='day'?{...q,completed:false}:q));
+            setQuests(prev=>prev.map(q=>q.type==='day'?{...q,completed:false,notes:""}:q));
             setTimeout(()=>triggerToast("⚡ New day — daily quests reset."),800);
           }
           if (newStreak>0) setTimeout(()=>triggerToast(`🔥 Streak: ${newStreak} day${newStreak>1?'s':''} — keep it alive.`),1400);
@@ -590,7 +614,9 @@
         localStorage.setItem('lq_prs_adi_v4',     JSON.stringify(exercisePRs));
         localStorage.setItem('lq_history_adi_v4', JSON.stringify(dailyHistory));
         localStorage.setItem('lq_milestones_adi_v4',JSON.stringify(statMilestones));
-      },[hero,quests,gymLogs,rewards,exercisePRs,dailyHistory,statMilestones]);
+        localStorage.setItem('lq_notehistory_v4', JSON.stringify(noteHistory));
+        localStorage.setItem('lq_improve_v4',     JSON.stringify(improvementLog));
+      },[hero,quests,gymLogs,rewards,exercisePRs,dailyHistory,statMilestones,noteHistory,improvementLog]);
 
       const triggerToast = (msg)=>{ setToastMsg(msg); setTimeout(()=>setToastMsg(""),4500); };
 
@@ -775,6 +801,51 @@
         if(confirm("Nuke all data? Resets everything.")) { localStorage.clear(); window.location.reload(); }
       };
 
+      /* ── IMPROVEMENT LOG ────────────────────────────────── */
+      const addImprovementEntry = () => {
+        if(!newImprovementText.trim()) return;
+        const today=todayStr();
+        setImprovementLog(prev=>({...prev,[today]:[...(prev[today]||[]),newImprovementText.trim()]}));
+        setNewImprovementText("");
+        triggerToast("Improvement logged.");
+      };
+      const deleteImprovementEntry = (date,idx) => {
+        setImprovementLog(prev=>{
+          const updated=[...(prev[date]||[])]; updated.splice(idx,1);
+          if(updated.length===0){ const n={...prev}; delete n[date]; return n; }
+          return {...prev,[date]:updated};
+        });
+      };
+
+      /* Word frequency for improvement insights */
+      const getTopThemes = () => {
+        const stopWords=new Set(['a','an','the','to','i','my','and','or','for','in','on','at','is','it','be','of','with','that','this','want','need','more','better','less']);
+        const freq={};
+        Object.values(improvementLog).flat().forEach(entry=>{
+          entry.toLowerCase().replace(/[^a-z\s]/g,'').split(/\s+/).forEach(w=>{
+            if(w.length>2&&!stopWords.has(w)) freq[w]=(freq[w]||0)+1;
+          });
+        });
+        return Object.entries(freq).sort((a,b)=>b[1]-a[1]).slice(0,12);
+      };
+
+      const generateAiInsight = async () => {
+        const apiKey=loadApiKey(); if(!apiKey) return;
+        const allEntries=Object.entries(improvementLog).map(([d,items])=>`${d}: ${items.join('; ')}`).join('\n');
+        if(!allEntries.trim()){ triggerToast("No improvement entries yet."); return; }
+        setAiInsightLoading(true); setAiInsight("");
+        try{
+          const res=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,{
+            method:"POST",headers:{"Content-Type":"application/json"},
+            body:JSON.stringify({contents:[{parts:[{text:`These are Adi's daily improvement log entries:\n${allEntries}\n\nAnalyze patterns and give 3 concise, actionable insights (each under 25 words). Be direct and personal. Format as a JSON array: {"insights":["...","...","..."]}`}]}],generationConfig:{responseMimeType:"application/json"}})
+          });
+          const result=await res.json();
+          const data=JSON.parse(result.candidates[0].content.parts[0].text);
+          if(data.insights) setAiInsight(data.insights);
+        }catch(e){ triggerToast(`Insight failed: ${e.message}`); }
+        finally{ setAiInsightLoading(false); }
+      };
+
       /* ── DERIVED ────────────────────────────────────────── */
       const codingQuest = quests.find(q=>q.text.includes("8 Hours"))||{};
       const readQuest   = quests.find(q=>q.text.includes("Read book"))||{};
@@ -791,6 +862,7 @@
         {id:'gym',      label:'Temple'},
         {id:'shop',     label:'Store'},
         {id:'hero',     label:'Matrix'},
+        {id:'journal',  label:'Journal'},
       ];
 
       /* ── QUEST ROW (reusable) ───────────────────────────── */
@@ -1317,6 +1389,179 @@
                     <p className="text-[10px] text-zinc-700 font-mono mt-2">Wipes all quests, logs, PRs, rewards, history, and hero data.</p>
                   </div>
                 </Card>
+              </div>
+            )}
+
+            {/* ══ JOURNAL TAB ═════════════════════════════════ */}
+            {activeTab==='journal' && (
+              <div className="tab-section space-y-7">
+
+                {/* ── Today's Improvement Log ── */}
+                <Card className="p-5" glow>
+                  <div className="flex items-center justify-between mb-1">
+                    <SectionLabel>Today's Improvement Log</SectionLabel>
+                    <span className="text-[10px] font-mono text-zinc-600">{todayStr()}</span>
+                  </div>
+                  <p className="text-[11px] font-mono text-zinc-600 mb-4 -mt-2">
+                    What do you want to get better at today? Log it and track the patterns over time.
+                  </p>
+                  <div className="flex gap-2.5">
+                    <input
+                      type="text"
+                      value={newImprovementText}
+                      onChange={e=>setNewImprovementText(e.target.value)}
+                      onKeyDown={e=>e.key==='Enter'&&addImprovementEntry()}
+                      placeholder="e.g. Stay off phone during deep work, finish tasks before starting new ones…"
+                      className="input-field flex-grow rounded-lg px-3.5 py-2.5 text-xs font-mono text-zinc-200 placeholder-zinc-700"
+                    />
+                    <button onClick={addImprovementEntry} className="btn-primary rounded-lg px-4 text-xs font-mono whitespace-nowrap">Log</button>
+                  </div>
+
+                  {/* Today's entries */}
+                  {(improvementLog[todayStr()]||[]).length>0 && (
+                    <div className="mt-4 space-y-2">
+                      {(improvementLog[todayStr()]||[]).map((entry,i)=>(
+                        <div key={i} className="flex items-start gap-3 rounded-lg px-3.5 py-2.5"
+                          style={{background:'var(--bg-input)',border:'1px solid var(--border-base)'}}>
+                          <span className="text-violet-500 mt-0.5 flex-shrink-0 text-[10px] font-mono font-bold">{String(i+1).padStart(2,'0')}</span>
+                          <span className="text-xs font-mono text-zinc-300 flex-1 leading-relaxed">{entry}</span>
+                          <button onClick={()=>deleteImprovementEntry(todayStr(),i)}
+                            className="flex-shrink-0 p-0.5 rounded hover:bg-zinc-900 transition-colors mt-0.5">
+                            <TrashIcon/>
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  {(improvementLog[todayStr()]||[]).length===0 && (
+                    <p className="mt-3 text-[10px] font-mono text-zinc-700 text-center py-2">Nothing logged yet today — set your first intention above.</p>
+                  )}
+                </Card>
+
+                {/* ── Pattern Insights ── */}
+                {Object.keys(improvementLog).length>0 && (
+                  <Card className="p-5">
+                    <div className="flex items-center justify-between mb-4">
+                      <SectionLabel>Recurring Themes</SectionLabel>
+                      <button onClick={generateAiInsight} disabled={aiInsightLoading}
+                        className="btn-ghost rounded-lg px-3 py-1.5 text-[10px] font-mono inline-flex items-center gap-1.5">
+                        {aiInsightLoading
+                          ?<><svg className="animate-spin w-2.5 h-2.5" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>Analyzing…</>
+                          :<>✦ AI Insights</>
+                        }
+                      </button>
+                    </div>
+
+                    {/* Word frequency chips */}
+                    <div className="flex flex-wrap gap-2 mb-4">
+                      {getTopThemes().map(([word,count])=>(
+                        <span key={word} className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-mono"
+                          style={{
+                            background:`rgba(124,58,237,${Math.min(0.18,0.05+count*0.04)})`,
+                            border:`1px solid rgba(124,58,237,${Math.min(0.35,0.1+count*0.07)})`,
+                            color:`rgba(167,139,250,${Math.min(1,0.6+count*0.1)})`,
+                            fontSize: `${Math.min(12,9+count)}px`
+                          }}>
+                          {word}
+                          <span className="text-violet-700 text-[9px]">×{count}</span>
+                        </span>
+                      ))}
+                    </div>
+
+                    {/* AI insights */}
+                    {Array.isArray(aiInsight) && aiInsight.length>0 && (
+                      <div className="space-y-2 border-t border-zinc-900/60 pt-4">
+                        <p className="text-[10px] font-mono text-violet-500 uppercase tracking-widest mb-3">AI Analysis</p>
+                        {aiInsight.map((insight,i)=>(
+                          <div key={i} className="flex gap-3 rounded-lg px-3.5 py-3"
+                            style={{background:'rgba(124,58,237,0.06)',border:'1px solid rgba(124,58,237,0.12)'}}>
+                            <span className="text-violet-600 font-bold font-mono text-[10px] flex-shrink-0 mt-0.5">{i+1}.</span>
+                            <span className="text-xs font-mono text-zinc-300 leading-relaxed">{insight}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    <p className="text-[10px] font-mono text-zinc-700 mt-3">
+                      {Object.values(improvementLog).flat().length} entries across {Object.keys(improvementLog).length} day{Object.keys(improvementLog).length!==1?'s':''} · AI insights require Gemini API key
+                    </p>
+                  </Card>
+                )}
+
+                {/* ── Quest Note Archive ── */}
+                <div>
+                  <div className="flex items-center justify-between mb-3">
+                    <SectionLabel>Quest Note Archive</SectionLabel>
+                    <span className="text-[10px] font-mono text-zinc-600">{Object.keys(noteHistory).length} day{Object.keys(noteHistory).length!==1?'s':''} archived</span>
+                  </div>
+
+                  {Object.keys(noteHistory).length===0 ? (
+                    <EmptyState icon="📓" title="No archived notes yet"
+                      sub="Add notes to quests via the ∨ chevron — they'll be saved here automatically at midnight reset."/>
+                  ) : (
+                    <div className="space-y-3">
+                      {Object.entries(noteHistory).sort((a,b)=>b[0].localeCompare(a[0])).slice(0,14).map(([date,entries])=>(
+                        <Card key={date} className="overflow-hidden">
+                          <button
+                            onClick={()=>setJournalViewDate(journalViewDate===date?null:date)}
+                            className="w-full px-4 py-3 flex items-center justify-between hover:bg-zinc-900/30 transition-colors">
+                            <div className="flex items-center gap-3">
+                              <span className="text-[10px] font-mono font-semibold text-zinc-400">{date}</span>
+                              <span className="text-[9px] font-mono text-zinc-600">
+                                {entries.length} note{entries.length!==1?'s':''} · {entries.filter(e=>e.completed).length} completed
+                              </span>
+                            </div>
+                            <ChevronIcon open={journalViewDate===date}/>
+                          </button>
+                          {journalViewDate===date && (
+                            <div className="border-t border-zinc-900/60 px-4 pb-4 space-y-3 pt-3">
+                              {entries.map((e,i)=>(
+                                <div key={i} className="space-y-1">
+                                  <div className="flex items-center gap-2">
+                                    <span className={`text-[9px] font-mono font-bold px-1.5 py-0.5 rounded ${attrClass(e.attribute)}`}>{attrLabel(e.attribute)}</span>
+                                    <span className={`text-[10px] font-mono ${e.completed?'text-green-400':'text-zinc-500'}`}>
+                                      {e.completed?'✓ ':''}{e.questText}
+                                    </span>
+                                  </div>
+                                  <p className="text-[11px] font-mono text-zinc-500 leading-relaxed pl-10 italic">
+                                    "{e.note}"
+                                  </p>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </Card>
+                      ))}
+                      {Object.keys(noteHistory).length>14 && (
+                        <p className="text-[10px] font-mono text-zinc-700 text-center">+{Object.keys(noteHistory).length-14} older entries</p>
+                      )}
+                    </div>
+                  )}
+                </div>
+
+                {/* ── Past Improvement Entries ── */}
+                {Object.keys(improvementLog).filter(d=>d!==todayStr()).length>0 && (
+                  <div>
+                    <SectionLabel>Past Improvement Entries</SectionLabel>
+                    <div className="space-y-2">
+                      {Object.entries(improvementLog)
+                        .filter(([d])=>d!==todayStr())
+                        .sort((a,b)=>b[0].localeCompare(a[0]))
+                        .slice(0,10)
+                        .map(([date,entries])=>(
+                          <div key={date} className="rounded-xl px-4 py-3 space-y-1.5"
+                            style={{background:'var(--bg-card)',border:'1px solid var(--border-card)'}}>
+                            <p className="text-[9px] font-mono text-zinc-600 uppercase tracking-widest">{date}</p>
+                            {entries.map((entry,i)=>(
+                              <p key={i} className="text-[11px] font-mono text-zinc-400 leading-relaxed flex gap-2">
+                                <span className="text-violet-700 flex-shrink-0">—</span>{entry}
+                              </p>
+                            ))}
+                          </div>
+                        ))}
+                    </div>
+                  </div>
+                )}
+
               </div>
             )}
 
