@@ -57,25 +57,20 @@
     body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");pointer-events:none;z-index:0;opacity:var(--noise);transition:opacity .35s ease}
     .glass{background:var(--bg-glass);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
     .glow-border{border:1px solid rgba(124,58,237,.28);box-shadow:0 0 24px rgba(124,58,237,.07),inset 0 1px 0 rgba(124,58,237,.1)}
-    /* Bars */
     .xp-fill{background:linear-gradient(90deg,#5b21b6,#7c3aed,#a78bfa,#7c3aed,#5b21b6);background-size:200% 100%;animation:shimmer 3s linear infinite}
     .streak-fill{background:linear-gradient(90deg,#92400e,#d97706,#fbbf24,#f59e0b,#d97706);background-size:200% 100%;animation:shimmer 2.2s linear infinite}
     .bar-bg{height:5px;background:var(--stat-bg);border-radius:99px;overflow:hidden;transition:background .35s ease}
     .bar-fill{height:100%;border-radius:99px;transition:width .45s cubic-bezier(.4,0,.2,1)}
-    /* Checkbox */
     .qcheck{appearance:none;width:19px;height:19px;border:1.5px solid #383848;border-radius:5px;cursor:pointer;transition:all .15s ease;position:relative;flex-shrink:0}
     .qcheck:checked{background:#7c3aed;border-color:#7c3aed}
     .qcheck:checked::after{content:'';position:absolute;left:5px;top:2px;width:6px;height:10px;border:2px solid white;border-left:none;border-top:none;transform:rotate(45deg)}
     .qcheck:hover:not(:checked){border-color:#7c3aed;background:rgba(124,58,237,.1)}
-    /* Tabs */
     .tab-on{color:#e8e8f0;background:rgba(40,40,52,.88);border:1.5px solid rgba(62,62,80,.72)}
     .tab-off{color:#464658;border:1.5px solid transparent}
     .tab-off:hover{color:#8a8a9a;background:rgba(28,28,38,.42)}
-    /* Inputs */
     .inp{background:var(--bg-input);border:1.5px solid var(--border-base);color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;transition:border-color .15s,box-shadow .15s,background .35s ease}
     .inp::placeholder{color:#383848}.inp:focus{outline:none;border-color:rgba(124,58,237,.55);box-shadow:0 0 0 4px rgba(124,58,237,.08)}
     select.inp{color:var(--muted)}select option{background:#14141e;color:#d0d0d8}
-    /* Buttons */
     .btn-p{background:#f0f0f2;color:#0a0a0d;font-weight:600;font-size:13px;transition:all .15s ease}
     .btn-p:hover{background:#fff;transform:translateY(-1px);box-shadow:0 6px 18px rgba(0,0,0,.4)}
     .btn-p:active{transform:translateY(0)}.btn-p:disabled{opacity:.38;cursor:not-allowed;transform:none}
@@ -83,10 +78,8 @@
     .btn-g:hover{background:rgba(40,40,52,.88);color:#e0e0e8;border-color:rgba(62,62,80,.88)}
     .btn-d{background:rgba(127,29,29,.12);border:1.5px solid rgba(185,28,28,.18);color:#f87171;font-size:13px;transition:all .15s}
     .btn-d:hover{background:rgba(127,29,29,.22);border-color:rgba(185,28,28,.35)}
-    /* Cards */
     .lq-card{background:var(--bg-card);border:1.5px solid var(--border-card);border-radius:16px;transition:background .35s ease,border-color .35s ease}
     .tab-section{animation:fadeSlideIn .25s ease-out both}
-    /* Badges */
     .gold{color:#fbbf24}
     .lvl-badge{background:linear-gradient(135deg,rgba(124,58,237,.17),rgba(139,92,246,.09));border:1.5px solid rgba(124,58,237,.3);color:#a78bfa}
     .empty-state{border:1.5px dashed rgba(42,42,54,.65);background:rgba(10,10,13,.22)}
@@ -99,41 +92,30 @@
     .atr-t{color:#34d399;background:rgba(52,211,153,.09);border:1.5px solid rgba(52,211,153,.18)}
     .b-wk{color:#818cf8;background:rgba(129,140,248,.09);border:1.5px solid rgba(129,140,248,.18)}
     .b-pr{color:#fbbf24;background:rgba(251,191,36,.12);border:1.5px solid rgba(251,191,36,.28)}
-    /* Day card */
     .day-card{background:var(--bg-day);border:1.5px solid var(--border-card);transition:all .2s ease}
     .day-card:hover{border-color:rgba(124,58,237,.4);transform:translateY(-2px);box-shadow:0 10px 28px rgba(0,0,0,.3),0 0 22px rgba(124,58,237,.07)}
-    /* Header */
     .hdr{background:var(--bg-header);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);border-bottom:1.5px solid rgba(40,40,52,.65);transition:background .35s ease}
-    /* Reward */
     .rcard{background:var(--bg-reward);border:1.5px solid var(--border-card);transition:all .18s ease}
     .rcard:hover{border-color:rgba(251,191,36,.24);box-shadow:0 0 24px rgba(251,191,36,.06)}
-    /* Dots */
     .dot-v{width:7px;height:7px;background:#7c3aed;border-radius:50%;box-shadow:0 0 7px rgba(124,58,237,.85),0 0 14px rgba(124,58,237,.38);flex-shrink:0}
     .dot-g{width:7px;height:7px;background:#4ade80;border-radius:50%;box-shadow:0 0 7px rgba(74,222,128,.85),0 0 14px rgba(74,222,128,.38);flex-shrink:0}
-    /* Drag */
     .drag-h{cursor:grab;color:#3a3a4a;transition:color .15s}.drag-h:hover{color:#6a6a7a}.drag-h:active{cursor:grabbing}
     .q-drag{opacity:.36}.q-over{border-color:rgba(124,58,237,.55)!important;background:rgba(124,58,237,.05)!important}
-    /* Notes */
     .notes-x{max-height:0;overflow:hidden;transition:max-height .22s ease}.notes-x.open{max-height:220px}
     .notes-ta{background:transparent;resize:none;outline:none;width:100%;font-family:'JetBrains Mono',monospace;font-size:12px;color:#4a4a5a;line-height:1.65}
     .notes-ta:focus{color:#6a6a7a}.notes-ta::placeholder{color:#2e2e3a}
-    /* Section label */
     .slabel{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:#4a4a5a;margin-bottom:14px}
-    /* Milestone */
     .mchip{background:var(--bg-day);border:1.5px solid var(--border-card);transition:all .18s ease}
-    /* Vol bars */
     .vbar-bg{height:5px;background:var(--vol-bg);border-radius:99px;overflow:hidden;flex:1;transition:background .35s ease}
     .vbar-fill{height:100%;border-radius:99px;transition:width .55s cubic-bezier(.4,0,.2,1)}
-    /* kbd */
     .kbd{display:inline-flex;align-items:center;justify-content:center;padding:2px 6px;border-radius:5px;font-size:10px;font-family:'JetBrains Mono',monospace;background:rgba(40,40,52,.65);border:1.5px solid rgba(62,62,80,.55);color:#52525b}
-    /* Dim toggle */
     .dim-tog{display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:99px;font-size:11px;font-family:'JetBrains Mono',monospace;font-weight:500;cursor:pointer;transition:all .2s ease;background:rgba(40,40,52,.55);border:1.5px solid rgba(62,62,80,.65);color:#6a6a7a;user-select:none}
     .dim-tog:hover{background:rgba(62,62,80,.65);color:#9a9ab2}
     .dim-tog.on{background:rgba(26,26,42,.85);border-color:rgba(129,140,248,.4);color:#818cf8;box-shadow:0 0 12px rgba(129,140,248,.12)}
 
-    /* ── FOCUS TIMER ── */
+    /* ── FOCUS TIMER STYLING ── */
     .timer-ring-track{fill:none;stroke:#1a1a26;stroke-width:7}
-    .timer-ring-prog{fill:none;stroke-width:7;stroke-linecap:round;transform:rotate(-90deg);transform-origin:60px 60px;transition:stroke-dashoffset .8s ease,stroke .4s ease}
+    .timer-ring-prog{fill:none;stroke-width:7;stroke-linecap:round;transform:rotate(-90deg);transform-origin:60px 60px;transition:stroke-dashoffset .5s ease,stroke .4s ease}
     .timer-mode-btn{padding:5px 14px;border-radius:99px;font-size:11px;font-family:'JetBrains Mono',monospace;font-weight:500;cursor:pointer;transition:all .18s ease;border:1.5px solid rgba(42,42,54,.8);color:#5a5a6a;background:transparent}
     .timer-mode-btn:hover{color:#9a9ab0;border-color:rgba(70,70,88,.9)}
     .timer-mode-btn.active{background:rgba(124,58,237,.18);border-color:rgba(124,58,237,.45);color:#a78bfa}
@@ -143,30 +125,20 @@
     .timer-btn:hover{background:rgba(42,42,56,.9);color:#e0e0ee}
     .timer-btn.run{border-color:rgba(124,58,237,.5);background:rgba(124,58,237,.2);color:#c4b5fd}
     .timer-btn.run:hover{background:rgba(124,58,237,.3)}
-    /* focus progress bar */
     .focus-prog-bar{height:4px;background:#1a1a26;border-radius:99px;overflow:hidden}
     .focus-prog-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,#5b21b6,#7c3aed,#a78bfa);background-size:200% 100%;animation:shimmer 3s linear infinite;transition:width .6s ease}
 
-    /* ── SLEEP ── */
     .sleep-debt-chip{padding:6px 14px;border-radius:99px;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;display:inline-flex;align-items:center;gap:6px}
     .sleep-good{background:rgba(52,211,153,.1);border:1.5px solid rgba(52,211,153,.28);color:#6ee7b7}
     .sleep-warn{background:rgba(251,191,36,.1);border:1.5px solid rgba(251,191,36,.28);color:#fcd34d}
     .sleep-bad{background:rgba(248,113,113,.1);border:1.5px solid rgba(248,113,113,.28);color:#fca5a5}
     .sleep-night-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-
-    /* ── HEATMAP ── */
     .hmap-dot{width:10px;height:10px;border-radius:3px;transition:transform .15s ease}
     .hmap-dot:hover{transform:scale(1.35)}
-
-    /* ── FAILURE TAG ── */
     .ftag-btn{padding:5px 12px;border-radius:99px;font-size:11px;font-family:'JetBrains Mono',monospace;font-weight:500;cursor:pointer;transition:all .15s ease;border:1.5px solid rgba(42,42,54,.8);color:#6a6a7a;background:rgba(20,20,30,.6)}
     .ftag-btn:hover{border-color:rgba(124,58,237,.5);color:#a78bfa;background:rgba(124,58,237,.1)}
     .ftag-btn.sel{border-color:rgba(124,58,237,.6);color:#c4b5fd;background:rgba(124,58,237,.2)}
-
-    /* ── PROGRESSION ── */
     .prog-trend-up{color:#4ade80}.prog-trend-dn{color:#f87171}.prog-trend-eq{color:#71717a}
-
-    /* ── REFLECTION ── */
     .refl-ta{background:transparent;resize:none;outline:none;width:100%;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--muted);line-height:1.7}
     .refl-ta:focus{color:var(--text)}.refl-ta::placeholder{color:#323242}
   </style>
@@ -211,7 +183,6 @@ const checkPRs = (exercises, prs) => {
   return {newNames,updated};
 };
 
-/* ── MILESTONE ── */
 const getMilestones = (old,nxt) => {
   const t=today(),ms=[];
   for(const k of Object.keys(nxt)){const of=Math.floor(old[k]||10),nf=Math.floor(nxt[k]||10);if(nf>of)ms.push({stat:k,milestone:nf,date:t});}
@@ -249,49 +220,19 @@ function Confetti({active,onDone}){
   return <canvas ref={ref} style={{position:'fixed',inset:0,pointerEvents:'none',zIndex:9999}}/>;
 }
 
-/* ── TIMER RING ── */
-function TimerRing({seconds,total,mode}){
-  const R=52,CIRC=2*Math.PI*R;
-  const pct=seconds/total;
-  const off=CIRC*(1-pct);
-  const modeColor={work:'#7c3aed',short:'#34d399',long:'#60a5fa'};
-  const mins=Math.floor(seconds/60),secs=seconds%60;
-  return(
-    <div className="relative inline-flex items-center justify-center">
-      <svg width="120" height="120" viewBox="0 0 120 120">
-        <circle className="timer-ring-track" cx="60" cy="60" r={R}/>
-        <circle className="timer-ring-prog" cx="60" cy="60" r={R}
-          stroke={modeColor[mode]}
-          strokeDasharray={CIRC}
-          strokeDashoffset={off}
-          style={{opacity:pct>0?1:.25}}
-        />
-      </svg>
-      <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <span className="font-display text-2xl font-bold text-zinc-100 tabular-nums">{String(mins).padStart(2,'0')}:{String(secs).padStart(2,'0')}</span>
-        <span className="font-mono text-[10px] text-zinc-600 uppercase tracking-widest mt-0.5">{mode==='work'?'focus':mode==='short'?'break':'long break'}</span>
-      </div>
-    </div>
-  );
-}
-
-/* ── FOCUS TIMER WIDGET (MIDNIGHT AUTO-STOP) ── */
+/* ── FOCUS TIMER WIDGET (DUAL MODE + THROTTLING RESISTANT) ── */
 function FocusTimerWidget({ focusToday, setFocusToday, setHistory, showToast, focusPct, codeQ, toggleQuest }) {
-  // Modes: 'flow' or 'pomodoro'
   const [mode, setMode] = useState('flow'); 
   const [pomoType, setPomoType] = useState('work'); 
-  
   const [timerSecs, setTimerSecs] = useState(0);
   const [timerOn, setTimerOn] = useState(false);
   const [manualMins, setManualMins] = useState('');
 
-  // Refs for calculating absolute time
   const startTimeRef = useRef(null);
   const startSecsRef = useRef(0);
   const lastLoggedMinsRef = useRef(0);
-  const midnightRef = useRef(null); 
+  const midnightRef = useRef(null);
 
-  // Play/Pause Engine
   const togglePlay = () => {
     if (!timerOn) {
       const now = new Date();
@@ -299,41 +240,31 @@ function FocusTimerWidget({ focusToday, setFocusToday, setHistory, showToast, fo
       startSecsRef.current = timerSecs;
       lastLoggedMinsRef.current = Math.floor(timerSecs / 60);
 
-      // Calculate timestamp for the upcoming midnight
       const nextMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0, 0);
       midnightRef.current = nextMidnight.getTime();
-
       setTimerOn(true);
     } else {
       setTimerOn(false);
     }
   };
 
-  // The Delta-Time Tick Loop
   useEffect(() => {
     if (!timerOn) return;
-    
     const id = setInterval(() => {
       const nowTime = Date.now();
-
-      // 🌙 Midnight Auto-Stop Check
       if (nowTime >= midnightRef.current) {
         setTimerOn(false);
         setTimerSecs(0);
         showToast("🌙 Midnight reached. Flow state auto-saved and reset for the new day.");
-        return; // Halt this tick
+        return;
       }
-
       const elapsed = Math.floor((nowTime - startTimeRef.current) / 1000);
       
       if (mode === 'flow') {
         const nextSec = startSecsRef.current + elapsed;
         setTimerSecs(nextSec);
-        
-        // Auto-log missed minutes instantly
         const currentMins = Math.floor(nextSec / 60);
         const diff = currentMins - lastLoggedMinsRef.current;
-        
         if (diff > 0) {
           lastLoggedMinsRef.current = currentMins;
           setFocusToday(prev => {
@@ -343,13 +274,11 @@ function FocusTimerWidget({ focusToday, setFocusToday, setHistory, showToast, fo
           });
           setHistory(h => ({ ...h, [today()]: { ...(h[today()] || {}), focusMin: (h[today()]?.focusMin || 0) + diff } }));
         }
-      } 
-      else {
+      } else {
         const nextSec = startSecsRef.current - elapsed;
         if (nextSec <= 0) {
           setTimerOn(false);
           setTimerSecs(0);
-          
           if (pomoType === 'work') {
             snd('timer');
             setFocusToday(prev => {
@@ -375,7 +304,6 @@ function FocusTimerWidget({ focusToday, setFocusToday, setHistory, showToast, fo
     return () => clearInterval(id);
   }, [timerOn, mode, pomoType, setFocusToday, setHistory, showToast]);
 
-  // Controls
   const switchPrimaryMode = (m) => {
     if(timerOn) return;
     setMode(m);
@@ -406,16 +334,11 @@ function FocusTimerWidget({ focusToday, setFocusToday, setHistory, showToast, fo
     showToast(`✏️ Manually logged ${m} minutes.`);
   };
 
-  // UI Math & Layout Calculations
   const R=52, CIRC=2*Math.PI*R;
   const total = mode === 'flow' ? 3600 : TIMER_DURATIONS[pomoType];
   const pct = mode === 'flow' ? (timerSecs % 3600) / 3600 : timerSecs / total;
-  const off = mode === 'flow' 
-     ? (timerSecs === 0 ? CIRC : CIRC * (1 - pct))
-     : CIRC * (1 - Math.max(0, pct));
-     
+  const off = mode === 'flow' ? (timerSecs === 0 ? CIRC : CIRC * (1 - pct)) : CIRC * (1 - Math.max(0, pct));
   const ringColor = mode === 'flow' ? '#7c3aed' : (pomoType === 'work' ? '#7c3aed' : pomoType === 'short' ? '#34d399' : '#60a5fa');
-
   const hrs = Math.floor(timerSecs / 3600);
   const mins = Math.floor((timerSecs % 3600) / 60);
   const secs = timerSecs % 60;
@@ -442,9 +365,7 @@ function FocusTimerWidget({ focusToday, setFocusToday, setHistory, showToast, fo
         </div>
       ) : (
         <div className="flex gap-2 mb-5 justify-center">
-           <span className="timer-mode-btn active w-full text-center cursor-default hover:border-[rgba(124,58,237,.45)] hover:text-[#a78bfa]">
-             Continuous Focus
-           </span>
+           <span className="timer-mode-btn active w-full text-center cursor-default hover:border-[rgba(124,58,237,.45)] hover:text-[#a78bfa]">Continuous Focus</span>
         </div>
       )}
 
@@ -471,14 +392,12 @@ function FocusTimerWidget({ focusToday, setFocusToday, setHistory, showToast, fo
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"/></svg>
              )}
           </button>
-          
           <button onClick={togglePlay} className={`timer-btn ${timerOn?'run':''}`} style={{width:'54px',height:'54px'}} title={timerOn?'Pause':'Start'}>
             {timerOn
               ?<svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/></svg>
               :<svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
             }
           </button>
-          
           {mode === 'pomodoro' && (
             <button onClick={()=>{setPomoType(pomoType==='work'?'short':'work');setTimerSecs(pomoType==='work'?TIMER_DURATIONS.short:TIMER_DURATIONS.work);setTimerOn(false);}} className="timer-btn" title="Skip">
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M7.5 21L3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5"/></svg>
@@ -501,6 +420,129 @@ function FocusTimerWidget({ focusToday, setFocusToday, setHistory, showToast, fo
         {focusPct>=100&&!codeQ?.completed&&(
           <button onClick={()=>toggleQuest(codeQ.id)} className="w-full mt-2 btn-p rounded-xl py-2 font-mono text-xs">✓ Complete Coding Quest Now</button>
         )}
+      </div>
+    </Card>
+  );
+}
+
+/* ── INTERACTIVE WORKOUT FORGE ── */
+function ManualWorkoutForge({ prs, setPrs, setGymLogs, setHero, showToast, checkPRs, today, snd }) {
+  const [routineTitle, setRoutineTitle] = useState('Custom Routine');
+  const [stagedExercises, setStagedExercises] = useState([]);
+  const [chosenEx, setChosenEx] = useState('Flat Bench Press');
+  const [customEx, setCustomEx] = useState('');
+  const [setsDraft, setSetsDraft] = useState([{ reps: 8, weight: 135 }]);
+
+  const EXERCISE_LIST = [
+    'Flat Bench Press', 'Incline Dumbbell Press', 'Deadlifts', 'Lat Pulldowns', 
+    'Barbell Back Squats', 'Romanian Deadlifts', 'Overhead Press (OHP)', 
+    'Dumbbell Lateral Raises', 'Hammer Curls', 'Tricep Pushdowns', 'Hanging Leg Raises', 'Custom'
+  ];
+
+  const handleAddSetRow = () => setSetsDraft([...setsDraft, { reps: 10, weight: 135 }]);
+  const handleUpdateSet = (idx, field, val) => {
+    setSetsDraft(setsDraft.map((s, i) => i === idx ? { ...s, [field]: Number(val) || 0 } : s));
+  };
+  const handleRemoveSet = (idx) => {
+    if (setsDraft.length > 1) setSetsDraft(setsDraft.filter((_, i) => i !== idx));
+  };
+
+  const handleStageExercise = () => {
+    const finalName = chosenEx === 'Custom' ? customEx.trim() : chosenEx;
+    if (!finalName) { showToast("⚠️ Give your custom exercise a name!"); return; }
+    setStagedExercises([...stagedExercises, { name: finalName, sets: setsDraft }]);
+    setSetsDraft([{ reps: 8, weight: 135 }]);
+    setCustomEx('');
+    showToast(`Staged ${finalName}`);
+  };
+
+  const handleCommitWorkout = () => {
+    if (!stagedExercises.length) return;
+    const { newNames, updated } = checkPRs(stagedExercises, prs);
+    setPrs(updated);
+    
+    setGymLogs(l => [{
+      id: Date.now(),
+      date: today(),
+      workoutName: `${routineTitle} (Forged)`,
+      exercises: stagedExercises,
+      prExercises: newNames
+    }, ...l]);
+
+    setHero(h => {
+      let nx = h.xp + 65, ng = h.gold + 20, nl = h.level, tx = h.nextLevelXp, rl = false;
+      if (nx >= tx) { nx -= tx; nl++; tx = nl * 300; rl = true; snd('levelup'); }
+      return { ...h, xp: Math.round(nx), gold: ng, level: nl, nextLevelXp: tx, statPoints: rl ? h.statPoints + 3 : h.statPoints };
+    });
+
+    if (newNames.length > 0) {
+      snd('pr');
+      showToast(`🏆 Routine Committed! PR detected on: ${newNames.join(', ')} — +65 XP · +20g`);
+    } else {
+      snd('complete');
+      showToast("💪 Custom workout session committed to database! — +65 XP · +20g");
+    }
+    setStagedExercises([]);
+    setRoutineTitle('Custom Routine');
+  };
+
+  return (
+    <Card className="p-6" glow>
+      <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-3 mb-5 border-b border-zinc-900/60 pb-4">
+        <div>
+          <p className="slabel" style={{marginBottom:'4px'}}>Routine Blacksmith</p>
+          <input type="text" value={routineTitle} onChange={e => setRoutineTitle(e.target.value)} className="bg-transparent font-display text-xl font-bold text-zinc-100 outline-none border-b border-dashed border-zinc-800 focus:border-violet-500 mt-1 pb-0.5 w-full max-w-xs" placeholder="Routine Title..."/>
+        </div>
+        {stagedExercises.length > 0 && (
+          <button onClick={handleCommitWorkout} className="btn-p rounded-xl px-5 py-2.5 font-mono text-xs shadow-lg animate-pulse whitespace-nowrap self-end sm:self-center">
+            🔥 Log Full Session ({stagedExercises.length} Ex)
+          </button>
+        )}
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
+        <div className="md:col-span-3 space-y-4">
+          <div className="flex gap-2.5">
+            <select value={chosenEx} onChange={e => setChosenEx(e.target.value)} className="inp rounded-xl px-3.5 py-2.5 font-mono cursor-pointer flex-1">
+              {EXERCISE_LIST.map(ex => <option key={ex} value={ex}>{ex}</option>)}
+            </select>
+            {chosenEx === 'Custom' && (
+              <input type="text" placeholder="Exercise Name..." value={customEx} onChange={e => setCustomEx(e.target.value)} className="inp rounded-xl px-4 py-2.5 flex-1 font-mono text-xs"/>
+            )}
+          </div>
+          <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
+            {setsDraft.map((set, idx) => (
+              <div key={idx} className="flex items-center gap-2 bg-zinc-950/40 p-2 border border-zinc-900 rounded-xl animate-fadeSlideIn">
+                <span className="font-mono text-[10px] text-zinc-600 w-12 text-center font-bold uppercase">Set {idx + 1}</span>
+                <input type="number" placeholder="Reps" value={set.reps || ''} onChange={e => handleUpdateSet(idx, 'reps', e.target.value)} className="inp rounded-lg px-2 py-1.5 font-mono text-center w-full text-xs" min="1"/>
+                <span className="font-mono text-xs text-zinc-700">×</span>
+                <input type="number" placeholder="Lbs" value={set.weight || ''} onChange={e => handleUpdateSet(idx, 'weight', e.target.value)} className="inp rounded-lg px-2 py-1.5 font-mono text-center w-full text-xs" min="0"/>
+                <button type="button" onClick={() => handleRemoveSet(idx)} className="p-1.5 text-zinc-700 hover:text-red-400 font-mono text-xs">✕</button>
+              </div>
+            ))}
+          </div>
+          <div className="flex gap-2">
+            <button type="button" onClick={handleAddSetRow} className="btn-g rounded-xl py-2 px-3 font-mono text-xs flex-1">+ Add Set Row</button>
+            <button type="button" onClick={handleStageExercise} className="btn-p rounded-xl py-2 px-4 font-mono text-xs bg-violet-600 text-white hover:bg-violet-500">Stage Exercise</button>
+          </div>
+        </div>
+        <div className="md:col-span-2 bg-zinc-950/20 border border-zinc-900 rounded-2xl p-4 flex flex-col justify-between min-h-[180px]">
+          <div>
+            <p className="font-mono text-[9px] uppercase tracking-wider text-zinc-600 mb-3 font-bold">Staged Tracklist</p>
+            {stagedExercises.length === 0 ? (
+              <p className="font-mono text-xs text-zinc-700 italic mt-6 text-center">Add an exercise on the left to begin staging your routine workflow...</p>
+            ) : (
+              <div className="space-y-2 max-h-44 overflow-y-auto pr-1">
+                {stagedExercises.map((ex, i) => (
+                  <div key={i} className="flex justify-between items-center text-xs border-b border-zinc-900/40 pb-1.5">
+                    <span className="font-medium text-zinc-300 truncate max-w-[120px]">{ex.name}</span>
+                    <span className="font-mono text-zinc-500 text-[11px] whitespace-nowrap">{ex.sets.map(s => `${s.reps}×${s.weight}`).join(' | ')}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </Card>
   );
@@ -567,7 +609,6 @@ const Spin=()=><svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24
    MAIN APP
 ══════════════════════════════════════════════════════════ */
 function App(){
-  /* ── CORE STATE ── */
   const [activeTab, setActiveTab] = useState('dashboard');
   const [dimMode,   setDimMode]   = useState(false);
   const [confetti,  setConfetti]  = useState(false);
@@ -601,17 +642,14 @@ function App(){
   const [noteHistory, setNoteHistory] = useState(()=>JSON.parse(localStorage.getItem('lq_notehistory_v4'))||{});
   const [improveLog,  setImproveLog]  = useState(()=>JSON.parse(localStorage.getItem('lq_improve_v4'))||{});
 
-  /* ── FOCUS STATE ── */
   const [focusToday, setFocusToday] = useState(()=>{
     try{const s=JSON.parse(localStorage.getItem('lq_focus_v4'));return(s&&s.date===today())?s:{date:today(),minutes:0,sessions:0};}
     catch{return{date:today(),minutes:0,sessions:0};}
   });
 
-  /* ── SLEEP STATE ── */
   const [sleepLog,  setSleepLog]  = useState(()=>JSON.parse(localStorage.getItem('lq_sleep_v4'))||{});
   const [sleepInp,  setSleepInp]  = useState('7.5');
 
-  /* ── REFLECTION / FAILURE STATE ── */
   const [reflections,   setReflections]   = useState(()=>JSON.parse(localStorage.getItem('lq_reflections_v4'))||{});
   const [reflDraft,     setReflDraft]     = useState('');
   const [failureLog,    setFailureLog]    = useState(()=>JSON.parse(localStorage.getItem('lq_failures_v4'))||{});
@@ -621,11 +659,8 @@ function App(){
   const [aiInsightLoad, setAiInsightLoad] = useState(false);
   const [aiInsight,     setAiInsight]     = useState('');
 
-  /* ── QUEST FORM STATE ── */
   const [aiPrompt,    setAiPrompt]    = useState('');
   const [aiGen,       setAiGen]       = useState(false);
-  const [visionParse, setVisionParse] = useState(false);
-  const fileRef = useRef(null);
   const [nqText, setNqText] = useState('');
   const [nqType, setNqType] = useState('day');
   const [nqDiff, setNqDiff] = useState('medium');
@@ -637,10 +672,8 @@ function App(){
   const [rewCost,setRewCost]=useState(40);
   const [newImprove, setNewImprove] = useState('');
 
-  /* ── DIM MODE ── */
   useEffect(()=>{document.body.classList.toggle('dim',dimMode);},[dimMode]);
 
-  /* ── KEYBOARD ── */
   useEffect(()=>{
     const ids=['dashboard','quests','gym','shop','hero','journal'];
     const fn=(e)=>{
@@ -653,7 +686,6 @@ function App(){
     return()=>window.removeEventListener('keydown',fn);
   },[]);
 
-  /* ── MIDNIGHT RESET + STREAK ── */
   useEffect(()=>{
     const td=today(),yd=yesterday();
     const last=localStorage.getItem('lq_last_reset');
@@ -662,11 +694,9 @@ function App(){
       const allDone=dqs.length>0&&dqs.every(q=>q.completed);
       const consec=last===yd;
       setHero(h=>({...h,streak:(consec&&allDone)?h.streak+1:0}));
-      // Archive notes
       if(last){
         const noted=quests.filter(q=>q.notes?.trim());
         if(noted.length>0)setNoteHistory(p=>({...p,[last]:noted.map(q=>({questText:q.text,note:q.notes,completed:q.completed,attribute:q.attribute}))}));
-        // Queue incomplete quests for failure tagging
         const skipped=dqs.filter(q=>!q.completed);
         if(skipped.length>0)setPendingFails(skipped.map(q=>({questText:q.text,attribute:q.attribute})));
       }
@@ -680,13 +710,11 @@ function App(){
         setQuests(p=>p.map(q=>q.type==='day'?{...q,completed:false,notes:''}:q));
         setTimeout(()=>showToast("⚡ New day — daily quests reset."),800);
       }
-      // Reset focus if different day
       setFocusToday(f=>f.date!==td?{date:td,minutes:0,sessions:0}:f);
       localStorage.setItem('lq_last_reset',td);
     }
   },[]);
 
-  /* ── PERSIST (OPTIMIZED TO ISOLATE I/O WRITES) ── */
   useEffect(() => { localStorage.setItem('lq_hero_adi_v4', JSON.stringify(hero)); }, [hero]);
   useEffect(() => { localStorage.setItem('lq_quests_adi_v4', JSON.stringify(quests)); }, [quests]);
   useEffect(() => { localStorage.setItem('lq_gymlogs_adi_v4', JSON.stringify(gymLogs)); }, [gymLogs]);
@@ -703,7 +731,6 @@ function App(){
 
   const showToast=(m)=>{setToast(m);setTimeout(()=>setToast(''),4500);};
 
-  /* ── QUEST TOGGLE ── */
   const toggleQuest=(id)=>{
     snd('complete');
     setQuests(prev=>prev.map(q=>{
@@ -725,7 +752,6 @@ function App(){
     }));
   };
 
-  /* ── DRAG ── */
   const onDragStart=(e,id)=>{setDragId(id);e.dataTransfer.effectAllowed='move';};
   const onDragOver=(e,id)=>{e.preventDefault();setOverId(id);};
   const onDrop=(e,tid)=>{
@@ -735,7 +761,6 @@ function App(){
     setDragId(null);setOverId(null);
   };
 
-  /* ── SLEEP ── */
   const logSleep=()=>{
     const h=parseFloat(sleepInp);if(isNaN(h)||h<0||h>24)return;
     setSleepLog(p=>({...p,[today()]:h}));
@@ -748,7 +773,6 @@ function App(){
     const days=[];for(let i=6;i>=0;i--){const dt=new Date(Date.now()-i*86400000).toISOString().split('T')[0];days.push({date:dt,hours:sleepLog[dt]??null});}return days;
   },[sleepLog]);
 
-  /* ── GYM ── */
   const logPreset=(day)=>{
     const p=PRESET_WORKOUTS[day];if(!p)return;
     const{newNames,updated}=checkPRs(p.exercises,prs);
@@ -760,7 +784,6 @@ function App(){
   };
   const deleteLog=(id)=>{setGymLogs(p=>p.filter(l=>l.id!==id));showToast("Session removed.");};
 
-  /* ── EXERCISE PROGRESSION ── */
   const exProgression=useMemo(()=>{
     const byEx={};
     gymLogs.forEach(log=>{
@@ -780,30 +803,6 @@ function App(){
     return bg;
   },[gymLogs]);
 
-  /* ── HEVY UPLOAD ── */
-  const hevyUpload=async(e)=>{
-    const file=e.target.files?.[0];if(!file)return;
-    const key=loadKey();if(!key)return;
-    setVisionParse(true);showToast("Parsing workout via Vision AI...");
-    const rd=new FileReader();
-    rd.onloadend=async()=>{
-      try{
-        const b64=rd.result.split(',')[1];
-        const res=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${key}`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({contents:[{role:"user",parts:[{text:`Parse this Hevy workout screenshot. Return ONLY JSON: {"workoutName":"name","date":"${today()}","exercises":[{"name":"Exercise","sets":[{"reps":10,"weight":135}]}]}`},{inlineData:{mimeType:file.type,data:b64}}]}],generationConfig:{responseMimeType:"application/json"}})});
-        const r=await res.json();const parsed=JSON.parse(r.candidates[0].content.parts[0].text);
-        const fp=JSON.parse(localStorage.getItem('lq_prs_adi_v4')||'{}');
-        const{newNames,updated}=checkPRs(parsed.exercises||[],fp);setPrs(updated);
-        setGymLogs(p=>[{id:Date.now(),date:parsed.date||today(),workoutName:`${parsed.workoutName} (Hevy Sync)`,exercises:parsed.exercises||[],prExercises:newNames},...p]);
-        setHero(h=>({...h,xp:h.xp+85,gold:h.gold+35}));
-        if(newNames.length>0){snd('pr');showToast(`Hevy parsed — +85 XP · +35g · 🏆 PR: ${newNames.join(', ')}`);}
-        else showToast("Hevy parsed — +85 XP · +35g");
-      }catch(err){showToast(`Vision failed: ${err.message}`);}
-      finally{setVisionParse(false);}
-    };
-    rd.readAsDataURL(file);
-  };
-
-  /* ── FAILURE TAGGING ── */
   const submitFailureTags=()=>{
     if(Object.keys(failTags).length===0){setPendingFails([]);return;}
     const yd=yesterday();
@@ -812,14 +811,12 @@ function App(){
     showToast("Failure reasons saved — feeding into pattern analysis.");
   };
 
-  /* ── REFLECTION ── */
   const saveReflection=()=>{
     if(!reflDraft.trim())return;
     setReflections(p=>({...p,[today()]:{text:reflDraft,timestamp:Date.now()}}));
     setReflDraft('');showToast("Reflection saved.");
   };
 
-  /* ── IMPROVEMENT LOG ── */
   const addImprove=()=>{
     if(!newImprove.trim())return;
     const td=today();setImproveLog(p=>({...p,[td]:[...(p[td]||[]),newImprove.trim()]}));
@@ -829,7 +826,6 @@ function App(){
     setImproveLog(p=>{const u=[...(p[date]||[])];u.splice(idx,1);if(!u.length){const n={...p};delete n[date];return n;}return{...p,[date]:u};});
   };
   
-  /* MEMOIZED TOP THEMES */
   const topThemesList = useMemo(()=>{
     const stop=new Set(['a','an','the','to','i','my','and','or','for','in','on','at','is','it','be','of','with','that','this','want','need','more','better','less']);
     const freq={};
@@ -837,7 +833,6 @@ function App(){
     return Object.entries(freq).sort((a,b)=>b[1]-a[1]).slice(0,12);
   }, [improveLog]);
 
-  /* ── AI ── */
   const loadKey=()=>{let k=localStorage.getItem("adi_gemini_key");if(!k){k=prompt("Enter your Gemini API key:");if(k)localStorage.setItem("adi_gemini_key",k.trim());}return k?k.trim():null;};
   const aiDecompose=async()=>{
     if(!aiPrompt.trim())return;const key=loadKey();if(!key)return;setAiGen(true);
@@ -874,7 +869,6 @@ Format as JSON: {"insights":["...","...","..."],"questAdjustment":"..."}`;
     }catch(e){showToast(`Insight failed: ${e.message}`);}finally{setAiInsightLoad(false);}
   };
 
-  /* ── MISC ── */
   const boostStat=(s)=>{if(hero.statPoints<=0)return;setHero(h=>({...h,statPoints:h.statPoints-1,stats:{...h.stats,[s]:h.stats[s]+1}}));};
   const buyReward=(id,cost,title)=>{if(hero.gold<cost){showToast("Insufficient gold.");return;}setHero(h=>({...h,gold:h.gold-cost}));showToast(`Redeemed: ${title}`);};
   const addReward=(e)=>{e.preventDefault();if(!rewName.trim())return;setRewards(p=>[{id:Date.now(),text:rewName,cost:+rewCost},...p]);setRewName('');showToast("Reward stocked.");};
@@ -888,7 +882,6 @@ Format as JSON: {"insights":["...","...","..."],"questAdjustment":"..."}`;
   const archive=()=>{setQuests(quests.filter(q=>!q.completed));showToast("Completed quests archived.");};
   const hardReset=()=>{if(confirm("Nuke all data?")){{localStorage.clear();window.location.reload();}}};
 
-  /* ── DERIVED ── */
   const codeQ=quests.find(q=>q.text.includes("8 Hours"))||{};
   const readQ=quests.find(q=>q.text.includes("Read book"))||{};
   const doneCount=quests.filter(q=>q.completed).length;
@@ -898,7 +891,7 @@ Format as JSON: {"insights":["...","...","..."],"questAdjustment":"..."}`;
   const daysLeft=daysUntilSun();
   const maxVol=Math.max(...Object.values(weeklyVol),1);
   const focusPct=Math.min(100,(focusToday.minutes/480)*100);
-  const stampHit=sleepDebt>=5; // Show debt warning on stamina
+  const stampHit=sleepDebt>=5;
 
   const tabs=[
     {id:'dashboard',label:'Overview'},
@@ -909,7 +902,6 @@ Format as JSON: {"insights":["...","...","..."],"questAdjustment":"..."}`;
     {id:'journal',  label:'Journal'},
   ];
 
-  /* ── QUEST ROW ── */
   const QRow=({q,drag=false})=>(
     <div className={`rounded-2xl border transition-all duration-200 ${q.completed?'border-zinc-900/30 opacity-40':'border-zinc-800/60'} ${dragId===q.id?'q-drag':''} ${overId===q.id&&dragId!==q.id?'q-over':''}`}
       style={{background:q.completed?'var(--bg-empty)':'var(--bg-card)',transition:'background .35s ease'}}
@@ -935,9 +927,6 @@ Format as JSON: {"insights":["...","...","..."],"questAdjustment":"..."}`;
     </div>
   );
 
-  /* ════════════════════════════════════════════════════════
-     RENDER
-  ════════════════════════════════════════════════════════ */
   return(
     <div className="min-h-screen flex flex-col relative" style={{zIndex:1}}>
       <Confetti active={confetti} onDone={()=>setConfetti(false)}/>
@@ -994,8 +983,6 @@ Format as JSON: {"insights":["...","...","..."],"questAdjustment":"..."}`;
         {/* ══ OVERVIEW ══ */}
         {activeTab==='dashboard'&&(
           <div className="tab-section space-y-6">
-
-            {/* Hero + Stats */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <Card className="sm:col-span-1 p-6 flex flex-col justify-between gap-5" glow>
                 <div>
@@ -1014,7 +1001,6 @@ Format as JSON: {"insights":["...","...","..."],"questAdjustment":"..."}`;
                   <div className="flex justify-between"><span className="font-mono text-xs text-zinc-600">XP Progress</span><span className="font-mono text-xs text-zinc-500">{xpPct}%</span></div>
                   <XpBar xp={hero.xp} max={hero.nextLevelXp}/>
                 </div>
-                {/* Week heatmap */}
                 <div className="space-y-2">
                   <span className="font-mono text-[9px] text-zinc-700 uppercase tracking-widest">This week</span>
                   <WeekHeatmap history={history}/>
@@ -1037,10 +1023,7 @@ Format as JSON: {"insights":["...","...","..."],"questAdjustment":"..."}`;
               </div>
             </div>
 
-            {/* Focus Timer + Sleep Logger */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-
-              {/* ISOLATED TIMER COMPONENT MOUNT */}
               <FocusTimerWidget 
                 focusToday={focusToday} 
                 setFocusToday={setFocusToday} 
@@ -1050,8 +1033,6 @@ Format as JSON: {"insights":["...","...","..."],"questAdjustment":"..."}`;
                 codeQ={codeQ} 
                 toggleQuest={toggleQuest} 
               />
-
-              {/* Sleep Tracker */}
               <Card className="p-5">
                 <div className="flex justify-between items-center mb-4">
                   <SL>Sleep Tracker</SL>
@@ -1059,7 +1040,6 @@ Format as JSON: {"insights":["...","...","..."],"questAdjustment":"..."}`;
                     {sleepDebt===0?'✓ No debt':`${sleepDebt}h in debt`}
                   </div>
                 </div>
-                {/* 7-day dots */}
                 <div className="flex items-center gap-2 mb-5">
                   {last7Sleep.map((d,i)=>{
                     const h=d.hours;const c=h===null?'#1e1e28':h>=8?'#22c55e':h>=7?'#4ade80':h>=6?'#fbbf24':'#f87171';
@@ -1071,7 +1051,6 @@ Format as JSON: {"insights":["...","...","..."],"questAdjustment":"..."}`;
                     );
                   })}
                 </div>
-                {/* Log today's sleep */}
                 <div className="space-y-2.5">
                   <p className="font-mono text-xs text-zinc-600">Log last night</p>
                   <div className="flex gap-2.5">
@@ -1085,7 +1064,6 @@ Format as JSON: {"insights":["...","...","..."],"questAdjustment":"..."}`;
               </Card>
             </div>
 
-            {/* XP Chart */}
             <Card className="p-6">
               <div className="flex justify-between items-center mb-5">
                 <SL>7-Day XP Trend</SL>
@@ -1098,7 +1076,6 @@ Format as JSON: {"insights":["...","...","..."],"questAdjustment":"..."}`;
               </div>
             </Card>
 
-            {/* AI Decomposer */}
             <Card className="p-6">
               <SL>AI Goal Decomposer</SL>
               <div className="flex gap-3">
@@ -1108,10 +1085,9 @@ Format as JSON: {"insights":["...","...","..."],"questAdjustment":"..."}`;
                   {aiGen?<span className="flex items-center gap-2"><Spin/>Parsing…</span>:'Split Goal'}
                 </button>
               </div>
-              <p className="font-mono text-[10px] text-zinc-700 mt-2.5">Powered by Gemini · Requires API key on first use</p>
+              <p className="font-mono text-[10px] text-zinc-700 mt-2.5">Powered by Gemini · API key cached locally</p>
             </Card>
 
-            {/* Quick Status */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <Card className="p-5 flex items-center justify-between">
                 <div className="flex items-center gap-3.5"><span className="text-xl">💻</span><span className="text-sm text-zinc-300">8h Intent Coding</span></div>
@@ -1123,7 +1099,6 @@ Format as JSON: {"insights":["...","...","..."],"questAdjustment":"..."}`;
               </Card>
             </div>
 
-            {/* Ledger */}
             <div>
               <div className="flex justify-between items-center mb-4">
                 <SL>Daily Ledger — {doneCount}/{quests.length} complete</SL>
@@ -1131,13 +1106,6 @@ Format as JSON: {"insights":["...","...","..."],"questAdjustment":"..."}`;
               </div>
               {quests.length===0?<Empty icon="📋" title="No active quests" sub="Add from Quests tab."/>
                 :<div className="space-y-2.5">{quests.map(q=><QRow key={q.id} q={q}/>)}</div>}
-            </div>
-
-            {/* Shortcuts */}
-            <div className="flex items-center gap-2.5 pt-1 flex-wrap">
-              <span className="font-mono text-[10px] text-zinc-700">Shortcuts:</span>
-              {tabs.map((t,i)=><span key={t.id} className="flex items-center gap-1.5"><kbd className="kbd">{i+1}</kbd><span className="font-mono text-[10px] text-zinc-700">{t.label}</span></span>)}
-              <kbd className="kbd ml-1">D</kbd><span className="font-mono text-[10px] text-zinc-700">dim</span>
             </div>
           </div>
         )}
@@ -1178,7 +1146,7 @@ Format as JSON: {"insights":["...","...","..."],"questAdjustment":"..."}`;
           </div>
         )}
 
-        {/* ══ GYM ══ */}
+        {/* ══ TEMPLE (GYM) ══ */}
         {activeTab==='gym'&&(
           <div className="tab-section space-y-8">
             <div>
@@ -1197,7 +1165,18 @@ Format as JSON: {"insights":["...","...","..."],"questAdjustment":"..."}`;
               </div>
             </div>
 
-            {/* PRs */}
+            {/* Routine Blacksmith Component Hook */}
+            <ManualWorkoutForge 
+              prs={prs} 
+              setPrs={setPrs} 
+              setGymLogs={setGymLogs} 
+              setHero={setHero} 
+              showToast={showToast} 
+              checkPRs={checkPRs} 
+              today={today} 
+              snd={snd} 
+            />
+
             {Object.keys(prs).length>0&&(
               <div>
                 <SL>Personal Records 🏆</SL>
@@ -1213,7 +1192,6 @@ Format as JSON: {"insights":["...","...","..."],"questAdjustment":"..."}`;
               </div>
             )}
 
-            {/* Exercise Progression */}
             {Object.keys(exProgression).length>0&&(
               <Card className="p-6">
                 <SL>Exercise Progression — Last 3 Sessions</SL>
@@ -1247,11 +1225,9 @@ Format as JSON: {"insights":["...","...","..."],"questAdjustment":"..."}`;
                     );
                   })}
                 </div>
-                <p className="font-mono text-[10px] text-zinc-700 mt-4">Showing exercises with 2+ logged sessions · bars show relative weight</p>
               </Card>
             )}
 
-            {/* Weekly Vol */}
             {Object.keys(weeklyVol).length>0&&(
               <Card className="p-6">
                 <div className="flex justify-between items-center mb-5">
@@ -1270,21 +1246,10 @@ Format as JSON: {"insights":["...","...","..."],"questAdjustment":"..."}`;
               </Card>
             )}
 
-            {/* Hevy */}
-            <Card className="p-7 text-center space-y-5">
-              <div><p className="text-base font-semibold text-zinc-200">Hevy Screenshot Parser</p><p className="font-mono text-xs text-zinc-600 mt-1">Vision AI reads your Hevy workout and auto-catalogs it</p></div>
-              <button onClick={()=>fileRef.current.click()} disabled={visionParse} className="btn-g rounded-xl px-6 py-3 font-mono inline-flex items-center gap-2.5">
-                {visionParse?<><Spin/>Scanning…</>:<><svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/></svg>Upload Screenshot</>}
-              </button>
-              <input type="file" accept="image/*" ref={fileRef} onChange={hevyUpload} className="hidden"/>
-              <p className="font-mono text-[11px] text-zinc-700">+85 XP · +35g · PR detection · progression tracking · volume analysis</p>
-            </Card>
-
-            {/* Logs */}
             <div>
               <SL>Workout Log — {gymLogs.length} sessions</SL>
-              {gymLogs.length===0?<Empty icon="🏛️" title="No sessions yet" sub="Tap a split or upload a Hevy screenshot."/>
-                :<div className="space-y-3">{gymLogs.map(log=>(
+              {gymLogs.length===0?<Empty icon="🏛️" title="No sessions yet" sub="Tap a split button or use the blacksmith forge above."/>
+                :<div className="space-y-3TYPE_UNSPECIFIED">{gymLogs.map(log=>(
                   <Card key={log.id} className="p-5 space-y-4">
                     <div className="flex justify-between items-start border-b border-zinc-900/60 pb-3">
                       <div className="flex items-center gap-2.5">
@@ -1300,7 +1265,7 @@ Format as JSON: {"insights":["...","...","..."],"questAdjustment":"..."}`;
                       {log.exercises.map((ex,i)=>(
                         <div key={i} className="flex justify-between items-center">
                           <span className="font-mono text-xs text-zinc-500 flex items-center gap-2">{ex.name}{log.prExercises?.includes(ex.name)&&<span className="font-mono text-[8px] font-bold px-1.5 py-0.5 rounded b-pr">PR</span>}</span>
-                          <span className="font-mono text-xs text-zinc-600">{ex.sets.map(s=>`${s.reps}×${s.weight}lbs`).join('  ')}</span>
+                          <span className="font-mono text-xs text-zinc-600">{ex.sets.map(s=>`${s.reps}×${s.weight}lbs`).join('   ')}</span>
                         </div>
                       ))}
                     </div>
@@ -1407,8 +1372,6 @@ Format as JSON: {"insights":["...","...","..."],"questAdjustment":"..."}`;
         {/* ══ JOURNAL ══ */}
         {activeTab==='journal'&&(
           <div className="tab-section space-y-7">
-
-            {/* Failure Tagging — if yesterday had skipped quests */}
             {pendingFails.length>0&&(
               <Card className="p-6" style={{border:'1.5px solid rgba(248,113,113,.2)'}}>
                 <div className="flex items-center justify-between mb-4">
@@ -1439,13 +1402,12 @@ Format as JSON: {"insights":["...","...","..."],"questAdjustment":"..."}`;
               </Card>
             )}
 
-            {/* Today's Reflection */}
             <Card className="p-6" glow>
               <div className="flex items-center justify-between mb-1">
                 <SL>Daily Reflection</SL>
                 <span className="font-mono text-xs text-zinc-600">{today()}</span>
               </div>
-              <p className="text-sm text-zinc-500 mb-4 leading-relaxed">What went well, what didn't, and why? Raw thoughts — Claude will analyze patterns across entries.</p>
+              <p className="text-sm text-zinc-500 mb-4 leading-relaxed">What went well, what didn't, and why? Raw thoughts — Gemini will analyze patterns across entries.</p>
               {reflections[today()]?(
                 <div className="rounded-xl p-4 space-y-3" style={{background:'var(--bg-input)',border:'1.5px solid var(--border-base)'}}>
                   <p className="text-sm text-zinc-300 leading-relaxed">{reflections[today()].text}</p>
@@ -1459,7 +1421,6 @@ Format as JSON: {"insights":["...","...","..."],"questAdjustment":"..."}`;
               )}
             </Card>
 
-            {/* Improvement Log */}
             <Card className="p-6">
               <div className="flex items-center justify-between mb-4">
                 <SL>Today's Improvement Log</SL>
@@ -1483,7 +1444,6 @@ Format as JSON: {"insights":["...","...","..."],"questAdjustment":"..."}`;
               )}
             </Card>
 
-            {/* AI Pattern Analysis */}
             <Card className="p-6">
               <div className="flex items-center justify-between mb-5">
                 <SL>Pattern Analysis</SL>
@@ -1493,7 +1453,6 @@ Format as JSON: {"insights":["...","...","..."],"questAdjustment":"..."}`;
                 </button>
               </div>
 
-              {/* Word themes (NOW MEMOIZED) */}
               {topThemesList.length>0&&(
                 <div className="flex flex-wrap gap-2 mb-5">
                   {topThemesList.map(([word,count])=>(
@@ -1505,7 +1464,6 @@ Format as JSON: {"insights":["...","...","..."],"questAdjustment":"..."}`;
                 </div>
               )}
 
-              {/* AI insights */}
               {typeof aiInsight==='object'&&aiInsight?.insights&&(
                 <div className="space-y-3 border-t border-zinc-900/60 pt-5">
                   <p className="font-mono text-xs text-violet-500 uppercase tracking-widest mb-4">AI Pattern Insights</p>
@@ -1527,7 +1485,6 @@ Format as JSON: {"insights":["...","...","..."],"questAdjustment":"..."}`;
                 </div>
               )}
 
-              {/* Failure reason breakdown */}
               {Object.keys(failureLog).length>0&&(
                 <div className="border-t border-zinc-900/60 pt-5 mt-5">
                   <p className="font-mono text-[10px] text-zinc-600 uppercase tracking-widest mb-3">Failure Reason History</p>
@@ -1540,11 +1497,8 @@ Format as JSON: {"insights":["...","...","..."],"questAdjustment":"..."}`;
                   </div>
                 </div>
               )}
-
-              <p className="font-mono text-[11px] text-zinc-700 mt-4">Analysis uses reflections + improvement log + failure tags + sleep data · Gemini API key required</p>
             </Card>
 
-            {/* Quest Note Archive */}
             <div>
               <div className="flex items-center justify-between mb-4">
                 <SL>Quest Note Archive</SL>
@@ -1575,7 +1529,6 @@ Format as JSON: {"insights":["...","...","..."],"questAdjustment":"..."}`;
               }
             </div>
 
-            {/* Past reflections */}
             {Object.entries(reflections).filter(([d])=>d!==today()).length>0&&(
               <div>
                 <SL>Past Reflections</SL>
@@ -1589,10 +1542,8 @@ Format as JSON: {"insights":["...","...","..."],"questAdjustment":"..."}`;
                 </div>
               </div>
             )}
-
           </div>
         )}
-
       </main>
 
       {/* LEVEL UP MODAL */}
