@@ -275,70 +275,105 @@ function TimerRing({seconds,total,mode}){
   );
 }
 
-/* ── FOCUS TIMER WIDGET (ISOLATED) ── */
+/* ── FOCUS TIMER WIDGET (CONTINUOUS) ── */
 function FocusTimerWidget({ focusToday, setFocusToday, setHistory, showToast, focusPct, codeQ, toggleQuest }) {
-  const [timerMode, setTimerMode] = useState('work');
-  const [timerSecs, setTimerSecs] = useState(TIMER_DURATIONS.work);
+  const [timerSecs, setTimerSecs] = useState(0);
   const [timerOn, setTimerOn] = useState(false);
   
   useEffect(() => {
     if (!timerOn) return;
     const id = setInterval(() => {
       setTimerSecs(s => {
-        if (s <= 1) {
-          setTimerOn(false);
-          // Complete Logic
-          if(timerMode === 'work') {
-            snd('timer');
-            const newMin = focusToday.minutes + 25;
-            const newSess = focusToday.sessions + 1;
-            const upd = { date: today(), minutes: newMin, sessions: newSess };
-            setFocusToday(upd);
-            localStorage.setItem('lq_focus_v4', JSON.stringify(upd));
-            setHistory(h => ({ ...h, [today()]: { ...(h[today()] || {}), focusMin: newMin } }));
-            if (newMin >= 480) { showToast("🎯 8h focus reached — coding quest ready to complete!"); } 
-            else { showToast(`✅ Session ${newSess} done — ${fmtMins(newMin)} / 8h today. Take a break.`); }
-            setTimerMode('short');
-            return TIMER_DURATIONS.short;
-          } else {
-            snd('complete');
-            showToast("☕ Break over — back to it!");
-            setTimerMode('work');
-            return TIMER_DURATIONS.work;
-          }
+        const nextSec = s + 1;
+        // Automatically log 1 minute to the OS global stats every 60 seconds
+        if (nextSec % 60 === 0) {
+          const newMin = focusToday.minutes + 1;
+          const upd = { date: today(), minutes: newMin, sessions: focusToday.sessions };
+          setFocusToday(upd);
+          // Sync with XP history
+          setHistory(h => ({ ...h, [today()]: { ...(h[today()] || {}), focusMin: newMin } }));
+          if (newMin === 480) showToast("🎯 8h focus reached — coding quest ready to complete!");
         }
-        return s - 1;
+        return nextSec;
       });
     }, 1000);
     return () => clearInterval(id);
-  }, [timerOn, timerMode, focusToday, setFocusToday, setHistory, showToast]);
+  }, [timerOn, focusToday, setFocusToday, setHistory, showToast]);
+
+  // UI Math for the Ring (Fills up over 1 hour, then loops)
+  const R=52,CIRC=2*Math.PI*R;
+  const pct = (timerSecs % 3600) / 3600; 
+  const off = timerSecs === 0 ? CIRC : CIRC * (1 - pct); 
+  const hrs = Math.floor(timerSecs / 3600);
+  const mins = Math.floor((timerSecs % 3600) / 60);
+  const secs = timerSecs % 60;
+
+  // Format display: MM:SS (or HH:MM:SS if over an hour)
+  const displayTime = hrs > 0 
+    ? `${hrs}:${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`
+    : `${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`;
 
   return (
     <Card className="p-5" glow>
       <div className="flex justify-between items-center mb-4">
-        <SL>Focus Timer</SL>
+        <SL>Deep Focus Timer</SL>
         <span className="font-mono text-xs text-zinc-600">{fmtMins(focusToday.minutes)} / 8h today</span>
       </div>
-      <div className="flex gap-2 mb-5">
-        {[['work','Work 25m'],['short','Break 5m'],['long','Long 15m']].map(([m,l])=>(
-          <button key={m} onClick={()=>{if(timerOn)return;setTimerMode(m);setTimerSecs(TIMER_DURATIONS[m]);}}
-            className={`timer-mode-btn flex-1 ${timerMode===m?(m==='work'?'active':m==='short'?'active-g':'active-b'):''}`}>{l}</button>
-        ))}
+      
+      {/* Spacer to keep layout height identical to the old Pomodoro version */}
+      <div className="flex gap-2 mb-5 justify-center">
+         <span className="timer-mode-btn active w-full text-center cursor-default hover:border-[rgba(124,58,237,.45)] hover:text-[#a78bfa]">
+           Continuous Flow Mode
+         </span>
       </div>
+
       <div className="flex flex-col items-center gap-5">
-        <TimerRing seconds={timerSecs} total={TIMER_DURATIONS[timerMode]} mode={timerMode}/>
+        
+        {/* Customized Timer Ring */}
+        <div className="relative inline-flex items-center justify-center">
+          <svg width="120" height="120" viewBox="0 0 120 120">
+            <circle className="timer-ring-track" cx="60" cy="60" r={R}/>
+            <circle className="timer-ring-prog" cx="60" cy="60" r={R}
+              stroke="#7c3aed"
+              strokeDasharray={CIRC}
+              strokeDashoffset={off}
+              style={{opacity: timerSecs > 0 ? 1 : 0.25}}
+            />
+          </svg>
+          <div className="absolute inset-0 flex flex-col items-center justify-center">
+            <span className="font-display text-2xl font-bold text-zinc-100 tabular-nums tracking-tight">
+              {displayTime}
+            </span>
+            <span className="font-mono text-[10px] text-zinc-600 uppercase tracking-widest mt-0.5">
+              elapsed
+            </span>
+          </div>
+        </div>
+
         <div className="flex items-center gap-3">
-          <button onClick={()=>{setTimerSecs(TIMER_DURATIONS[timerMode]);setTimerOn(false);}} className="timer-btn" title="Reset">
+          {/* Reset Button */}
+          <button onClick={()=>{setTimerSecs(0);setTimerOn(false);}} className="timer-btn" title="Reset Session">
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"/></svg>
           </button>
+          
+          {/* Play/Pause Button */}
           <button onClick={()=>setTimerOn(o=>!o)} className={`timer-btn ${timerOn?'run':''}`} style={{width:'54px',height:'54px'}} title={timerOn?'Pause':'Start'}>
             {timerOn
               ?<svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/></svg>
               :<svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
             }
           </button>
-          <button onClick={()=>{setTimerMode(timerMode==='work'?'short':'work');setTimerSecs(timerMode==='work'?TIMER_DURATIONS.short:TIMER_DURATIONS.work);setTimerOn(false);}} className="timer-btn" title="Switch mode">
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M7.5 21L3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5"/></svg>
+          
+          {/* Save & Stop Button */}
+          <button onClick={()=>{
+             if (timerSecs > 0) {
+               showToast(`✅ Flow state saved! Logged ${Math.floor(timerSecs/60)}m ${timerSecs%60}s.`);
+               snd('complete');
+             }
+             setTimerSecs(0);
+             setTimerOn(false);
+          }} className="timer-btn" title="Save & Reset">
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/></svg>
           </button>
         </div>
       </div>
@@ -348,7 +383,7 @@ function FocusTimerWidget({ focusToday, setFocusToday, setHistory, showToast, fo
           <span className={`font-mono text-[10px] font-semibold ${focusPct>=100?'text-green-400':'text-zinc-500'}`}>{Math.round(focusPct)}%</span>
         </div>
         <div className="focus-prog-bar"><div className="focus-prog-fill" style={{width:`${focusPct}%`}}/></div>
-        {focusPct>=100&&!codeQ.completed&&(
+        {focusPct>=100&&!codeQ?.completed&&(
           <button onClick={()=>toggleQuest(codeQ.id)} className="w-full mt-2 btn-p rounded-xl py-2 font-mono text-xs">✓ Complete Coding Quest Now</button>
         )}
       </div>
