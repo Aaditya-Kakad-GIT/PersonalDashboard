@@ -275,109 +275,224 @@ function TimerRing({seconds,total,mode}){
   );
 }
 
-/* ── FOCUS TIMER WIDGET (CONTINUOUS) ── */
+/* ── FOCUS TIMER WIDGET (MIDNIGHT AUTO-STOP) ── */
 function FocusTimerWidget({ focusToday, setFocusToday, setHistory, showToast, focusPct, codeQ, toggleQuest }) {
+  // Modes: 'flow' or 'pomodoro'
+  const [mode, setMode] = useState('flow'); 
+  const [pomoType, setPomoType] = useState('work'); 
+  
   const [timerSecs, setTimerSecs] = useState(0);
   const [timerOn, setTimerOn] = useState(false);
-  
+  const [manualMins, setManualMins] = useState('');
+
+  // Refs for calculating absolute time
+  const startTimeRef = useRef(null);
+  const startSecsRef = useRef(0);
+  const lastLoggedMinsRef = useRef(0);
+  const midnightRef = useRef(null); 
+
+  // Play/Pause Engine
+  const togglePlay = () => {
+    if (!timerOn) {
+      const now = new Date();
+      startTimeRef.current = now.getTime();
+      startSecsRef.current = timerSecs;
+      lastLoggedMinsRef.current = Math.floor(timerSecs / 60);
+
+      // Calculate timestamp for the upcoming midnight
+      const nextMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0, 0);
+      midnightRef.current = nextMidnight.getTime();
+
+      setTimerOn(true);
+    } else {
+      setTimerOn(false);
+    }
+  };
+
+  // The Delta-Time Tick Loop
   useEffect(() => {
     if (!timerOn) return;
+    
     const id = setInterval(() => {
-      setTimerSecs(s => {
-        const nextSec = s + 1;
-        // Automatically log 1 minute to the OS global stats every 60 seconds
-        if (nextSec % 60 === 0) {
-          const newMin = focusToday.minutes + 1;
-          const upd = { date: today(), minutes: newMin, sessions: focusToday.sessions };
-          setFocusToday(upd);
-          // Sync with XP history
-          setHistory(h => ({ ...h, [today()]: { ...(h[today()] || {}), focusMin: newMin } }));
-          if (newMin === 480) showToast("🎯 8h focus reached — coding quest ready to complete!");
-        }
-        return nextSec;
-      });
-    }, 1000);
-    return () => clearInterval(id);
-  }, [timerOn, focusToday, setFocusToday, setHistory, showToast]);
+      const nowTime = Date.now();
 
-  // UI Math for the Ring (Fills up over 1 hour, then loops)
-  const R=52,CIRC=2*Math.PI*R;
-  const pct = (timerSecs % 3600) / 3600; 
-  const off = timerSecs === 0 ? CIRC : CIRC * (1 - pct); 
+      // 🌙 Midnight Auto-Stop Check
+      if (nowTime >= midnightRef.current) {
+        setTimerOn(false);
+        setTimerSecs(0);
+        showToast("🌙 Midnight reached. Flow state auto-saved and reset for the new day.");
+        return; // Halt this tick
+      }
+
+      const elapsed = Math.floor((nowTime - startTimeRef.current) / 1000);
+      
+      if (mode === 'flow') {
+        const nextSec = startSecsRef.current + elapsed;
+        setTimerSecs(nextSec);
+        
+        // Auto-log missed minutes instantly
+        const currentMins = Math.floor(nextSec / 60);
+        const diff = currentMins - lastLoggedMinsRef.current;
+        
+        if (diff > 0) {
+          lastLoggedMinsRef.current = currentMins;
+          setFocusToday(prev => {
+            const newMin = prev.minutes + diff;
+            localStorage.setItem('lq_focus_v4', JSON.stringify({ ...prev, minutes: newMin }));
+            return { ...prev, minutes: newMin };
+          });
+          setHistory(h => ({ ...h, [today()]: { ...(h[today()] || {}), focusMin: (h[today()]?.focusMin || 0) + diff } }));
+        }
+      } 
+      else {
+        const nextSec = startSecsRef.current - elapsed;
+        if (nextSec <= 0) {
+          setTimerOn(false);
+          setTimerSecs(0);
+          
+          if (pomoType === 'work') {
+            snd('timer');
+            setFocusToday(prev => {
+              const newMin = prev.minutes + 25;
+              localStorage.setItem('lq_focus_v4', JSON.stringify({ ...prev, minutes: newMin, sessions: prev.sessions + 1 }));
+              return { ...prev, minutes: newMin, sessions: prev.sessions + 1 };
+            });
+            setHistory(h => ({ ...h, [today()]: { ...(h[today()] || {}), focusMin: (h[today()]?.focusMin || 0) + 25 } }));
+            showToast(`✅ Pomodoro done! Logged 25m.`);
+            setPomoType('short');
+            setTimerSecs(TIMER_DURATIONS.short);
+          } else {
+            snd('complete');
+            showToast("☕ Break over!");
+            setPomoType('work');
+            setTimerSecs(TIMER_DURATIONS.work);
+          }
+        } else {
+          setTimerSecs(nextSec);
+        }
+      }
+    }, 500); 
+    return () => clearInterval(id);
+  }, [timerOn, mode, pomoType, setFocusToday, setHistory, showToast]);
+
+  // Controls
+  const switchPrimaryMode = (m) => {
+    if(timerOn) return;
+    setMode(m);
+    setTimerSecs(m === 'flow' ? 0 : TIMER_DURATIONS.work);
+    setPomoType('work');
+  };
+
+  const resetTimer = () => {
+    setTimerOn(false);
+    if (mode === 'flow') {
+       if (timerSecs > 0) showToast(`✅ Flow saved: ${Math.floor(timerSecs/60)}m ${timerSecs%60}s.`);
+       setTimerSecs(0);
+    } else {
+       setTimerSecs(TIMER_DURATIONS[pomoType]);
+    }
+  };
+
+  const logManual = () => {
+    const m = parseInt(manualMins);
+    if (isNaN(m) || m <= 0) return;
+    setFocusToday(prev => {
+       const newMin = prev.minutes + m;
+       localStorage.setItem('lq_focus_v4', JSON.stringify({ ...prev, minutes: newMin }));
+       return { ...prev, minutes: newMin };
+    });
+    setHistory(h => ({ ...h, [today()]: { ...(h[today()] || {}), focusMin: (h[today()]?.focusMin || 0) + m } }));
+    setManualMins('');
+    showToast(`✏️ Manually logged ${m} minutes.`);
+  };
+
+  // UI Math & Layout Calculations
+  const R=52, CIRC=2*Math.PI*R;
+  const total = mode === 'flow' ? 3600 : TIMER_DURATIONS[pomoType];
+  const pct = mode === 'flow' ? (timerSecs % 3600) / 3600 : timerSecs / total;
+  const off = mode === 'flow' 
+     ? (timerSecs === 0 ? CIRC : CIRC * (1 - pct))
+     : CIRC * (1 - Math.max(0, pct));
+     
+  const ringColor = mode === 'flow' ? '#7c3aed' : (pomoType === 'work' ? '#7c3aed' : pomoType === 'short' ? '#34d399' : '#60a5fa');
+
   const hrs = Math.floor(timerSecs / 3600);
   const mins = Math.floor((timerSecs % 3600) / 60);
   const secs = timerSecs % 60;
-
-  // Format display: MM:SS (or HH:MM:SS if over an hour)
-  const displayTime = hrs > 0 
+  const displayStr = mode === 'flow' && hrs > 0 
     ? `${hrs}:${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`
     : `${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`;
 
   return (
     <Card className="p-5" glow>
       <div className="flex justify-between items-center mb-4">
-        <SL>Deep Focus Timer</SL>
+        <div className="flex gap-2">
+           <button onClick={()=>switchPrimaryMode('flow')} className={`font-mono text-[10px] font-bold px-2 py-1 rounded-lg transition-colors ${mode==='flow'?'bg-violet-500/20 text-violet-400':'text-zinc-600 hover:text-zinc-400'}`}>FLOW</button>
+           <button onClick={()=>switchPrimaryMode('pomodoro')} className={`font-mono text-[10px] font-bold px-2 py-1 rounded-lg transition-colors ${mode==='pomodoro'?'bg-violet-500/20 text-violet-400':'text-zinc-600 hover:text-zinc-400'}`}>POMO</button>
+        </div>
         <span className="font-mono text-xs text-zinc-600">{fmtMins(focusToday.minutes)} / 8h today</span>
       </div>
       
-      {/* Spacer to keep layout height identical to the old Pomodoro version */}
-      <div className="flex gap-2 mb-5 justify-center">
-         <span className="timer-mode-btn active w-full text-center cursor-default hover:border-[rgba(124,58,237,.45)] hover:text-[#a78bfa]">
-           Continuous Flow Mode
-         </span>
-      </div>
+      {mode === 'pomodoro' ? (
+        <div className="flex gap-2 mb-5">
+          {[['work','Work 25m'],['short','Break 5m'],['long','Long 15m']].map(([m,l])=>(
+            <button key={m} onClick={()=>{if(timerOn)return;setPomoType(m);setTimerSecs(TIMER_DURATIONS[m]);}}
+              className={`timer-mode-btn flex-1 ${pomoType===m?(m==='work'?'active':m==='short'?'active-g':'active-b'):''}`}>{l}</button>
+          ))}
+        </div>
+      ) : (
+        <div className="flex gap-2 mb-5 justify-center">
+           <span className="timer-mode-btn active w-full text-center cursor-default hover:border-[rgba(124,58,237,.45)] hover:text-[#a78bfa]">
+             Continuous Focus
+           </span>
+        </div>
+      )}
 
       <div className="flex flex-col items-center gap-5">
-        
-        {/* Customized Timer Ring */}
         <div className="relative inline-flex items-center justify-center">
           <svg width="120" height="120" viewBox="0 0 120 120">
             <circle className="timer-ring-track" cx="60" cy="60" r={R}/>
             <circle className="timer-ring-prog" cx="60" cy="60" r={R}
-              stroke="#7c3aed"
-              strokeDasharray={CIRC}
-              strokeDashoffset={off}
+              stroke={ringColor} strokeDasharray={CIRC} strokeDashoffset={off}
               style={{opacity: timerSecs > 0 ? 1 : 0.25}}
             />
           </svg>
           <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <span className="font-display text-2xl font-bold text-zinc-100 tabular-nums tracking-tight">
-              {displayTime}
-            </span>
-            <span className="font-mono text-[10px] text-zinc-600 uppercase tracking-widest mt-0.5">
-              elapsed
-            </span>
+            <span className="font-display text-2xl font-bold text-zinc-100 tabular-nums tracking-tight">{displayStr}</span>
+            <span className="font-mono text-[10px] text-zinc-600 uppercase tracking-widest mt-0.5">{mode === 'flow' ? 'elapsed' : (pomoType === 'work' ? 'focus' : 'break')}</span>
           </div>
         </div>
 
         <div className="flex items-center gap-3">
-          {/* Reset Button */}
-          <button onClick={()=>{setTimerSecs(0);setTimerOn(false);}} className="timer-btn" title="Reset Session">
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"/></svg>
+          <button onClick={resetTimer} className="timer-btn" title={mode === 'flow' ? "Save & Reset" : "Reset"}>
+             {mode === 'flow' ? (
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/></svg>
+             ) : (
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"/></svg>
+             )}
           </button>
           
-          {/* Play/Pause Button */}
-          <button onClick={()=>setTimerOn(o=>!o)} className={`timer-btn ${timerOn?'run':''}`} style={{width:'54px',height:'54px'}} title={timerOn?'Pause':'Start'}>
+          <button onClick={togglePlay} className={`timer-btn ${timerOn?'run':''}`} style={{width:'54px',height:'54px'}} title={timerOn?'Pause':'Start'}>
             {timerOn
               ?<svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/></svg>
               :<svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
             }
           </button>
           
-          {/* Save & Stop Button */}
-          <button onClick={()=>{
-             if (timerSecs > 0) {
-               showToast(`✅ Flow state saved! Logged ${Math.floor(timerSecs/60)}m ${timerSecs%60}s.`);
-               snd('complete');
-             }
-             setTimerSecs(0);
-             setTimerOn(false);
-          }} className="timer-btn" title="Save & Reset">
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/></svg>
-          </button>
+          {mode === 'pomodoro' && (
+            <button onClick={()=>{setPomoType(pomoType==='work'?'short':'work');setTimerSecs(pomoType==='work'?TIMER_DURATIONS.short:TIMER_DURATIONS.work);setTimerOn(false);}} className="timer-btn" title="Skip">
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M7.5 21L3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5"/></svg>
+            </button>
+          )}
         </div>
       </div>
-      <div className="mt-5 space-y-1.5">
+
+      <div className="flex gap-2.5 mt-5 pt-5 border-t border-zinc-900/60">
+        <input type="number" min="1" placeholder="Forgot? Add mins..." value={manualMins} onChange={e=>setManualMins(e.target.value)} className="inp flex-1 rounded-xl px-4 py-2 font-mono text-xs"/>
+        <button onClick={logManual} className="btn-p rounded-xl px-4 py-2 font-mono text-xs whitespace-nowrap">+ Log</button>
+      </div>
+
+      <div className="mt-4 space-y-1.5">
         <div className="flex justify-between">
           <span className="font-mono text-[10px] text-zinc-600">Coding quest progress</span>
           <span className={`font-mono text-[10px] font-semibold ${focusPct>=100?'text-green-400':'text-zinc-500'}`}>{Math.round(focusPct)}%</span>
