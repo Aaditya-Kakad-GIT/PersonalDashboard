@@ -149,15 +149,6 @@
 const { useState, useEffect, useRef, useMemo, useCallback } = React;
 
 /* ── CONSTANTS ── */
-const MUSCLE_MAP = {'Deadlifts':'Back','Lat Pulldowns':'Back','Hammer Curls':'Biceps','Flat Bench Press':'Chest','Incline Dumbbell Press':'Chest','Tricep Pushdowns':'Triceps','Barbell Back Squats':'Legs','Romanian Deadlifts':'Legs','Overhead Press (OHP)':'Shoulders','Dumbbell Lateral Raises':'Shoulders','Lateral Raises (Giant Set)':'Shoulders','Hanging Leg Raises':'Core','Bicep 21s':'Biceps'};
-const MUSCLE_COLORS = {Back:'#60a5fa',Chest:'#fb923c',Legs:'#34d399',Shoulders:'#c084fc',Biceps:'#fbbf24',Triceps:'#fb923c',Core:'#f87171'};
-const PRESET_WORKOUTS = {
-  Tuesday:{name:"Back & Biceps",emoji:"🏋️",exercises:[{name:"Deadlifts",sets:[{reps:5,weight:225},{reps:5,weight:245},{reps:5,weight:265}]},{name:"Lat Pulldowns",sets:[{reps:10,weight:120},{reps:10,weight:130}]},{name:"Hammer Curls",sets:[{reps:12,weight:30},{reps:12,weight:35}]}]},
-  Wednesday:{name:"Chest & Triceps",emoji:"💪",exercises:[{name:"Flat Bench Press",sets:[{reps:8,weight:135},{reps:8,weight:185},{reps:6,weight:205}]},{name:"Incline Dumbbell Press",sets:[{reps:10,weight:60},{reps:10,weight:65}]},{name:"Tricep Pushdowns",sets:[{reps:12,weight:50}]}]},
-  Thursday:{name:"Legs Day",emoji:"🦵",exercises:[{name:"Barbell Back Squats",sets:[{reps:8,weight:185},{reps:8,weight:225},{reps:6,weight:245}]},{name:"Romanian Deadlifts",sets:[{reps:10,weight:135},{reps:10,weight:185}]}]},
-  Friday:{name:"Shoulders & Abs",emoji:"⚡",exercises:[{name:"Overhead Press (OHP)",sets:[{reps:8,weight:95},{reps:8,weight:115}]},{name:"Dumbbell Lateral Raises",sets:[{reps:15,weight:20},{reps:15,weight:25}]},{name:"Hanging Leg Raises",sets:[{reps:12,weight:0},{reps:12,weight:0}]}]},
-  Saturday:{name:"Grow Day",emoji:"🌱",exercises:[{name:"Bicep 21s",sets:[{reps:21,weight:45}]},{name:"Lateral Raises (Giant Set)",sets:[{reps:20,weight:15},{reps:15,weight:20}]}]},
-};
 const TIMER_DURATIONS = {work:25*60,short:5*60,long:15*60};
 const FAILURE_REASONS = ['Tired','Distracted','Forgot','Too Hard','No Time','Other'];
 
@@ -173,16 +164,6 @@ const weekStart = () => { const n=new Date(),d=new Date(n); d.setDate(d.getDate(
 const fmtMins = m => { const h=Math.floor(m/60),mn=m%60; return h>0?`${h}h ${mn}m`:`${mn}m`; };
 
 /* ── PR ENGINE ── */
-const checkPRs = (exercises, prs) => {
-  const newNames=[]; const updated={...prs};
-  for(const ex of (exercises||[])){
-    if(!ex.sets?.length) continue;
-    const max=Math.max(...ex.sets.map(s=>Number(s.weight)||0));
-    if(max>0&&max>(updated[ex.name]||0)){newNames.push(ex.name);updated[ex.name]=max;}
-  }
-  return {newNames,updated};
-};
-
 const getMilestones = (old,nxt) => {
   const t=today(),ms=[];
   for(const k of Object.keys(nxt)){const of=Math.floor(old[k]||10),nf=Math.floor(nxt[k]||10);if(nf>of)ms.push({stat:k,milestone:nf,date:t});}
@@ -425,129 +406,6 @@ function FocusTimerWidget({ focusToday, setFocusToday, setHistory, showToast, fo
   );
 }
 
-/* ── INTERACTIVE WORKOUT FORGE ── */
-function ManualWorkoutForge({ prs, setPrs, setGymLogs, setHero, showToast, checkPRs, today, snd }) {
-  const [routineTitle, setRoutineTitle] = useState('Custom Routine');
-  const [stagedExercises, setStagedExercises] = useState([]);
-  const [chosenEx, setChosenEx] = useState('Flat Bench Press');
-  const [customEx, setCustomEx] = useState('');
-  const [setsDraft, setSetsDraft] = useState([{ reps: 8, weight: 135 }]);
-
-  const EXERCISE_LIST = [
-    'Flat Bench Press', 'Incline Dumbbell Press', 'Deadlifts', 'Lat Pulldowns', 
-    'Barbell Back Squats', 'Romanian Deadlifts', 'Overhead Press (OHP)', 
-    'Dumbbell Lateral Raises', 'Hammer Curls', 'Tricep Pushdowns', 'Hanging Leg Raises', 'Custom'
-  ];
-
-  const handleAddSetRow = () => setSetsDraft([...setsDraft, { reps: 10, weight: 135 }]);
-  const handleUpdateSet = (idx, field, val) => {
-    setSetsDraft(setsDraft.map((s, i) => i === idx ? { ...s, [field]: Number(val) || 0 } : s));
-  };
-  const handleRemoveSet = (idx) => {
-    if (setsDraft.length > 1) setSetsDraft(setsDraft.filter((_, i) => i !== idx));
-  };
-
-  const handleStageExercise = () => {
-    const finalName = chosenEx === 'Custom' ? customEx.trim() : chosenEx;
-    if (!finalName) { showToast("⚠️ Give your custom exercise a name!"); return; }
-    setStagedExercises([...stagedExercises, { name: finalName, sets: setsDraft }]);
-    setSetsDraft([{ reps: 8, weight: 135 }]);
-    setCustomEx('');
-    showToast(`Staged ${finalName}`);
-  };
-
-  const handleCommitWorkout = () => {
-    if (!stagedExercises.length) return;
-    const { newNames, updated } = checkPRs(stagedExercises, prs);
-    setPrs(updated);
-    
-    setGymLogs(l => [{
-      id: Date.now(),
-      date: today(),
-      workoutName: `${routineTitle} (Forged)`,
-      exercises: stagedExercises,
-      prExercises: newNames
-    }, ...l]);
-
-    setHero(h => {
-      let nx = h.xp + 65, ng = h.gold + 20, nl = h.level, tx = h.nextLevelXp, rl = false;
-      if (nx >= tx) { nx -= tx; nl++; tx = nl * 300; rl = true; snd('levelup'); }
-      return { ...h, xp: Math.round(nx), gold: ng, level: nl, nextLevelXp: tx, statPoints: rl ? h.statPoints + 3 : h.statPoints };
-    });
-
-    if (newNames.length > 0) {
-      snd('pr');
-      showToast(`🏆 Routine Committed! PR detected on: ${newNames.join(', ')} — +65 XP · +20g`);
-    } else {
-      snd('complete');
-      showToast("💪 Custom workout session committed to database! — +65 XP · +20g");
-    }
-    setStagedExercises([]);
-    setRoutineTitle('Custom Routine');
-  };
-
-  return (
-    <Card className="p-6" glow>
-      <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-3 mb-5 border-b border-zinc-900/60 pb-4">
-        <div>
-          <p className="slabel" style={{marginBottom:'4px'}}>Routine Blacksmith</p>
-          <input type="text" value={routineTitle} onChange={e => setRoutineTitle(e.target.value)} className="bg-transparent font-display text-xl font-bold text-zinc-100 outline-none border-b border-dashed border-zinc-800 focus:border-violet-500 mt-1 pb-0.5 w-full max-w-xs" placeholder="Routine Title..."/>
-        </div>
-        {stagedExercises.length > 0 && (
-          <button onClick={handleCommitWorkout} className="btn-p rounded-xl px-5 py-2.5 font-mono text-xs shadow-lg animate-pulse whitespace-nowrap self-end sm:self-center">
-            🔥 Log Full Session ({stagedExercises.length} Ex)
-          </button>
-        )}
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
-        <div className="md:col-span-3 space-y-4">
-          <div className="flex gap-2.5">
-            <select value={chosenEx} onChange={e => setChosenEx(e.target.value)} className="inp rounded-xl px-3.5 py-2.5 font-mono cursor-pointer flex-1">
-              {EXERCISE_LIST.map(ex => <option key={ex} value={ex}>{ex}</option>)}
-            </select>
-            {chosenEx === 'Custom' && (
-              <input type="text" placeholder="Exercise Name..." value={customEx} onChange={e => setCustomEx(e.target.value)} className="inp rounded-xl px-4 py-2.5 flex-1 font-mono text-xs"/>
-            )}
-          </div>
-          <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
-            {setsDraft.map((set, idx) => (
-              <div key={idx} className="flex items-center gap-2 bg-zinc-950/40 p-2 border border-zinc-900 rounded-xl animate-fadeSlideIn">
-                <span className="font-mono text-[10px] text-zinc-600 w-12 text-center font-bold uppercase">Set {idx + 1}</span>
-                <input type="number" placeholder="Reps" value={set.reps || ''} onChange={e => handleUpdateSet(idx, 'reps', e.target.value)} className="inp rounded-lg px-2 py-1.5 font-mono text-center w-full text-xs" min="1"/>
-                <span className="font-mono text-xs text-zinc-700">×</span>
-                <input type="number" placeholder="Lbs" value={set.weight || ''} onChange={e => handleUpdateSet(idx, 'weight', e.target.value)} className="inp rounded-lg px-2 py-1.5 font-mono text-center w-full text-xs" min="0"/>
-                <button type="button" onClick={() => handleRemoveSet(idx)} className="p-1.5 text-zinc-700 hover:text-red-400 font-mono text-xs">✕</button>
-              </div>
-            ))}
-          </div>
-          <div className="flex gap-2">
-            <button type="button" onClick={handleAddSetRow} className="btn-g rounded-xl py-2 px-3 font-mono text-xs flex-1">+ Add Set Row</button>
-            <button type="button" onClick={handleStageExercise} className="btn-p rounded-xl py-2 px-4 font-mono text-xs bg-violet-600 text-white hover:bg-violet-500">Stage Exercise</button>
-          </div>
-        </div>
-        <div className="md:col-span-2 bg-zinc-950/20 border border-zinc-900 rounded-2xl p-4 flex flex-col justify-between min-h-[180px]">
-          <div>
-            <p className="font-mono text-[9px] uppercase tracking-wider text-zinc-600 mb-3 font-bold">Staged Tracklist</p>
-            {stagedExercises.length === 0 ? (
-              <p className="font-mono text-xs text-zinc-700 italic mt-6 text-center">Add an exercise on the left to begin staging your routine workflow...</p>
-            ) : (
-              <div className="space-y-2 max-h-44 overflow-y-auto pr-1">
-                {stagedExercises.map((ex, i) => (
-                  <div key={i} className="flex justify-between items-center text-xs border-b border-zinc-900/40 pb-1.5">
-                    <span className="font-medium text-zinc-300 truncate max-w-[120px]">{ex.name}</span>
-                    <span className="font-mono text-zinc-500 text-[11px] whitespace-nowrap">{ex.sets.map(s => `${s.reps}×${s.weight}`).join(' | ')}</span>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-    </Card>
-  );
-}
-
 /* ── XP CHART ── */
 function XpChart({history}){
   const days=[];
@@ -630,8 +488,6 @@ function App(){
       {id:6,text:"Hit 4 gym sessions this week",type:"week",completed:false,difficulty:"medium",attribute:"strength",xp:80,gold:40,notes:""},
     ];
   });
-  const [gymLogs,     setGymLogs]     = useState(()=>JSON.parse(localStorage.getItem('lq_gymlogs_adi_v4'))||[]);
-  const [prs,         setPrs]         = useState(()=>JSON.parse(localStorage.getItem('lq_prs_adi_v4'))||{});
   const [rewards,     setRewards]     = useState(()=>JSON.parse(localStorage.getItem('lq_rewards_adi_v4'))||[
     {id:1,text:"Watch 1 episode of anime/show guilt-free",cost:30},
     {id:2,text:"Indulge in a clean cheat meal",cost:60},
@@ -675,10 +531,10 @@ function App(){
   useEffect(()=>{document.body.classList.toggle('dim',dimMode);},[dimMode]);
 
   useEffect(()=>{
-    const ids=['dashboard','quests','gym','shop','hero','journal'];
+    const ids=['dashboard','quests','shop','hero','journal'];
     const fn=(e)=>{
       if(['INPUT','TEXTAREA','SELECT'].includes(e.target.tagName))return;
-      if(e.key>='1'&&e.key<='6')setActiveTab(ids[+e.key-1]);
+      if(e.key>='1'&&e.key<='5')setActiveTab(ids[+e.key-1]);
       if(e.key==='Escape'){setLvlModal(false);setConfetti(false);}
       if(e.key==='d'||e.key==='D')setDimMode(m=>!m);
     };
@@ -717,9 +573,7 @@ function App(){
 
   useEffect(() => { localStorage.setItem('lq_hero_adi_v4', JSON.stringify(hero)); }, [hero]);
   useEffect(() => { localStorage.setItem('lq_quests_adi_v4', JSON.stringify(quests)); }, [quests]);
-  useEffect(() => { localStorage.setItem('lq_gymlogs_adi_v4', JSON.stringify(gymLogs)); }, [gymLogs]);
   useEffect(() => { localStorage.setItem('lq_rewards_adi_v4', JSON.stringify(rewards)); }, [rewards]);
-  useEffect(() => { localStorage.setItem('lq_prs_adi_v4', JSON.stringify(prs)); }, [prs]);
   useEffect(() => { localStorage.setItem('lq_history_adi_v4', JSON.stringify(history)); }, [history]);
   useEffect(() => { localStorage.setItem('lq_milestones_adi_v4', JSON.stringify(milestones)); }, [milestones]);
   useEffect(() => { localStorage.setItem('lq_notehistory_v4', JSON.stringify(noteHistory)); }, [noteHistory]);
@@ -772,36 +626,6 @@ function App(){
   const last7Sleep=useMemo(()=>{
     const days=[];for(let i=6;i>=0;i--){const dt=new Date(Date.now()-i*86400000).toISOString().split('T')[0];days.push({date:dt,hours:sleepLog[dt]??null});}return days;
   },[sleepLog]);
-
-  const logPreset=(day)=>{
-    const p=PRESET_WORKOUTS[day];if(!p)return;
-    const{newNames,updated}=checkPRs(p.exercises,prs);
-    setPrs(updated);
-    setGymLogs(l=>[{id:Date.now(),date:today(),workoutName:`${p.name} (${day})`,exercises:p.exercises,prExercises:newNames},...l]);
-    setHero(h=>({...h,xp:h.xp+60,gold:h.gold+20}));
-    if(newNames.length>0){snd('pr');showToast(`🏆 PR: ${newNames.join(', ')} — +60 XP · +20g`);}
-    else showToast(`Split logged: ${p.name} — +60 XP · +20g`);
-  };
-  const deleteLog=(id)=>{setGymLogs(p=>p.filter(l=>l.id!==id));showToast("Session removed.");};
-
-  const exProgression=useMemo(()=>{
-    const byEx={};
-    gymLogs.forEach(log=>{
-      (log.exercises||[]).forEach(ex=>{
-        if(!byEx[ex.name])byEx[ex.name]=[];
-        const max=Math.max(...ex.sets.map(s=>Number(s.weight)||0));
-        byEx[ex.name].push({date:log.date,max,volume:ex.sets.reduce((s,t)=>s+(Number(t.reps)||0)*(Number(t.weight)||0),0)});
-      });
-    });
-    Object.keys(byEx).forEach(n=>{byEx[n]=byEx[n].sort((a,b)=>b.date.localeCompare(a.date)).slice(0,4);});
-    return byEx;
-  },[gymLogs]);
-
-  const weeklyVol=useMemo(()=>{
-    const ws=weekStart(),tw=gymLogs.filter(l=>l.date>=ws),bg={};
-    tw.forEach(log=>(log.exercises||[]).forEach(ex=>{const g=MUSCLE_MAP[ex.name]||'Other';const v=(ex.sets||[]).reduce((s,t)=>s+(Number(t.reps)||0)*(Number(t.weight)||0),0);bg[g]=(bg[g]||0)+v;}));
-    return bg;
-  },[gymLogs]);
 
   const submitFailureTags=()=>{
     if(Object.keys(failTags).length===0){setPendingFails([]);return;}
@@ -889,14 +713,12 @@ Format as JSON: {"insights":["...","...","..."],"questAdjustment":"..."}`;
   const dailyQs=quests.filter(q=>q.type==='day');
   const weeklyQs=quests.filter(q=>q.type==='week');
   const daysLeft=daysUntilSun();
-  const maxVol=Math.max(...Object.values(weeklyVol),1);
   const focusPct=Math.min(100,(focusToday.minutes/480)*100);
   const stampHit=sleepDebt>=5;
 
   const tabs=[
     {id:'dashboard',label:'Overview'},
     {id:'quests',   label:'Quests'},
-    {id:'gym',      label:'Temple'},
     {id:'shop',     label:'Store'},
     {id:'hero',     label:'Matrix'},
     {id:'journal',  label:'Journal'},
@@ -1142,135 +964,6 @@ Format as JSON: {"insights":["...","...","..."],"questAdjustment":"..."}`;
               <SL>Daily Quests — {dailyQs.filter(q=>q.completed).length}/{dailyQs.length}</SL>
               {dailyQs.length===0?<Empty icon="⚔️" title="No daily quests" sub="Forge above or use AI decomposer."/>
                 :<div className="space-y-2.5">{dailyQs.map(q=><QRow key={q.id} q={q} drag/>)}</div>}
-            </div>
-          </div>
-        )}
-
-        {/* ══ TEMPLE (GYM) ══ */}
-        {activeTab==='gym'&&(
-          <div className="tab-section space-y-8">
-            <div>
-              <SL>Weekly Split — Tap to Log</SL>
-              <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
-                {Object.entries(PRESET_WORKOUTS).map(([day,d])=>(
-                  <button key={day} onClick={()=>logPreset(day)} className="day-card rounded-2xl p-5 text-left space-y-2.5 group">
-                    <div className="flex justify-between items-center">
-                      <span className="font-mono text-[9px] text-zinc-700 uppercase tracking-widest">{day}</span>
-                      <span className="text-lg opacity-55 group-hover:opacity-100 transition-opacity">{d.emoji}</span>
-                    </div>
-                    <p className="text-sm font-semibold text-zinc-200 leading-snug">{d.name}</p>
-                    <p className="font-mono text-[11px] text-zinc-600">{d.exercises.length} exercises</p>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Routine Blacksmith Component Hook */}
-            <ManualWorkoutForge 
-              prs={prs} 
-              setPrs={setPrs} 
-              setGymLogs={setGymLogs} 
-              setHero={setHero} 
-              showToast={showToast} 
-              checkPRs={checkPRs} 
-              today={today} 
-              snd={snd} 
-            />
-
-            {Object.keys(prs).length>0&&(
-              <div>
-                <SL>Personal Records 🏆</SL>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
-                  {Object.entries(prs).sort((a,b)=>b[1]-a[1]).map(([name,w])=>(
-                    <div key={name} className="rounded-2xl px-4 py-3.5 flex items-center justify-between gap-2"
-                      style={{background:'var(--bg-day)',border:'1.5px solid rgba(251,191,36,.14)',transition:'background .35s ease'}}>
-                      <span className="font-mono text-xs text-zinc-400 truncate">{name}</span>
-                      <span className="text-sm font-bold font-mono text-yellow-400 flex-shrink-0">{w}<span className="text-zinc-600 font-normal text-[10px]">lb</span></span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {Object.keys(exProgression).length>0&&(
-              <Card className="p-6">
-                <SL>Exercise Progression — Last 3 Sessions</SL>
-                <div className="space-y-4">
-                  {Object.entries(exProgression).filter(([,d])=>d.length>=2).sort((a,b)=>b[1][0].max-a[1][0].max).slice(0,8).map(([name,sessions])=>{
-                    const latest=sessions[0].max,prev=sessions[sessions.length-1].max;
-                    const diff=latest-prev;
-                    const trendCls=diff>0?'prog-trend-up':diff<0?'prog-trend-dn':'prog-trend-eq';
-                    const trendStr=diff>0?`+${diff}`:diff<0?`${diff}`:'—';
-                    return(
-                      <div key={name} className="flex items-center gap-4">
-                        <div className="w-36 flex-shrink-0">
-                          <p className="text-xs text-zinc-300 font-medium leading-tight">{name}</p>
-                          <p className={`font-mono text-[10px] font-semibold mt-0.5 ${trendCls}`}>{trendStr} lbs trend</p>
-                        </div>
-                        <div className="flex items-end gap-2 flex-1">
-                          {[...sessions].reverse().map((s,i)=>{
-                            const maxAll=Math.max(...sessions.map(x=>x.max),1);
-                            const h=Math.max(16,(s.max/maxAll)*52);
-                            const isLatest=i===sessions.length-1;
-                            return(
-                              <div key={i} className="flex flex-col items-center gap-1" style={{flex:1}}>
-                                <span className="font-mono text-[9px] text-zinc-600">{s.max}lb</span>
-                                <div className="w-full rounded-t-md transition-all" style={{height:`${h}px`,background:isLatest?'#7c3aed':'#2a2a3e',opacity:isLatest?1:.7}}/>
-                                <span className="font-mono text-[8px] text-zinc-700">{s.date.slice(5)}</span>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </Card>
-            )}
-
-            {Object.keys(weeklyVol).length>0&&(
-              <Card className="p-6">
-                <div className="flex justify-between items-center mb-5">
-                  <SL>Weekly Volume</SL>
-                  <span className="font-mono text-xs text-zinc-600">{Object.values(weeklyVol).reduce((a,b)=>a+b,0).toLocaleString()} lbs total</span>
-                </div>
-                <div className="space-y-3.5">
-                  {Object.entries(weeklyVol).sort((a,b)=>b[1]-a[1]).map(([g,v])=>(
-                    <div key={g} className="flex items-center gap-4">
-                      <span className="font-mono text-xs w-20 flex-shrink-0" style={{color:MUSCLE_COLORS[g]||'#6a6a78'}}>{g}</span>
-                      <div className="vbar-bg"><div className="vbar-fill" style={{width:`${(v/maxVol)*100}%`,background:MUSCLE_COLORS[g]||'#4a4a58'}}/></div>
-                      <span className="font-mono text-xs text-zinc-600 w-16 text-right flex-shrink-0">{v.toLocaleString()} lbs</span>
-                    </div>
-                  ))}
-                </div>
-              </Card>
-            )}
-
-            <div>
-              <SL>Workout Log — {gymLogs.length} sessions</SL>
-              {gymLogs.length===0?<Empty icon="🏛️" title="No sessions yet" sub="Tap a split button or use the blacksmith forge above."/>
-                :<div className="space-y-3TYPE_UNSPECIFIED">{gymLogs.map(log=>(
-                  <Card key={log.id} className="p-5 space-y-4">
-                    <div className="flex justify-between items-start border-b border-zinc-900/60 pb-3">
-                      <div className="flex items-center gap-2.5">
-                        <span className="text-sm font-semibold text-zinc-200">{log.workoutName}</span>
-                        {log.prExercises?.length>0&&<span className="font-mono text-[9px] font-bold px-2 py-0.5 rounded-lg b-pr">🏆 PR</span>}
-                      </div>
-                      <div className="flex items-center gap-2.5">
-                        <span className="font-mono text-xs text-zinc-600">{log.date}</span>
-                        <button onClick={()=>deleteLog(log.id)} className="p-1.5 rounded-lg hover:bg-zinc-900 transition-colors"><Trash/></button>
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      {log.exercises.map((ex,i)=>(
-                        <div key={i} className="flex justify-between items-center">
-                          <span className="font-mono text-xs text-zinc-500 flex items-center gap-2">{ex.name}{log.prExercises?.includes(ex.name)&&<span className="font-mono text-[8px] font-bold px-1.5 py-0.5 rounded b-pr">PR</span>}</span>
-                          <span className="font-mono text-xs text-zinc-600">{ex.sets.map(s=>`${s.reps}×${s.weight}lbs`).join('   ')}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </Card>
-                ))}</div>}
             </div>
           </div>
         )}
