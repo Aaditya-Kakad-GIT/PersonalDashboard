@@ -113,10 +113,6 @@
     .dim-tog:hover{background:rgba(62,62,80,.65);color:#9a9ab2}
     .dim-tog.on{background:rgba(26,26,42,.85);border-color:rgba(129,140,248,.4);color:#818cf8;box-shadow:0 0 12px rgba(129,140,248,.12)}
 
-    .energy-btn { width: 38px; height: 38px; border-radius: 50%; font-family: 'JetBrains Mono', monospace; font-size: 14px; border: 1.5px solid rgba(42,42,54,.8); background: rgba(20,20,30,.7); color: #7a7a8c; transition: all .15s; cursor: pointer; flex-shrink: 0; }
-    .energy-btn:hover { border-color: rgba(124,58,237,.5); color: #a78bfa; background: rgba(124,58,237,.1); }
-    .energy-btn.sel { background: rgba(124,58,237,.2); border-color: #7c3aed; color: #c4b5fd; font-weight: bold; box-shadow: 0 0 12px rgba(124,58,237,.2); transform: scale(1.05); }
-
     /* ── FOCUS TIMER STYLING ── */
     .timer-ring-track{fill:none;stroke:#1a1a26;stroke-width:7}
     .timer-ring-prog{fill:none;stroke-width:7;stroke-linecap:round;transform:rotate(-90deg);transform-origin:60px 60px;transition:stroke-dashoffset .5s ease,stroke .4s ease}
@@ -205,7 +201,7 @@ function Confetti({active,onDone}){
   return <canvas ref={ref} style={{position:'fixed',inset:0,pointerEvents:'none',zIndex:9999}}/>;
 }
 
-/* ── FOCUS TIMER WIDGET ── */
+/* ── FOCUS TIMER WIDGET (DUAL MODE + THROTTLING RESISTANT) ── */
 function FocusTimerWidget({ focusToday, setFocusToday, setHistory, showToast, focusPct, codeQ, toggleQuest }) {
   const [mode, setMode] = useState('flow'); 
   const [pomoType, setPomoType] = useState('work'); 
@@ -224,6 +220,7 @@ function FocusTimerWidget({ focusToday, setFocusToday, setHistory, showToast, fo
       startTimeRef.current = now.getTime();
       startSecsRef.current = timerSecs;
       lastLoggedMinsRef.current = Math.floor(timerSecs / 60);
+
       const nextMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0, 0);
       midnightRef.current = nextMidnight.getTime();
       setTimerOn(true);
@@ -470,7 +467,7 @@ const Spin=()=><svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24
    MAIN APP
 ══════════════════════════════════════════════════════════ */
 function App(){
-  const [activeTab, setActiveTab] = useState('today');
+  const [activeTab, setActiveTab] = useState('dashboard');
   const [dimMode,   setDimMode]   = useState(false);
   const [confetti,  setConfetti]  = useState(false);
   const [lvlModal,  setLvlModal]  = useState(false);
@@ -518,15 +515,6 @@ function App(){
   const [aiInsightLoad, setAiInsightLoad] = useState(false);
   const [aiInsight,     setAiInsight]     = useState('');
 
-  // MORNING GOALS STATE
-  const [morningLogs, setMorningLogs] = useState(()=>JSON.parse(localStorage.getItem('lq_mornings_v4'))||{});
-  const [mDraft, setMDraft] = useState(() => JSON.parse(localStorage.getItem('lq_mornings_v4'))?.[today()]?.text || '');
-  const [mWord, setMWord] = useState(() => JSON.parse(localStorage.getItem('lq_mornings_v4'))?.[today()]?.word || '');
-  const [mEnergy, setMEnergy] = useState(() => JSON.parse(localStorage.getItem('lq_mornings_v4'))?.[today()]?.energy || 0);
-  const [mAiQuests, setMAiQuests] = useState([]);
-  const [mAiLoading, setMAiLoading] = useState(false);
-  const [morningArchiveOpen, setMorningArchiveOpen] = useState(null);
-
   const [aiPrompt,    setAiPrompt]    = useState('');
   const [aiGen,       setAiGen]       = useState(false);
   const [nqText, setNqText] = useState('');
@@ -543,10 +531,10 @@ function App(){
   useEffect(()=>{document.body.classList.toggle('dim',dimMode);},[dimMode]);
 
   useEffect(()=>{
-    const ids=['today','dashboard','quests','shop','hero','journal'];
+    const ids=['dashboard','quests','shop','hero','journal'];
     const fn=(e)=>{
       if(['INPUT','TEXTAREA','SELECT'].includes(e.target.tagName))return;
-      if(e.key>='1'&&e.key<='6')setActiveTab(ids[+e.key-1]);
+      if(e.key>='1'&&e.key<='5')setActiveTab(ids[+e.key-1]);
       if(e.key==='Escape'){setLvlModal(false);setConfetti(false);}
       if(e.key==='d'||e.key==='D')setDimMode(m=>!m);
     };
@@ -594,39 +582,8 @@ function App(){
   useEffect(() => { localStorage.setItem('lq_reflections_v4', JSON.stringify(reflections)); }, [reflections]);
   useEffect(() => { localStorage.setItem('lq_failures_v4', JSON.stringify(failureLog)); }, [failureLog]);
   useEffect(() => { localStorage.setItem('lq_focus_v4', JSON.stringify(focusToday)); }, [focusToday]);
-  useEffect(() => { localStorage.setItem('lq_mornings_v4', JSON.stringify(morningLogs)); }, [morningLogs]);
 
   const showToast=(m)=>{setToast(m);setTimeout(()=>setToast(''),4500);};
-
-  const saveMorning = () => {
-    setMorningLogs(p => ({ ...p, [today()]: { text: mDraft, word: mWord, energy: mEnergy, date: today() } }));
-    showToast("☀️ Morning intention locked in.");
-  };
-
-  const loadKey=()=>{let k=localStorage.getItem("adi_gemini_key");if(!k){k=prompt("Enter your Gemini API key:");if(k)localStorage.setItem("adi_gemini_key",k.trim());}return k?k.trim():null;};
-
-  const generateMorningQuests = async () => {
-    if(!mDraft.trim()) return showToast("⚠️ Write your stream of consciousness first.");
-    const key = loadKey(); if(!key) return;
-    setMAiLoading(true);
-    try {
-      const prompt = `You are Adi's personal coach analyzing his raw morning journal entry. Convert his thoughts into 1 to 3 highly specific, actionable daily quests. Schema: {"quests":[{"text":"Task","difficulty":"easy|medium|hard","attribute":"intelligence|strength|willpower|stamina","xp":40,"gold":20}]}. Raw JSON only. Entry: "${mDraft}"`;
-      const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${key}`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{responseMimeType:"application/json"}})});
-      const res = await r.json(); 
-      const data = JSON.parse(res.candidates[0].content.parts[0].text);
-      if(data.quests) {
-        setMAiQuests(data.quests);
-        showToast("✦ Goals successfully synthesized into quests.");
-      }
-    } catch(e) { showToast(`AI Error: ${e.message}`); } finally { setMAiLoading(false); }
-  };
-
-  const approveMorningQuest = (q, idx) => {
-    const newId = Date.now() + idx;
-    setQuests(p => [{ id: newId, text: q.text, type: 'day', completed: false, difficulty: q.difficulty || 'medium', attribute: q.attribute || 'intelligence', xp: q.xp || 40, gold: q.gold || 20, notes: '' }, ...p]);
-    setMAiQuests(p => p.filter((_, i) => i !== idx));
-    showToast(`✓ Added to Board: ${q.text}`);
-  };
 
   const toggleQuest=(id)=>{
     snd('complete');
@@ -700,6 +657,7 @@ function App(){
     return Object.entries(freq).sort((a,b)=>b[1]-a[1]).slice(0,12);
   }, [improveLog]);
 
+  const loadKey=()=>{let k=localStorage.getItem("adi_gemini_key");if(!k){k=prompt("Enter your Gemini API key:");if(k)localStorage.setItem("adi_gemini_key",k.trim());}return k?k.trim():null;};
   const aiDecompose=async()=>{
     if(!aiPrompt.trim())return;const key=loadKey();if(!key)return;setAiGen(true);
     try{
@@ -759,12 +717,11 @@ Format as JSON: {"insights":["...","...","..."],"questAdjustment":"..."}`;
   const stampHit=sleepDebt>=5;
 
   const tabs=[
-    {id:'today',     label:'Today'},
-    {id:'dashboard', label:'Overview'},
-    {id:'quests',    label:'Quests'},
-    {id:'shop',      label:'Store'},
-    {id:'hero',      label:'Matrix'},
-    {id:'journal',   label:'Journal'},
+    {id:'dashboard',label:'Overview'},
+    {id:'quests',   label:'Quests'},
+    {id:'shop',     label:'Store'},
+    {id:'hero',     label:'Matrix'},
+    {id:'journal',  label:'Journal'},
   ];
 
   const QRow=({q,drag=false})=>(
@@ -844,112 +801,6 @@ Format as JSON: {"insights":["...","...","..."],"questAdjustment":"..."}`;
       )}
 
       <main className="max-w-4xl mx-auto px-6 py-8 w-full flex-grow">
-
-        {/* ══ TODAY (MORNING GOALS) ══ */}
-        {activeTab === 'today' && (
-          <div className="tab-section space-y-6">
-            
-            <Card className="p-6" glow>
-              <div className="flex justify-between items-center mb-5">
-                <SL>Morning Intent & Flow</SL>
-                <span className="font-mono text-xs text-zinc-500">{today()}</span>
-              </div>
-              
-              <div className="flex flex-col sm:flex-row gap-5 mb-5 border-b border-zinc-900/60 pb-5">
-                <div className="flex-1">
-                  <p className="font-mono text-[10px] text-zinc-600 uppercase tracking-widest mb-2">Today's Word</p>
-                  <input type="text" value={mWord} onChange={e => setMWord(e.target.value.toUpperCase())} 
-                    className="bg-transparent font-display text-2xl font-bold text-violet-400 outline-none border-b border-dashed border-zinc-800 focus:border-violet-500 w-full placeholder-zinc-800" placeholder="e.g. EXECUTE"/>
-                </div>
-                
-                <div>
-                  <p className="font-mono text-[10px] text-zinc-600 uppercase tracking-widest mb-2">Energy Check-in</p>
-                  <div className="flex gap-2">
-                    {[1, 2, 3, 4, 5].map(lvl => (
-                      <button key={lvl} onClick={() => setMEnergy(lvl)} className={`energy-btn ${mEnergy === lvl ? 'sel' : ''}`}>
-                        {lvl}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-3">
-                <p className="font-mono text-[10px] text-zinc-600 uppercase tracking-widest">Stream of Consciousness</p>
-                <textarea value={mDraft} onChange={e => setMDraft(e.target.value)} 
-                  placeholder="What's on your mind? E.g., Need to structure the RAG pipeline for FindADoc, review some C++ hashmaps, and make sure I hit 100g of protein today..." 
-                  className="refl-ta rounded-xl p-4 w-full" style={{background:'var(--bg-input)',border:'1.5px solid var(--border-base)',borderRadius:'12px',minHeight:'140px'}} rows={5}/>
-                <button onClick={saveMorning} className="btn-p rounded-xl px-5 py-3 font-mono w-full shadow-lg">Save Morning Intention</button>
-              </div>
-            </Card>
-
-            {/* AI Synthesizer Card */}
-            {(mDraft.length > 10 || mAiQuests.length > 0) && (
-              <Card className="p-6">
-                <div className="flex justify-between items-center mb-4">
-                  <SL>AI Synthesis</SL>
-                  {mAiQuests.length === 0 && (
-                    <button onClick={generateMorningQuests} disabled={mAiLoading} className="btn-g rounded-xl px-4 py-2 font-mono text-xs inline-flex items-center gap-2">
-                      {mAiLoading ? <><Spin/>Converting...</> : '✦ Convert to Quests'}
-                    </button>
-                  )}
-                </div>
-                
-                {mAiQuests.length > 0 ? (
-                  <div className="space-y-3 border-t border-zinc-900/60 pt-4 mt-2">
-                    <p className="font-mono text-[10px] text-violet-400 uppercase tracking-widest mb-2">Suggested Quests</p>
-                    {mAiQuests.map((q, i) => (
-                      <div key={i} className="flex justify-between items-center bg-zinc-950/40 p-3 rounded-xl border border-zinc-800/60 animate-fadeSlideIn">
-                        <div className="flex items-center gap-3 overflow-hidden">
-                           <span className={`font-mono text-[10px] font-bold px-2 py-0.5 rounded-lg ${ac(q.attribute)}`}>{al(q.attribute)}</span>
-                           <span className="text-sm text-zinc-200 truncate">{q.text}</span>
-                        </div>
-                        <button onClick={() => approveMorningQuest(q, i)} className="btn-p px-3 py-1.5 rounded-lg text-xs font-mono flex-shrink-0 ml-3">Add +</button>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-sm text-zinc-500">Write your thoughts above, then tap convert to let Gemini parse them into actionable tasks for your board.</p>
-                )}
-              </Card>
-            )}
-
-            <div>
-              <div className="flex justify-between items-center mb-4">
-                <SL>Today's Quests — {dailyQs.filter(q=>q.completed).length}/{dailyQs.length}</SL>
-                <button onClick={archive} className="font-mono text-xs text-zinc-600 hover:text-zinc-400 transition-colors underline underline-offset-2">Archive done</button>
-              </div>
-              {dailyQs.length===0?<Empty icon="⚡" title="No tasks assigned" sub="Generate them from your morning writing."/>
-                :<div className="space-y-2.5">{dailyQs.map(q=><QRow key={q.id} q={q} drag/>)}</div>}
-            </div>
-
-            {/* Past Mornings Archive */}
-            {Object.keys(morningLogs).filter(d => d !== today()).length > 0 && (
-              <div className="pt-4 border-t border-zinc-900/60">
-                <SL>Morning Archive</SL>
-                <div className="space-y-3 mt-4">
-                  {Object.entries(morningLogs).filter(([d]) => d !== today()).sort((a, b) => b[0].localeCompare(a[0])).slice(0, 7).map(([date, log]) => (
-                    <Card key={date} className="overflow-hidden">
-                      <button onClick={() => setMorningArchiveOpen(morningArchiveOpen === date ? null : date)} className="w-full px-5 py-4 flex items-center justify-between hover:bg-zinc-900/30 transition-colors">
-                        <div className="flex items-center gap-4">
-                          <span className="font-mono text-sm font-semibold text-zinc-300">{date}</span>
-                          {log.word && <span className="font-display text-sm font-bold text-violet-400">{log.word}</span>}
-                          {log.energy > 0 && <span className="font-mono text-[10px] bg-zinc-800 text-zinc-400 px-2 py-0.5 rounded-md">E: {log.energy}/5</span>}
-                        </div>
-                        <Chev open={morningArchiveOpen === date}/>
-                      </button>
-                      {morningArchiveOpen === date && (
-                        <div className="border-t border-zinc-900/60 px-5 pb-5 pt-4">
-                          <p className="text-sm text-zinc-400 leading-relaxed italic border-l-2 border-zinc-700 pl-4">{log.text}</p>
-                        </div>
-                      )}
-                    </Card>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-        )}
 
         {/* ══ OVERVIEW ══ */}
         {activeTab==='dashboard'&&(
@@ -1051,7 +902,7 @@ Format as JSON: {"insights":["...","...","..."],"questAdjustment":"..."}`;
               <SL>AI Goal Decomposer</SL>
               <div className="flex gap-3">
                 <input value={aiPrompt} onChange={e=>setAiPrompt(e.target.value)} onKeyDown={e=>e.key==='Enter'&&aiDecompose()}
-                  placeholder="Enter a goal — e.g. 'Implement C++ BFS', 'Study Samurai Gurukul N5 Katakana'..." className="inp flex-grow rounded-xl px-4 py-3"/>
+                  placeholder="Enter a goal — e.g. 'Build a REST API', 'DSA tree problems'…" className="inp flex-grow rounded-xl px-4 py-3"/>
                 <button onClick={aiDecompose} disabled={aiGen} className="btn-p rounded-xl px-6 font-mono whitespace-nowrap">
                   {aiGen?<span className="flex items-center gap-2"><Spin/>Parsing…</span>:'Split Goal'}
                 </button>
