@@ -706,7 +706,7 @@ Format as JSON: {"insights":["...","...","..."],"questAdjustment":"..."}`;
   };
   const delQuest=(id)=>setQuests(p=>p.filter(q=>q.id!==id));
   const archive=()=>{setQuests(quests.filter(q=>!q.completed));showToast("Completed quests archived.");};
-  const hardReset=()=>{if(confirm("Nuke all data?")){{localStorage.clear();window.location.reload();}}};
+  const hardReset=()=>{if(confirm("Nuke all data?")){localStorage.clear();window.location.reload();}};
 
   // Past XP Editor Logic
   const handleEditPastXp = (e) => {
@@ -1130,7 +1130,7 @@ Format as JSON: {"insights":["...","...","..."],"questAdjustment":"..."}`;
                         <span className="text-sm text-zinc-300">{f.questText}</span>
                       </div>
                       <div className="flex flex-wrap gap-2">
-                        {FAILURE_REASONS.map(r)=>(
+                        {FAILURE_REASONS.map((r)=>(
                           <button key={r} onClick={()=>setFailTags(p=>({...p,[f.questText]:r}))}
                             className={`ftag-btn ${failTags[f.questText]===r?'sel':''}`}>{r}</button>
                         ))}
