@@ -68,7 +68,7 @@
     .tab-on{color:#e8e8f0;background:rgba(40,40,52,.88);border:1.5px solid rgba(62,62,80,.72)}
     .tab-off{color:#464658;border:1.5px solid transparent}
     .tab-off:hover{color:#8a8a9a;background:rgba(28,28,38,.42)}
-    .inp{background:var(--bg-input);border:1.5px solid var(--border-base);color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;transition:border-color .15s,box-shadow .15s,background .35s ease}
+    .inp{background:var(--bg-input);border:1.5px solid var(--border-base);color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;transition:border-color .15s,box-shadow .15s,background .35s ease;color-scheme: dark;}
     .inp::placeholder{color:#383848}.inp:focus{outline:none;border-color:rgba(124,58,237,.55);box-shadow:0 0 0 4px rgba(124,58,237,.08)}
     select.inp{color:var(--muted)}select option{background:#14141e;color:#d0d0d8}
     .btn-p{background:#f0f0f2;color:#0a0a0d;font-weight:600;font-size:13px;transition:all .15s ease}
@@ -201,7 +201,7 @@ function Confetti({active,onDone}){
   return <canvas ref={ref} style={{position:'fixed',inset:0,pointerEvents:'none',zIndex:9999}}/>;
 }
 
-/* ── FOCUS TIMER WIDGET (DUAL MODE + THROTTLING RESISTANT) ── */
+/* ── FOCUS TIMER WIDGET ── */
 function FocusTimerWidget({ focusToday, setFocusToday, setHistory, showToast, focusPct, codeQ, toggleQuest }) {
   const [mode, setMode] = useState('flow'); 
   const [pomoType, setPomoType] = useState('work'); 
@@ -482,10 +482,8 @@ function App(){
     return s?JSON.parse(s):[
       {id:1,text:"Perform 8 Hours of meaningful coding",type:"day",completed:false,difficulty:"hard",attribute:"intelligence",xp:80,gold:40,notes:""},
       {id:2,text:"Read book for 30 minutes (Instead of scrolling)",type:"day",completed:false,difficulty:"medium",attribute:"willpower",xp:40,gold:20,notes:""},
-      {id:3,text:"Hit today's custom Gym Split",type:"day",completed:false,difficulty:"medium",attribute:"strength",xp:40,gold:20,notes:""},
       {id:4,text:"Secure 8 Hours of deep sleep",type:"day",completed:false,difficulty:"easy",attribute:"stamina",xp:20,gold:10,notes:""},
-      {id:5,text:"Ship one meaningful side-project feature this week",type:"week",completed:false,difficulty:"hard",attribute:"intelligence",xp:120,gold:60,notes:""},
-      {id:6,text:"Hit 4 gym sessions this week",type:"week",completed:false,difficulty:"medium",attribute:"strength",xp:80,gold:40,notes:""},
+      {id:5,text:"Ship one meaningful side-project feature this week",type:"week",completed:false,difficulty:"hard",attribute:"intelligence",xp:120,gold:60,notes:""}
     ];
   });
   const [rewards,     setRewards]     = useState(()=>JSON.parse(localStorage.getItem('lq_rewards_adi_v4'))||[
@@ -527,6 +525,10 @@ function App(){
   const [rewName,setRewName]=useState('');
   const [rewCost,setRewCost]=useState(40);
   const [newImprove, setNewImprove] = useState('');
+
+  // Past XP editing states
+  const [editXpDate, setEditXpDate] = useState(yesterday());
+  const [editXpVal, setEditXpVal] = useState('');
 
   useEffect(()=>{document.body.classList.toggle('dim',dimMode);},[dimMode]);
 
@@ -705,6 +707,46 @@ Format as JSON: {"insights":["...","...","..."],"questAdjustment":"..."}`;
   const delQuest=(id)=>setQuests(p=>p.filter(q=>q.id!==id));
   const archive=()=>{setQuests(quests.filter(q=>!q.completed));showToast("Completed quests archived.");};
   const hardReset=()=>{if(confirm("Nuke all data?")){{localStorage.clear();window.location.reload();}}};
+
+  // Past XP Editor Logic
+  const handleEditPastXp = (e) => {
+    e.preventDefault();
+    const newXp = parseInt(editXpVal);
+    if (isNaN(newXp) || !editXpDate) return;
+
+    const oldHistoryData = history[editXpDate] || {};
+    const oldXp = oldHistoryData.xp || 0;
+    const diff = newXp - oldXp;
+
+    setHistory(h => ({
+      ...h,
+      [editXpDate]: { ...h[editXpDate], xp: newXp }
+    }));
+
+    if (diff !== 0) {
+      setHero(h => {
+        let nx = h.xp + diff;
+        let nl = h.level;
+        let tx = h.nextLevelXp;
+        let sp = h.statPoints;
+        let rl = false;
+
+        while (nx >= tx) {
+          nx -= tx;
+          nl++;
+          tx = nl * 300;
+          sp += 3;
+          rl = true;
+        }
+        if (nx < 0) nx = 0; // Prevent negative levels
+
+        if (rl) { snd('levelup'); setLvlModal(true); setConfetti(true); }
+        return { ...h, xp: Math.round(nx), level: nl, nextLevelXp: tx, statPoints: sp };
+      });
+      showToast(`Adjusted ${editXpDate} XP by ${diff>0?'+':''}${diff}. Total XP updated.`);
+    }
+    setEditXpVal('');
+  };
 
   const codeQ=quests.find(q=>q.text.includes("8 Hours"))||{};
   const readQ=quests.find(q=>q.text.includes("Read book"))||{};
@@ -896,6 +938,14 @@ Format as JSON: {"insights":["...","...","..."],"questAdjustment":"..."}`;
                 <span className="font-mono text-[10px] text-zinc-700">XP earned per day · today highlighted</span>
                 <span className="font-mono text-xs text-zinc-600">{history[today()]?.xp||0} XP today</span>
               </div>
+
+              {/* PAST XP EDITOR TOOL */}
+              <div className="mt-5 pt-5 border-t border-zinc-900/60 flex flex-wrap gap-2.5 items-center">
+                <span className="font-mono text-[10px] text-zinc-600 uppercase tracking-widest mr-auto">Missed a day? Edit Past XP</span>
+                <input type="date" max={today()} value={editXpDate} onChange={e=>setEditXpDate(e.target.value)} className="inp rounded-xl px-3 py-1.5 font-mono text-xs"/>
+                <input type="number" placeholder="New Total XP" value={editXpVal} onChange={e=>setEditXpVal(e.target.value)} className="inp w-28 rounded-xl px-3 py-1.5 font-mono text-xs"/>
+                <button onClick={handleEditPastXp} className="btn-g rounded-xl px-4 py-1.5 font-mono text-xs">Update</button>
+              </div>
             </Card>
 
             <Card className="p-6">
@@ -1080,7 +1130,7 @@ Format as JSON: {"insights":["...","...","..."],"questAdjustment":"..."}`;
                         <span className="text-sm text-zinc-300">{f.questText}</span>
                       </div>
                       <div className="flex flex-wrap gap-2">
-                        {FAILURE_REASONS.map(r=>(
+                        {FAILURE_REASONS.map(r)=>(
                           <button key={r} onClick={()=>setFailTags(p=>({...p,[f.questText]:r}))}
                             className={`ftag-btn ${failTags[f.questText]===r?'sel':''}`}>{r}</button>
                         ))}
