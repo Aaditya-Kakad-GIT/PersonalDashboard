@@ -1,147 +1,136 @@
 <!DOCTYPE html>
 <html lang="en" class="dark">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LifeQuest OS // Adi</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      darkMode:'class',
-      theme:{extend:{
-        colors:{zinc:{950:'#09090b'}},
-        fontFamily:{sans:['DM Sans','sans-serif'],mono:['JetBrains Mono','monospace'],display:['Syne','sans-serif']},
-        keyframes:{
-          fadeSlideIn:{'0%':{opacity:'0',transform:'translateY(8px)'},'100%':{opacity:'1',transform:'translateY(0)'}},
-          shimmer:{'0%':{backgroundPosition:'-200% 0'},'100%':{backgroundPosition:'200% 0'}},
-          scaleIn:{'0%':{opacity:'0',transform:'scale(0.95)'},'100%':{opacity:'1',transform:'scale(1)'}},
-          pulseRing:{'0%,100%':{opacity:1},'50%':{opacity:0.55}},
-          timerPop:{'0%':{transform:'scale(1)'},'40%':{transform:'scale(1.06)'},'100%':{transform:'scale(1)'}},
-        },
-        animation:{
-          fadeSlideIn:'fadeSlideIn 0.28s ease-out both',
-          shimmer:'shimmer 2s linear infinite',
-          scaleIn:'scaleIn 0.22s ease-out both',
-          pulseRing:'pulseRing 2s ease-in-out infinite',
-          timerPop:'timerPop 0.35s ease-out',
-        }
-      }}
-    }
-  </script>
-  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=JetBrains+Mono:wght@300;400;500;600;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <style>
-    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-    :root{
-      --bg-base:#0a0a0d;--bg-card:rgba(16,16,22,0.78);--bg-header:rgba(10,10,13,0.94);
-      --bg-input:rgba(10,10,13,0.88);--bg-day:rgba(10,10,13,0.62);--bg-glass:rgba(18,18,26,0.68);
-      --bg-empty:rgba(10,10,13,0.28);--bg-reward:rgba(10,10,13,0.58);
-      --border-base:rgba(40,40,50,0.95);--border-card:rgba(34,34,44,0.88);
-      --stat-bg:#1a1a24;--vol-bg:#14141e;--text:#f0f0f2;--muted:#7a7a8c;
-      --accent:#7c3aed;--accent-s:rgba(124,58,237,0.12);--noise:0.32;
-    }
-    body.dim{
-      --bg-base:#12121a;--bg-card:rgba(20,20,30,0.88);--bg-header:rgba(12,12,18,0.96);
-      --bg-input:rgba(12,12,18,0.92);--bg-day:rgba(16,16,24,0.86);--bg-glass:rgba(22,22,34,0.78);
-      --border-base:rgba(55,55,70,0.9);--border-card:rgba(46,46,60,0.85);
-      --stat-bg:#1e1e2c;--vol-bg:#181828;--text:#d0d0dc;--muted:#686878;--noise:0.18;
-    }
-    body{font-family:'DM Sans',sans-serif;background:var(--bg-base);color:var(--text);min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased;font-size:15px;line-height:1.6;transition:background .35s ease,color .35s ease}
-    ::-webkit-scrollbar{width:3px;height:3px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:#2a2a36;border-radius:99px}
-    ::selection{background:rgba(124,58,237,.22);color:#e8e8f2}
-    .font-mono{font-family:'JetBrains Mono',monospace}.font-display{font-family:'Syne',sans-serif}
-    body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");pointer-events:none;z-index:0;opacity:var(--noise);transition:opacity .35s ease}
-    .glass{background:var(--bg-glass);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
-    .glow-border{border:1px solid rgba(124,58,237,.28);box-shadow:0 0 24px rgba(124,58,237,.07),inset 0 1px 0 rgba(124,58,237,.1)}
-    .xp-fill{background:linear-gradient(90deg,#5b21b6,#7c3aed,#a78bfa,#7c3aed,#5b21b6);background-size:200% 100%;animation:shimmer 3s linear infinite}
-    .streak-fill{background:linear-gradient(90deg,#92400e,#d97706,#fbbf24,#f59e0b,#d97706);background-size:200% 100%;animation:shimmer 2.2s linear infinite}
-    .bar-bg{height:5px;background:var(--stat-bg);border-radius:99px;overflow:hidden;transition:background .35s ease}
-    .bar-fill{height:100%;border-radius:99px;transition:width .45s cubic-bezier(.4,0,.2,1)}
-    .qcheck{appearance:none;width:19px;height:19px;border:1.5px solid #383848;border-radius:5px;cursor:pointer;transition:all .15s ease;position:relative;flex-shrink:0}
-    .qcheck:checked{background:#7c3aed;border-color:#7c3aed}
-    .qcheck:checked::after{content:'';position:absolute;left:5px;top:2px;width:6px;height:10px;border:2px solid white;border-left:none;border-top:none;transform:rotate(45deg)}
-    .qcheck:hover:not(:checked){border-color:#7c3aed;background:rgba(124,58,237,.1)}
-    .tab-on{color:#e8e8f0;background:rgba(40,40,52,.88);border:1.5px solid rgba(62,62,80,.72)}
-    .tab-off{color:#464658;border:1.5px solid transparent}
-    .tab-off:hover{color:#8a8a9a;background:rgba(28,28,38,.42)}
-    .inp{background:var(--bg-input);border:1.5px solid var(--border-base);color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;transition:border-color .15s,box-shadow .15s,background .35s ease;color-scheme: dark;}
-    .inp::placeholder{color:#383848}.inp:focus{outline:none;border-color:rgba(124,58,237,.55);box-shadow:0 0 0 4px rgba(124,58,237,.08)}
-    select.inp{color:var(--muted)}select option{background:#14141e;color:#d0d0d8}
-    .btn-p{background:#f0f0f2;color:#0a0a0d;font-weight:600;font-size:13px;transition:all .15s ease}
-    .btn-p:hover{background:#fff;transform:translateY(-1px);box-shadow:0 6px 18px rgba(0,0,0,.4)}
-    .btn-p:active{transform:translateY(0)}.btn-p:disabled{opacity:.38;cursor:not-allowed;transform:none}
-    .btn-g{background:rgba(20,20,28,.68);border:1.5px solid rgba(40,40,52,.88);color:var(--muted);transition:all .15s;font-size:13px}
-    .btn-g:hover{background:rgba(40,40,52,.88);color:#e0e0e8;border-color:rgba(62,62,80,.88)}
-    .btn-d{background:rgba(127,29,29,.12);border:1.5px solid rgba(185,28,28,.18);color:#f87171;font-size:13px;transition:all .15s}
-    .btn-d:hover{background:rgba(127,29,29,.22);border-color:rgba(185,28,28,.35)}
-    .lq-card{background:var(--bg-card);border:1.5px solid var(--border-card);border-radius:16px;transition:background .35s ease,border-color .35s ease}
-    .tab-section{animation:fadeSlideIn .25s ease-out both}
-    .gold{color:#fbbf24}
-    .lvl-badge{background:linear-gradient(135deg,rgba(124,58,237,.17),rgba(139,92,246,.09));border:1.5px solid rgba(124,58,237,.3);color:#a78bfa}
-    .empty-state{border:1.5px dashed rgba(42,42,54,.65);background:rgba(10,10,13,.22)}
-    .diff-e{color:#4ade80;background:rgba(74,222,128,.09);border:1.5px solid rgba(74,222,128,.18)}
-    .diff-m{color:#fbbf24;background:rgba(251,191,36,.09);border:1.5px solid rgba(251,191,36,.18)}
-    .diff-h{color:#f87171;background:rgba(248,113,113,.09);border:1.5px solid rgba(248,113,113,.18)}
-    .atr-i{color:#60a5fa;background:rgba(96,165,250,.09);border:1.5px solid rgba(96,165,250,.18)}
-    .atr-s{color:#fb923c;background:rgba(249,115,22,.09);border:1.5px solid rgba(249,115,22,.18)}
-    .atr-w{color:#c084fc;background:rgba(192,132,252,.09);border:1.5px solid rgba(192,132,252,.18)}
-    .atr-t{color:#34d399;background:rgba(52,211,153,.09);border:1.5px solid rgba(52,211,153,.18)}
-    .b-wk{color:#818cf8;background:rgba(129,140,248,.09);border:1.5px solid rgba(129,140,248,.18)}
-    .b-pr{color:#fbbf24;background:rgba(251,191,36,.12);border:1.5px solid rgba(251,191,36,.28)}
-    .day-card{background:var(--bg-day);border:1.5px solid var(--border-card);transition:all .2s ease}
-    .day-card:hover{border-color:rgba(124,58,237,.4);transform:translateY(-2px);box-shadow:0 10px 28px rgba(0,0,0,.3),0 0 22px rgba(124,58,237,.07)}
-    .hdr{background:var(--bg-header);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);border-bottom:1.5px solid rgba(40,40,52,.65);transition:background .35s ease}
-    .rcard{background:var(--bg-reward);border:1.5px solid var(--border-card);transition:all .18s ease}
-    .rcard:hover{border-color:rgba(251,191,36,.24);box-shadow:0 0 24px rgba(251,191,36,.06)}
-    .dot-v{width:7px;height:7px;background:#7c3aed;border-radius:50%;box-shadow:0 0 7px rgba(124,58,237,.85),0 0 14px rgba(124,58,237,.38);flex-shrink:0}
-    .dot-g{width:7px;height:7px;background:#4ade80;border-radius:50%;box-shadow:0 0 7px rgba(74,222,128,.85),0 0 14px rgba(74,222,128,.38);flex-shrink:0}
-    .drag-h{cursor:grab;color:#3a3a4a;transition:color .15s}.drag-h:hover{color:#6a6a7a}.drag-h:active{cursor:grabbing}
-    .q-drag{opacity:.36}.q-over{border-color:rgba(124,58,237,.55)!important;background:rgba(124,58,237,.05)!important}
-    .notes-x{max-height:0;overflow:hidden;transition:max-height .22s ease}.notes-x.open{max-height:220px}
-    .notes-ta{background:transparent;resize:none;outline:none;width:100%;font-family:'JetBrains Mono',monospace;font-size:12px;color:#4a4a5a;line-height:1.65}
-    .notes-ta:focus{color:#6a6a7a}.notes-ta::placeholder{color:#2e2e3a}
-    .slabel{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:#4a4a5a;margin-bottom:14px}
-    .mchip{background:var(--bg-day);border:1.5px solid var(--border-card);transition:all .18s ease}
-    .vbar-bg{height:5px;background:var(--vol-bg);border-radius:99px;overflow:hidden;flex:1;transition:background .35s ease}
-    .vbar-fill{height:100%;border-radius:99px;transition:width .55s cubic-bezier(.4,0,.2,1)}
-    .kbd{display:inline-flex;align-items:center;justify-content:center;padding:2px 6px;border-radius:5px;font-size:10px;font-family:'JetBrains Mono',monospace;background:rgba(40,40,52,.65);border:1.5px solid rgba(62,62,80,.55);color:#52525b}
-    .dim-tog{display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:99px;font-size:11px;font-family:'JetBrains Mono',monospace;font-weight:500;cursor:pointer;transition:all .2s ease;background:rgba(40,40,52,.55);border:1.5px solid rgba(62,62,80,.65);color:#6a6a7a;user-select:none}
-    .dim-tog:hover{background:rgba(62,62,80,.65);color:#9a9ab2}
-    .dim-tog.on{background:rgba(26,26,42,.85);border-color:rgba(129,140,248,.4);color:#818cf8;box-shadow:0 0 12px rgba(129,140,248,.12)}
-
-    /* ── FOCUS TIMER STYLING ── */
-    .timer-ring-track{fill:none;stroke:#1a1a26;stroke-width:7}
-    .timer-ring-prog{fill:none;stroke-width:7;stroke-linecap:round;transform:rotate(-90deg);transform-origin:60px 60px;transition:stroke-dashoffset .5s ease,stroke .4s ease}
-    .timer-mode-btn{padding:5px 14px;border-radius:99px;font-size:11px;font-family:'JetBrains Mono',monospace;font-weight:500;cursor:pointer;transition:all .18s ease;border:1.5px solid rgba(42,42,54,.8);color:#5a5a6a;background:transparent}
-    .timer-mode-btn:hover{color:#9a9ab0;border-color:rgba(70,70,88,.9)}
-    .timer-mode-btn.active{background:rgba(124,58,237,.18);border-color:rgba(124,58,237,.45);color:#a78bfa}
-    .timer-mode-btn.active-g{background:rgba(52,211,153,.14);border-color:rgba(52,211,153,.4);color:#6ee7b7}
-    .timer-mode-btn.active-b{background:rgba(96,165,250,.14);border-color:rgba(96,165,250,.4);color:#93c5fd}
-    .timer-btn{width:42px;height:42px;border-radius:50%;border:1.5px solid rgba(42,42,54,.8);background:rgba(20,20,30,.7);color:var(--muted);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .18s ease}
-    .timer-btn:hover{background:rgba(42,42,56,.9);color:#e0e0ee}
-    .timer-btn.run{border-color:rgba(124,58,237,.5);background:rgba(124,58,237,.2);color:#c4b5fd}
-    .timer-btn.run:hover{background:rgba(124,58,237,.3)}
-    .focus-prog-bar{height:4px;background:#1a1a26;border-radius:99px;overflow:hidden}
-    .focus-prog-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,#5b21b6,#7c3aed,#a78bfa);background-size:200% 100%;animation:shimmer 3s linear infinite;transition:width .6s ease}
-
-    .sleep-debt-chip{padding:6px 14px;border-radius:99px;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;display:inline-flex;align-items:center;gap:6px}
-    .sleep-good{background:rgba(52,211,153,.1);border:1.5px solid rgba(52,211,153,.28);color:#6ee7b7}
-    .sleep-warn{background:rgba(251,191,36,.1);border:1.5px solid rgba(251,191,36,.28);color:#fcd34d}
-    .sleep-bad{background:rgba(248,113,113,.1);border:1.5px solid rgba(248,113,113,.28);color:#fca5a5}
-    .sleep-night-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-    .hmap-dot{width:10px;height:10px;border-radius:3px;transition:transform .15s ease}
-    .hmap-dot:hover{transform:scale(1.35)}
-    .ftag-btn{padding:5px 12px;border-radius:99px;font-size:11px;font-family:'JetBrains Mono',monospace;font-weight:500;cursor:pointer;transition:all .15s ease;border:1.5px solid rgba(42,42,54,.8);color:#6a6a7a;background:rgba(20,20,30,.6)}
-    .ftag-btn:hover{border-color:rgba(124,58,237,.5);color:#a78bfa;background:rgba(124,58,237,.1)}
-    .ftag-btn.sel{border-color:rgba(124,58,237,.6);color:#c4b5fd;background:rgba(124,58,237,.2)}
-    .prog-trend-up{color:#4ade80}.prog-trend-dn{color:#f87171}.prog-trend-eq{color:#71717a}
-    .refl-ta{background:transparent;resize:none;outline:none;width:100%;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--muted);line-height:1.7}
-    .refl-ta:focus{color:var(--text)}.refl-ta::placeholder{color:#323242}
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LifeQuest OS // Adi</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config={darkMode:'class',theme:{extend:{
+  colors:{zinc:{950:'#09090b'}},
+  fontFamily:{sans:['DM Sans','sans-serif'],mono:['JetBrains Mono','monospace'],display:['Syne','sans-serif']},
+  keyframes:{
+    fadeSlideIn:{'0%':{opacity:'0',transform:'translateY(8px)'},'100%':{opacity:'1',transform:'translateY(0)'}},
+    shimmer:{'0%':{backgroundPosition:'-200% 0'},'100%':{backgroundPosition:'200% 0'}},
+    scaleIn:{'0%':{opacity:'0',transform:'scale(0.95)'},'100%':{opacity:'1',transform:'scale(1)'}},
+    pulseRing:{'0%,100%':{opacity:1},'50%':{opacity:0.55}},
+  },
+  animation:{
+    fadeSlideIn:'fadeSlideIn 0.28s ease-out both',
+    shimmer:'shimmer 2s linear infinite',
+    scaleIn:'scaleIn 0.22s ease-out both',
+    pulseRing:'pulseRing 2s ease-in-out infinite',
+  }
+}}}
+</script>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=JetBrains+Mono:wght@300;400;500;600;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg-base:#0a0a0d;--bg-card:rgba(16,16,22,0.78);--bg-header:rgba(10,10,13,0.94);
+  --bg-input:rgba(10,10,13,0.88);--bg-day:rgba(10,10,13,0.62);--bg-glass:rgba(18,18,26,0.68);
+  --bg-empty:rgba(10,10,13,0.28);--bg-reward:rgba(10,10,13,0.58);
+  --border-base:rgba(40,40,50,0.95);--border-card:rgba(34,34,44,0.88);
+  --stat-bg:#1a1a24;--vol-bg:#14141e;--text:#f0f0f2;--muted:#7a7a8c;
+  --accent:#7c3aed;--accent-s:rgba(124,58,237,0.12);--noise:0.32;
+}
+body.dim{
+  --bg-base:#12121a;--bg-card:rgba(20,20,30,0.88);--bg-header:rgba(12,12,18,0.96);
+  --bg-input:rgba(12,12,18,0.92);--bg-day:rgba(16,16,24,0.86);--bg-glass:rgba(22,22,34,0.78);
+  --border-base:rgba(55,55,70,0.9);--border-card:rgba(46,46,60,0.85);
+  --stat-bg:#1e1e2c;--vol-bg:#181828;--text:#d0d0dc;--muted:#686878;--noise:0.18;
+}
+body{font-family:'DM Sans',sans-serif;background:var(--bg-base);color:var(--text);min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased;font-size:15px;line-height:1.6;transition:background .35s ease,color .35s ease}
+::-webkit-scrollbar{width:3px;height:3px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:#2a2a36;border-radius:99px}
+::selection{background:rgba(124,58,237,.22);color:#e8e8f2}
+.font-mono{font-family:'JetBrains Mono',monospace}.font-display{font-family:'Syne',sans-serif}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");pointer-events:none;z-index:0;opacity:var(--noise);transition:opacity .35s ease}
+.glass{background:var(--bg-glass);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.glow-border{border:1px solid rgba(124,58,237,.28);box-shadow:0 0 24px rgba(124,58,237,.07),inset 0 1px 0 rgba(124,58,237,.1)}
+.xp-fill{background:linear-gradient(90deg,#5b21b6,#7c3aed,#a78bfa,#7c3aed,#5b21b6);background-size:200% 100%;animation:shimmer 3s linear infinite}
+.streak-fill{background:linear-gradient(90deg,#92400e,#d97706,#fbbf24,#f59e0b,#d97706);background-size:200% 100%;animation:shimmer 2.2s linear infinite}
+.bar-bg{height:5px;background:var(--stat-bg);border-radius:99px;overflow:hidden;transition:background .35s ease}
+.bar-fill{height:100%;border-radius:99px;transition:width .45s cubic-bezier(.4,0,.2,1)}
+.qcheck{appearance:none;width:19px;height:19px;border:1.5px solid #383848;border-radius:5px;cursor:pointer;transition:all .15s ease;position:relative;flex-shrink:0}
+.qcheck:checked{background:#7c3aed;border-color:#7c3aed}
+.qcheck:checked::after{content:'';position:absolute;left:5px;top:2px;width:6px;height:10px;border:2px solid white;border-left:none;border-top:none;transform:rotate(45deg)}
+.qcheck:hover:not(:checked){border-color:#7c3aed;background:rgba(124,58,237,.1)}
+.tab-on{color:#e8e8f0;background:rgba(40,40,52,.88);border:1.5px solid rgba(62,62,80,.72)}
+.tab-off{color:#464658;border:1.5px solid transparent}
+.tab-off:hover{color:#8a8a9a;background:rgba(28,28,38,.42)}
+.inp{background:var(--bg-input);border:1.5px solid var(--border-base);color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;transition:border-color .15s,box-shadow .15s,background .35s ease;color-scheme:dark}
+.inp::placeholder{color:#383848}.inp:focus{outline:none;border-color:rgba(124,58,237,.55);box-shadow:0 0 0 4px rgba(124,58,237,.08)}
+select.inp{color:var(--muted)}select option{background:#14141e;color:#d0d0d8}
+.btn-p{background:#f0f0f2;color:#0a0a0d;font-weight:600;font-size:13px;transition:all .15s ease;border:none;cursor:pointer}
+.btn-p:hover:not(:disabled){background:#fff;transform:translateY(-1px);box-shadow:0 6px 18px rgba(0,0,0,.4)}
+.btn-p:active:not(:disabled){transform:translateY(0)}.btn-p:disabled{opacity:.38;cursor:not-allowed;transform:none}
+.btn-g{background:rgba(20,20,28,.68);border:1.5px solid rgba(40,40,52,.88);color:var(--muted);transition:all .15s;font-size:13px;cursor:pointer}
+.btn-g:hover{background:rgba(40,40,52,.88);color:#e0e0e8;border-color:rgba(62,62,80,.88)}
+.btn-d{background:rgba(127,29,29,.12);border:1.5px solid rgba(185,28,28,.18);color:#f87171;font-size:13px;transition:all .15s;cursor:pointer}
+.btn-d:hover{background:rgba(127,29,29,.22);border-color:rgba(185,28,28,.35)}
+.lq-card{background:var(--bg-card);border:1.5px solid var(--border-card);border-radius:16px;transition:background .35s ease,border-color .35s ease}
+.tab-section{animation:fadeSlideIn .25s ease-out both}
+.gold{color:#fbbf24}
+.lvl-badge{background:linear-gradient(135deg,rgba(124,58,237,.17),rgba(139,92,246,.09));border:1.5px solid rgba(124,58,237,.3);color:#a78bfa}
+.empty-state{border:1.5px dashed rgba(42,42,54,.65);background:rgba(10,10,13,.22)}
+.diff-e{color:#4ade80;background:rgba(74,222,128,.09);border:1.5px solid rgba(74,222,128,.18)}
+.diff-m{color:#fbbf24;background:rgba(251,191,36,.09);border:1.5px solid rgba(251,191,36,.18)}
+.diff-h{color:#f87171;background:rgba(248,113,113,.09);border:1.5px solid rgba(248,113,113,.18)}
+.atr-i{color:#60a5fa;background:rgba(96,165,250,.09);border:1.5px solid rgba(96,165,250,.18)}
+.atr-s{color:#fb923c;background:rgba(249,115,22,.09);border:1.5px solid rgba(249,115,22,.18)}
+.atr-w{color:#c084fc;background:rgba(192,132,252,.09);border:1.5px solid rgba(192,132,252,.18)}
+.atr-t{color:#34d399;background:rgba(52,211,153,.09);border:1.5px solid rgba(52,211,153,.18)}
+.b-wk{color:#818cf8;background:rgba(129,140,248,.09);border:1.5px solid rgba(129,140,248,.18)}
+.b-pr{color:#fbbf24;background:rgba(251,191,36,.12);border:1.5px solid rgba(251,191,36,.28)}
+.day-card{background:var(--bg-day);border:1.5px solid var(--border-card);transition:all .2s ease;cursor:pointer}
+.day-card:hover{border-color:rgba(124,58,237,.4);transform:translateY(-2px);box-shadow:0 10px 28px rgba(0,0,0,.3),0 0 22px rgba(124,58,237,.07)}
+.hdr{background:var(--bg-header);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);border-bottom:1.5px solid rgba(40,40,52,.65);transition:background .35s ease}
+.rcard{background:var(--bg-reward);border:1.5px solid var(--border-card);transition:all .18s ease}
+.rcard:hover{border-color:rgba(251,191,36,.24);box-shadow:0 0 24px rgba(251,191,36,.06)}
+.dot-v{width:7px;height:7px;background:#7c3aed;border-radius:50%;box-shadow:0 0 7px rgba(124,58,237,.85),0 0 14px rgba(124,58,237,.38);flex-shrink:0}
+.dot-g{width:7px;height:7px;background:#4ade80;border-radius:50%;box-shadow:0 0 7px rgba(74,222,128,.85),0 0 14px rgba(74,222,128,.38);flex-shrink:0}
+.drag-h{cursor:grab;color:#3a3a4a;transition:color .15s}.drag-h:hover{color:#6a6a7a}.drag-h:active{cursor:grabbing}
+.q-drag{opacity:.36}.q-over{border-color:rgba(124,58,237,.55)!important;background:rgba(124,58,237,.05)!important}
+.notes-x{max-height:0;overflow:hidden;transition:max-height .22s ease}.notes-x.open{max-height:220px}
+.notes-ta{background:transparent;resize:none;outline:none;width:100%;font-family:'JetBrains Mono',monospace;font-size:12px;color:#4a4a5a;line-height:1.65;border:none}
+.notes-ta:focus{color:#6a6a7a}.notes-ta::placeholder{color:#2e2e3a}
+.slabel{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:#4a4a5a;margin-bottom:14px;display:block}
+.mchip{background:var(--bg-day);border:1.5px solid var(--border-card);transition:all .18s ease}
+.kbd{display:inline-flex;align-items:center;justify-content:center;padding:2px 6px;border-radius:5px;font-size:10px;font-family:'JetBrains Mono',monospace;background:rgba(40,40,52,.65);border:1.5px solid rgba(62,62,80,.55);color:#52525b}
+.dim-tog{display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:99px;font-size:11px;font-family:'JetBrains Mono',monospace;font-weight:500;cursor:pointer;transition:all .2s ease;background:rgba(40,40,52,.55);border:1.5px solid rgba(62,62,80,.65);color:#6a6a7a;user-select:none}
+.dim-tog:hover{background:rgba(62,62,80,.65);color:#9a9ab2}
+.dim-tog.on{background:rgba(26,26,42,.85);border-color:rgba(129,140,248,.4);color:#818cf8;box-shadow:0 0 12px rgba(129,140,248,.12)}
+.timer-ring-track{fill:none;stroke:#1a1a26;stroke-width:7}
+.timer-ring-prog{fill:none;stroke-width:7;stroke-linecap:round;transform:rotate(-90deg);transform-origin:60px 60px;transition:stroke-dashoffset .5s ease,stroke .4s ease}
+.timer-mode-btn{padding:5px 14px;border-radius:99px;font-size:11px;font-family:'JetBrains Mono',monospace;font-weight:500;cursor:pointer;transition:all .18s ease;border:1.5px solid rgba(42,42,54,.8);color:#5a5a6a;background:transparent}
+.timer-mode-btn:hover{color:#9a9ab0;border-color:rgba(70,70,88,.9)}
+.timer-mode-btn.active{background:rgba(124,58,237,.18);border-color:rgba(124,58,237,.45);color:#a78bfa}
+.timer-mode-btn.active-g{background:rgba(52,211,153,.14);border-color:rgba(52,211,153,.4);color:#6ee7b7}
+.timer-mode-btn.active-b{background:rgba(96,165,250,.14);border-color:rgba(96,165,250,.4);color:#93c5fd}
+.timer-btn{width:42px;height:42px;border-radius:50%;border:1.5px solid rgba(42,42,54,.8);background:rgba(20,20,30,.7);color:var(--muted);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .18s ease}
+.timer-btn:hover{background:rgba(42,42,56,.9);color:#e0e0ee}
+.timer-btn.run{border-color:rgba(124,58,237,.5);background:rgba(124,58,237,.2);color:#c4b5fd}
+.timer-btn.run:hover{background:rgba(124,58,237,.3)}
+.focus-prog-bar{height:4px;background:#1a1a26;border-radius:99px;overflow:hidden}
+.focus-prog-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,#5b21b6,#7c3aed,#a78bfa);background-size:200% 100%;animation:shimmer 3s linear infinite;transition:width .6s ease}
+.sleep-debt-chip{padding:6px 14px;border-radius:99px;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;display:inline-flex;align-items:center;gap:6px}
+.sleep-good{background:rgba(52,211,153,.1);border:1.5px solid rgba(52,211,153,.28);color:#6ee7b7}
+.sleep-warn{background:rgba(251,191,36,.1);border:1.5px solid rgba(251,191,36,.28);color:#fcd34d}
+.sleep-bad{background:rgba(248,113,113,.1);border:1.5px solid rgba(248,113,113,.28);color:#fca5a5}
+.sleep-night-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.hmap-dot{width:10px;height:10px;border-radius:3px;transition:transform .15s ease}
+.hmap-dot:hover{transform:scale(1.35)}
+.ftag-btn{padding:5px 12px;border-radius:99px;font-size:11px;font-family:'JetBrains Mono',monospace;font-weight:500;cursor:pointer;transition:all .15s ease;border:1.5px solid rgba(42,42,54,.8);color:#6a6a7a;background:rgba(20,20,30,.6)}
+.ftag-btn:hover{border-color:rgba(124,58,237,.5);color:#a78bfa;background:rgba(124,58,237,.1)}
+.ftag-btn.sel{border-color:rgba(124,58,237,.6);color:#c4b5fd;background:rgba(124,58,237,.2)}
+.refl-ta{background:transparent;resize:none;outline:none;width:100%;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--muted);line-height:1.7;border:none}
+.refl-ta:focus{color:var(--text)}.refl-ta::placeholder{color:#323242}
+</style>
 </head>
 <body class="min-h-screen">
 <div id="root"></div>
@@ -149,7 +138,7 @@
 const { useState, useEffect, useRef, useMemo, useCallback } = React;
 
 /* ── CONSTANTS ── */
-const TIMER_DURATIONS = {work:25*60,short:5*60,long:15*60};
+const TIMER_DURATIONS = { work: 25*60, short: 5*60, long: 15*60 };
 const FAILURE_REASONS = ['Tired','Distracted','Forgot','Too Hard','No Time','Other'];
 
 /* ── HELPERS ── */
@@ -157,71 +146,119 @@ const dc = d => d==='easy'?'diff-e':d==='medium'?'diff-m':'diff-h';
 const ac = a => a==='intelligence'?'atr-i':a==='strength'?'atr-s':a==='willpower'?'atr-w':'atr-t';
 const al = a => a==='intelligence'?'INT':a==='strength'?'STR':a==='willpower'?'WIL':'STA';
 const sc = s => s==='intelligence'?'#60a5fa':s==='strength'?'#fb923c':s==='willpower'?'#c084fc':'#34d399';
-const today = () => new Date().toISOString().split('T')[0];
-const yesterday = () => new Date(Date.now()-86400000).toISOString().split('T')[0];
+const today    = () => new Date().toISOString().split('T')[0];
+const yesterday= () => new Date(Date.now()-86400000).toISOString().split('T')[0];
 const daysUntilSun = () => { const d=new Date().getDay(); return d===0?0:7-d; };
-const weekStart = () => { const n=new Date(),d=new Date(n); d.setDate(d.getDate()-d.getDay()); return d.toISOString().split('T')[0]; };
-const fmtMins = m => { const h=Math.floor(m/60),mn=m%60; return h>0?`${h}h ${mn}m`:`${mn}m`; };
+const fmtMins  = m  => { const h=Math.floor(m/60),mn=m%60; return h>0?`${h}h ${mn}m`:`${mn}m`; };
 
-/* ── PR ENGINE ── */
-const getMilestones = (old,nxt) => {
-  const t=today(),ms=[];
-  for(const k of Object.keys(nxt)){const of=Math.floor(old[k]||10),nf=Math.floor(nxt[k]||10);if(nf>of)ms.push({stat:k,milestone:nf,date:t});}
+/* ── MILESTONE CHECK ── */
+const getMilestones = (oldS, newS) => {
+  const t=today(), ms=[];
+  for (const k of Object.keys(newS)) {
+    const of=Math.floor(oldS[k]||10), nf=Math.floor(newS[k]||10);
+    if (nf > of) ms.push({ stat:k, milestone:nf, date:t });
+  }
   return ms;
 };
 
 /* ── SOUND ── */
 const snd = (type) => {
-  try{
+  try {
     const Ctx=window.AudioContext||window.webkitAudioContext; if(!Ctx)return;
-    const ctx=new Ctx(),now=ctx.currentTime;
-    if(type==='complete'){const o=ctx.createOscillator(),g=ctx.createGain();o.type='sine';o.frequency.setValueAtTime(480,now);o.frequency.exponentialRampToValueAtTime(240,now+.12);g.gain.setValueAtTime(.02,now);g.gain.exponentialRampToValueAtTime(.001,now+.12);o.connect(g);g.connect(ctx.destination);o.start(now);o.stop(now+.12);}
-    else if(type==='levelup'){[330,440,550,660].forEach((f,i)=>{const o=ctx.createOscillator(),g=ctx.createGain();o.type='sine';o.frequency.setValueAtTime(f,now+i*.04);g.gain.setValueAtTime(.02,now+i*.04);g.gain.exponentialRampToValueAtTime(.001,now+i*.04+.2);o.connect(g);g.connect(ctx.destination);o.start(now+i*.04);o.stop(now+i*.04+.2);});}
-    else if(type==='pr'){[392,523,659,784].forEach((f,i)=>{const o=ctx.createOscillator(),g=ctx.createGain();o.type='triangle';o.frequency.setValueAtTime(f,now+i*.07);g.gain.setValueAtTime(.025,now+i*.07);g.gain.exponentialRampToValueAtTime(.001,now+i*.07+.18);o.connect(g);g.connect(ctx.destination);o.start(now+i*.07);o.stop(now+i*.07+.18);});}
-    else if(type==='timer'){[528,660,792].forEach((f,i)=>{const o=ctx.createOscillator(),g=ctx.createGain();o.type='sine';o.frequency.setValueAtTime(f,now+i*.1);g.gain.setValueAtTime(.018,now+i*.1);g.gain.exponentialRampToValueAtTime(.001,now+i*.1+.25);o.connect(g);g.connect(ctx.destination);o.start(now+i*.1);o.stop(now+i*.1+.25);});}
-  }catch(e){}
+    const ctx=new Ctx(), now=ctx.currentTime;
+    if (type==='complete') {
+      const o=ctx.createOscillator(),g=ctx.createGain();
+      o.type='sine';o.frequency.setValueAtTime(480,now);o.frequency.exponentialRampToValueAtTime(240,now+.12);
+      g.gain.setValueAtTime(.02,now);g.gain.exponentialRampToValueAtTime(.001,now+.12);
+      o.connect(g);g.connect(ctx.destination);o.start(now);o.stop(now+.12);
+    } else if (type==='levelup') {
+      [330,440,550,660].forEach((f,i)=>{
+        const o=ctx.createOscillator(),g=ctx.createGain();
+        o.type='sine';o.frequency.setValueAtTime(f,now+i*.04);
+        g.gain.setValueAtTime(.02,now+i*.04);g.gain.exponentialRampToValueAtTime(.001,now+i*.04+.2);
+        o.connect(g);g.connect(ctx.destination);o.start(now+i*.04);o.stop(now+i*.04+.2);
+      });
+    } else if (type==='timer') {
+      [528,660,792].forEach((f,i)=>{
+        const o=ctx.createOscillator(),g=ctx.createGain();
+        o.type='sine';o.frequency.setValueAtTime(f,now+i*.1);
+        g.gain.setValueAtTime(.018,now+i*.1);g.gain.exponentialRampToValueAtTime(.001,now+i*.1+.25);
+        o.connect(g);g.connect(ctx.destination);o.start(now+i*.1);o.stop(now+i*.1+.25);
+      });
+    }
+  } catch(e) {}
 };
 
 /* ── CONFETTI ── */
-function Confetti({active,onDone}){
-  const ref=useRef(),fr=useRef();
+function Confetti({ active, onDone }) {
+  const ref=useRef(), fr=useRef();
   useEffect(()=>{
-    if(!active)return;
-    const c=ref.current; if(!c)return;
-    const ctx=c.getContext('2d'); c.width=window.innerWidth; c.height=window.innerHeight;
-    const W=c.width,H=c.height,COLS=['#7c3aed','#a78bfa','#f59e0b','#34d399','#60a5fa','#f472b6','#fb923c','#fff'];
-    const pts=Array.from({length:130},()=>({x:Math.random()*W,y:-20-Math.random()*H*.3,vx:(Math.random()-.5)*6,vy:Math.random()*4+1.5,col:COLS[Math.floor(Math.random()*COLS.length)],w:Math.random()*9+3,h:Math.random()*5+2,a:Math.random()*Math.PI*2,sp:(Math.random()-.5)*.25,gr:.04+Math.random()*.04,dr:.98}));
-    let el=0,stop=false;
-    const anim=()=>{ctx.clearRect(0,0,W,H);let gone=true;pts.forEach(p=>{p.vx*=p.dr;p.vy+=p.gr;p.x+=p.vx;p.y+=p.vy;p.a+=p.sp;if(p.y<H+30)gone=false;ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.a);ctx.globalAlpha=Math.max(0,1-p.y/(H*.9));ctx.fillStyle=p.col;ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);ctx.restore();});el++;if(gone||el>240||stop){onDone();}else{fr.current=requestAnimationFrame(anim);}};
+    if (!active) return;
+    const c=ref.current; if(!c) return;
+    const ctx=c.getContext('2d');
+    c.width=window.innerWidth; c.height=window.innerHeight;
+    const W=c.width, H=c.height;
+    const COLS=['#7c3aed','#a78bfa','#f59e0b','#34d399','#60a5fa','#f472b6','#fb923c','#fff'];
+    const pts=Array.from({length:130},()=>({
+      x:Math.random()*W, y:-20-Math.random()*H*.3,
+      vx:(Math.random()-.5)*6, vy:Math.random()*4+1.5,
+      col:COLS[Math.floor(Math.random()*COLS.length)],
+      w:Math.random()*9+3, h:Math.random()*5+2,
+      a:Math.random()*Math.PI*2, sp:(Math.random()-.5)*.25,
+      gr:.04+Math.random()*.04, dr:.98
+    }));
+    let el=0, stop=false;
+    const anim=()=>{
+      ctx.clearRect(0,0,W,H);
+      let gone=true;
+      pts.forEach(p=>{
+        p.vx*=p.dr; p.vy+=p.gr; p.x+=p.vx; p.y+=p.vy; p.a+=p.sp;
+        if (p.y<H+30) gone=false;
+        ctx.save();
+        ctx.translate(p.x,p.y); ctx.rotate(p.a);
+        ctx.globalAlpha=Math.max(0,1-p.y/(H*.9));
+        ctx.fillStyle=p.col; ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);
+        ctx.restore();
+      });
+      el++;
+      if (gone||el>240||stop) { onDone(); } else { fr.current=requestAnimationFrame(anim); }
+    };
     fr.current=requestAnimationFrame(anim);
-    const t=setTimeout(()=>{stop=true;},4000);
-    return()=>{cancelAnimationFrame(fr.current);clearTimeout(t);};
+    const t=setTimeout(()=>{ stop=true; }, 4000);
+    return ()=>{ cancelAnimationFrame(fr.current); clearTimeout(t); };
   },[active]);
-  if(!active)return null;
+  if (!active) return null;
   return <canvas ref={ref} style={{position:'fixed',inset:0,pointerEvents:'none',zIndex:9999}}/>;
 }
 
-/* ── FOCUS TIMER WIDGET ── */
+/* ═══════════════════════════════════════════════════════
+   FOCUS TIMER — FIX: removed `timerMode` undefined ref,
+   stabilised showToast with useCallback in parent,
+   removed dead setTimerSecs(0) before overwrite.
+═══════════════════════════════════════════════════════ */
 function FocusTimerWidget({ focusToday, setFocusToday, setHistory, showToast, focusPct, codeQ, toggleQuest }) {
-  const [mode, setMode] = useState('flow'); 
-  const [pomoType, setPomoType] = useState('work'); 
+  const [mode,      setMode]      = useState('flow');
+  const [pomoType,  setPomoType]  = useState('work');
   const [timerSecs, setTimerSecs] = useState(0);
-  const [timerOn, setTimerOn] = useState(false);
-  const [manualMins, setManualMins] = useState('');
+  const [timerOn,   setTimerOn]   = useState(false);
+  const [manualMins,setManualMins]= useState('');
 
-  const startTimeRef = useRef(null);
-  const startSecsRef = useRef(0);
-  const lastLoggedMinsRef = useRef(0);
-  const midnightRef = useRef(null);
+  const startTimeRef        = useRef(null);
+  const startSecsRef        = useRef(0);
+  const lastLoggedMinsRef   = useRef(0);
+  const midnightRef         = useRef(null);
+  /* FIX: keep a stable ref to showToast so the interval dep doesn't change
+     on every parent render, which was restarting the timer constantly. */
+  const showToastRef = useRef(showToast);
+  useEffect(() => { showToastRef.current = showToast; }, [showToast]);
 
   const togglePlay = () => {
     if (!timerOn) {
       const now = new Date();
-      startTimeRef.current = now.getTime();
-      startSecsRef.current = timerSecs;
+      startTimeRef.current   = now.getTime();
+      startSecsRef.current   = timerSecs;
       lastLoggedMinsRef.current = Math.floor(timerSecs / 60);
-
-      const nextMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0, 0);
+      const nextMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate()+1, 0,0,0,0);
       midnightRef.current = nextMidnight.getTime();
       setTimerOn(true);
     } else {
@@ -229,124 +266,129 @@ function FocusTimerWidget({ focusToday, setFocusToday, setHistory, showToast, fo
     }
   };
 
+  /* FIX: deps no longer include showToast (volatile) — use showToastRef instead */
   useEffect(() => {
     if (!timerOn) return;
     const id = setInterval(() => {
       const nowTime = Date.now();
-      if (nowTime >= midnightRef.current) {
+      /* midnight guard */
+      if (midnightRef.current && nowTime >= midnightRef.current) {
         setTimerOn(false);
         setTimerSecs(0);
-        showToast("🌙 Midnight reached. Flow state auto-saved and reset for the new day.");
+        showToastRef.current("🌙 Midnight reached — flow state reset for the new day.");
         return;
       }
       const elapsed = Math.floor((nowTime - startTimeRef.current) / 1000);
-      
+
       if (mode === 'flow') {
-        const nextSec = startSecsRef.current + elapsed;
+        const nextSec   = startSecsRef.current + elapsed;
+        const currMins  = Math.floor(nextSec / 60);
+        const diff      = currMins - lastLoggedMinsRef.current;
         setTimerSecs(nextSec);
-        const currentMins = Math.floor(nextSec / 60);
-        const diff = currentMins - lastLoggedMinsRef.current;
         if (diff > 0) {
-          lastLoggedMinsRef.current = currentMins;
-          setFocusToday(prev => {
-            const newMin = prev.minutes + diff;
-            localStorage.setItem('lq_focus_v4', JSON.stringify({ ...prev, minutes: newMin }));
-            return { ...prev, minutes: newMin };
-          });
-          setHistory(h => ({ ...h, [today()]: { ...(h[today()] || {}), focusMin: (h[today()]?.focusMin || 0) + diff } }));
+          lastLoggedMinsRef.current = currMins;
+          setFocusToday(prev => ({ ...prev, minutes: prev.minutes + diff }));
+          setHistory(h => ({
+            ...h,
+            [today()]: { ...(h[today()]||{}), focusMin: (h[today()]?.focusMin||0) + diff }
+          }));
         }
       } else {
+        /* pomodoro countdown */
         const nextSec = startSecsRef.current - elapsed;
         if (nextSec <= 0) {
+          /* FIX: removed dead setTimerSecs(0) before the real value below.
+             FIX: replaced undefined `timerMode` with `pomoType`. */
           setTimerOn(false);
-          setTimerSecs(0);
           if (pomoType === 'work') {
             snd('timer');
-            setFocusToday(prev => {
-              const newMin = prev.minutes + 25;
-              localStorage.setItem('lq_focus_v4', JSON.stringify({ ...prev, minutes: newMin, sessions: prev.sessions + 1 }));
-              return { ...prev, minutes: newMin, sessions: prev.sessions + 1 };
-            });
-            setHistory(h => ({ ...h, [today()]: { ...(h[today()] || {}), focusMin: (h[today()]?.focusMin || 0) + 25 } }));
-            showToast(`✅ Pomodoro done! Logged 25m.`);
+            setFocusToday(prev => ({ ...prev, minutes: prev.minutes + 25, sessions: prev.sessions + 1 }));
+            setHistory(h => ({
+              ...h,
+              [today()]: { ...(h[today()]||{}), focusMin: (h[today()]?.focusMin||0) + 25 }
+            }));
+            showToastRef.current("✅ Pomodoro done! Logged 25 min.");
             setPomoType('short');
             setTimerSecs(TIMER_DURATIONS.short);
           } else {
             snd('complete');
-            showToast("☕ Break over!");
+            showToastRef.current("☕ Break over!");
             setPomoType('work');
             setTimerSecs(TIMER_DURATIONS.work);
           }
+          /* no return value needed — setInterval callback ignores return */
         } else {
           setTimerSecs(nextSec);
         }
       }
-    }, 500); 
+    }, 500);
     return () => clearInterval(id);
-  }, [timerOn, mode, pomoType, setFocusToday, setHistory, showToast]);
+  /* FIX: showToast removed from deps, replaced by stable showToastRef */
+  }, [timerOn, mode, pomoType, setFocusToday, setHistory]);
 
-  const switchPrimaryMode = (m) => {
-    if(timerOn) return;
+  const switchMode = (m) => {
+    if (timerOn) return;
     setMode(m);
     setTimerSecs(m === 'flow' ? 0 : TIMER_DURATIONS.work);
     setPomoType('work');
   };
 
   const resetTimer = () => {
-    setTimerOn(false);
-    if (mode === 'flow') {
-       if (timerSecs > 0) showToast(`✅ Flow saved: ${Math.floor(timerSecs/60)}m ${timerSecs%60}s.`);
-       setTimerSecs(0);
-    } else {
-       setTimerSecs(TIMER_DURATIONS[pomoType]);
+    if (mode === 'flow' && timerSecs > 0) {
+      showToast(`✅ Flow saved: ${Math.floor(timerSecs/60)}m ${timerSecs%60}s.`);
     }
+    setTimerOn(false);
+    setTimerSecs(mode === 'flow' ? 0 : TIMER_DURATIONS[pomoType]);
   };
 
   const logManual = () => {
     const m = parseInt(manualMins);
     if (isNaN(m) || m <= 0) return;
-    setFocusToday(prev => {
-       const newMin = prev.minutes + m;
-       localStorage.setItem('lq_focus_v4', JSON.stringify({ ...prev, minutes: newMin }));
-       return { ...prev, minutes: newMin };
-    });
-    setHistory(h => ({ ...h, [today()]: { ...(h[today()] || {}), focusMin: (h[today()]?.focusMin || 0) + m } }));
+    setFocusToday(prev => ({ ...prev, minutes: prev.minutes + m }));
+    setHistory(h => ({
+      ...h,
+      [today()]: { ...(h[today()]||{}), focusMin: (h[today()]?.focusMin||0) + m }
+    }));
     setManualMins('');
     showToast(`✏️ Manually logged ${m} minutes.`);
   };
 
-  const R=52, CIRC=2*Math.PI*R;
-  const total = mode === 'flow' ? 3600 : TIMER_DURATIONS[pomoType];
-  const pct = mode === 'flow' ? (timerSecs % 3600) / 3600 : timerSecs / total;
-  const off = mode === 'flow' ? (timerSecs === 0 ? CIRC : CIRC * (1 - pct)) : CIRC * (1 - Math.max(0, pct));
-  const ringColor = mode === 'flow' ? '#7c3aed' : (pomoType === 'work' ? '#7c3aed' : pomoType === 'short' ? '#34d399' : '#60a5fa');
-  const hrs = Math.floor(timerSecs / 3600);
+  const R = 52, CIRC = 2 * Math.PI * R;
+  const total      = mode === 'flow' ? 3600 : TIMER_DURATIONS[pomoType];
+  const pct        = mode === 'flow' ? (timerSecs % 3600) / 3600 : timerSecs / total;
+  const off        = mode === 'flow'
+    ? (timerSecs === 0 ? CIRC : CIRC * (1 - pct))
+    : CIRC * (1 - Math.max(0, pct));
+  const ringColor  = pomoType === 'work' ? '#7c3aed' : pomoType === 'short' ? '#34d399' : '#60a5fa';
+  const hrs  = Math.floor(timerSecs / 3600);
   const mins = Math.floor((timerSecs % 3600) / 60);
   const secs = timerSecs % 60;
-  const displayStr = mode === 'flow' && hrs > 0 
+  const display = (mode === 'flow' && hrs > 0)
     ? `${hrs}:${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`
     : `${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`;
 
   return (
-    <Card className="p-5" glow>
+    <div className="lq-card glow-border p-5">
       <div className="flex justify-between items-center mb-4">
         <div className="flex gap-2">
-           <button onClick={()=>switchPrimaryMode('flow')} className={`font-mono text-[10px] font-bold px-2 py-1 rounded-lg transition-colors ${mode==='flow'?'bg-violet-500/20 text-violet-400':'text-zinc-600 hover:text-zinc-400'}`}>FLOW</button>
-           <button onClick={()=>switchPrimaryMode('pomodoro')} className={`font-mono text-[10px] font-bold px-2 py-1 rounded-lg transition-colors ${mode==='pomodoro'?'bg-violet-500/20 text-violet-400':'text-zinc-600 hover:text-zinc-400'}`}>POMO</button>
+          {[['flow','FLOW'],['pomodoro','POMO']].map(([m,l])=>(
+            <button key={m} onClick={()=>switchMode(m)}
+              className={`font-mono text-[10px] font-bold px-2 py-1 rounded-lg transition-colors ${mode===m?'bg-violet-500/20 text-violet-400':'text-zinc-600 hover:text-zinc-400'}`}>{l}</button>
+          ))}
         </div>
         <span className="font-mono text-xs text-zinc-600">{fmtMins(focusToday.minutes)} / 8h today</span>
       </div>
-      
+
       {mode === 'pomodoro' ? (
         <div className="flex gap-2 mb-5">
           {[['work','Work 25m'],['short','Break 5m'],['long','Long 15m']].map(([m,l])=>(
-            <button key={m} onClick={()=>{if(timerOn)return;setPomoType(m);setTimerSecs(TIMER_DURATIONS[m]);}}
+            <button key={m} onClick={()=>{ if(timerOn)return; setPomoType(m); setTimerSecs(TIMER_DURATIONS[m]); }}
               className={`timer-mode-btn flex-1 ${pomoType===m?(m==='work'?'active':m==='short'?'active-g':'active-b'):''}`}>{l}</button>
           ))}
         </div>
       ) : (
-        <div className="flex gap-2 mb-5 justify-center">
-           <span className="timer-mode-btn active w-full text-center cursor-default hover:border-[rgba(124,58,237,.45)] hover:text-[#a78bfa]">Continuous Focus</span>
+        <div className="flex gap-2 mb-5">
+          <span className="timer-mode-btn active w-full text-center">Continuous Focus</span>
         </div>
       )}
 
@@ -356,31 +398,31 @@ function FocusTimerWidget({ focusToday, setFocusToday, setHistory, showToast, fo
             <circle className="timer-ring-track" cx="60" cy="60" r={R}/>
             <circle className="timer-ring-prog" cx="60" cy="60" r={R}
               stroke={ringColor} strokeDasharray={CIRC} strokeDashoffset={off}
-              style={{opacity: timerSecs > 0 ? 1 : 0.25}}
-            />
+              style={{opacity: timerSecs > 0 ? 1 : 0.22}}/>
           </svg>
           <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <span className="font-display text-2xl font-bold text-zinc-100 tabular-nums tracking-tight">{displayStr}</span>
-            <span className="font-mono text-[10px] text-zinc-600 uppercase tracking-widest mt-0.5">{mode === 'flow' ? 'elapsed' : (pomoType === 'work' ? 'focus' : 'break')}</span>
+            <span className="font-display text-2xl font-bold text-zinc-100 tabular-nums tracking-tight">{display}</span>
+            <span className="font-mono text-[10px] text-zinc-600 uppercase tracking-widest mt-0.5">
+              {mode === 'flow' ? 'elapsed' : (pomoType === 'work' ? 'focus' : 'break')}
+            </span>
           </div>
         </div>
 
         <div className="flex items-center gap-3">
-          <button onClick={resetTimer} className="timer-btn" title={mode === 'flow' ? "Save & Reset" : "Reset"}>
-             {mode === 'flow' ? (
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/></svg>
-             ) : (
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"/></svg>
-             )}
+          <button onClick={resetTimer} className="timer-btn" title={mode==='flow'?'Save & Reset':'Reset'}>
+            {mode === 'flow'
+              ? <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/></svg>
+              : <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"/></svg>
+            }
           </button>
           <button onClick={togglePlay} className={`timer-btn ${timerOn?'run':''}`} style={{width:'54px',height:'54px'}} title={timerOn?'Pause':'Start'}>
             {timerOn
-              ?<svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/></svg>
-              :<svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+              ? <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/></svg>
+              : <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
             }
           </button>
           {mode === 'pomodoro' && (
-            <button onClick={()=>{setPomoType(pomoType==='work'?'short':'work');setTimerSecs(pomoType==='work'?TIMER_DURATIONS.short:TIMER_DURATIONS.work);setTimerOn(false);}} className="timer-btn" title="Skip">
+            <button onClick={()=>{ setPomoType(p=>{ const next=p==='work'?'short':'work'; setTimerSecs(TIMER_DURATIONS[next]); setTimerOn(false); return next; }); }} className="timer-btn" title="Skip">
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M7.5 21L3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5"/></svg>
             </button>
           )}
@@ -388,7 +430,9 @@ function FocusTimerWidget({ focusToday, setFocusToday, setHistory, showToast, fo
       </div>
 
       <div className="flex gap-2.5 mt-5 pt-5 border-t border-zinc-900/60">
-        <input type="number" min="1" placeholder="Forgot? Add mins..." value={manualMins} onChange={e=>setManualMins(e.target.value)} className="inp flex-1 rounded-xl px-4 py-2 font-mono text-xs"/>
+        <input type="number" min="1" placeholder="Forgot? Add mins..." value={manualMins}
+          onChange={e=>setManualMins(e.target.value)} onKeyDown={e=>e.key==='Enter'&&logManual()}
+          className="inp flex-1 rounded-xl px-4 py-2 font-mono text-xs"/>
         <button onClick={logManual} className="btn-p rounded-xl px-4 py-2 font-mono text-xs whitespace-nowrap">+ Log</button>
       </div>
 
@@ -398,41 +442,57 @@ function FocusTimerWidget({ focusToday, setFocusToday, setHistory, showToast, fo
           <span className={`font-mono text-[10px] font-semibold ${focusPct>=100?'text-green-400':'text-zinc-500'}`}>{Math.round(focusPct)}%</span>
         </div>
         <div className="focus-prog-bar"><div className="focus-prog-fill" style={{width:`${focusPct}%`}}/></div>
-        {focusPct>=100&&!codeQ?.completed&&(
+        {focusPct>=100 && codeQ && !codeQ.completed && (
           <button onClick={()=>toggleQuest(codeQ.id)} className="w-full mt-2 btn-p rounded-xl py-2 font-mono text-xs">✓ Complete Coding Quest Now</button>
         )}
       </div>
-    </Card>
+    </div>
   );
 }
 
 /* ── XP CHART ── */
-function XpChart({history}){
-  const days=[];
-  for(let i=6;i>=0;i--){const d=new Date(Date.now()-i*86400000);const s=d.toISOString().split('T')[0];const lbl=d.toLocaleDateString('en',{weekday:'short'}).slice(0,2);days.push({s,lbl,xp:history[s]?.xp||0});}
+function XpChart({ history }) {
+  const days = [];
+  for (let i=6;i>=0;i--) {
+    const d=new Date(Date.now()-i*86400000);
+    const s=d.toISOString().split('T')[0];
+    const lbl=d.toLocaleDateString('en',{weekday:'short'}).slice(0,2);
+    days.push({s,lbl,xp:history[s]?.xp||0});
+  }
   const maxXp=Math.max(...days.map(d=>d.xp),40);
   const CH=72,BW=30,GAP=10,TW=days.length*(BW+GAP)-GAP,t=today();
-  return(
+  return (
     <svg viewBox={`0 0 ${TW} ${CH+26}`} width="100%" preserveAspectRatio="none" style={{overflow:'visible'}}>
       {days.map((day,i)=>{
         const x=i*(BW+GAP),bh=Math.max(4,(day.xp/maxXp)*CH),iT=day.s===t;
-        return(<g key={day.s}>
-          <rect x={x} y={CH} width={BW} height={2.5} rx={1.5} fill="#1a1a24"/>
-          {day.xp>0?<rect x={x} y={CH-bh} width={BW} height={bh} rx={4} fill={iT?'#7c3aed':'#2a2a3e'} opacity={iT?1:.75}/>:<rect x={x} y={CH-4} width={BW} height={4} rx={2} fill="#181820"/>}
-          {day.xp>0&&<text x={x+BW/2} y={CH-bh-5} textAnchor="middle" fontSize="9" fill={iT?'#a78bfa':'#4a4a5a'} fontFamily="JetBrains Mono" fontWeight="600">{day.xp}</text>}
-          <text x={x+BW/2} y={CH+18} textAnchor="middle" fontSize="10" fill={iT?'#9a9aaa':'#3a3a48'} fontFamily="JetBrains Mono">{day.lbl}</text>
-        </g>);
+        return (
+          <g key={day.s}>
+            <rect x={x} y={CH} width={BW} height={2.5} rx={1.5} fill="#1a1a24"/>
+            {day.xp>0
+              ?<rect x={x} y={CH-bh} width={BW} height={bh} rx={4} fill={iT?'#7c3aed':'#2a2a3e'} opacity={iT?1:.75}/>
+              :<rect x={x} y={CH-4} width={BW} height={4} rx={2} fill="#181820"/>
+            }
+            {day.xp>0&&<text x={x+BW/2} y={CH-bh-5} textAnchor="middle" fontSize="9" fill={iT?'#a78bfa':'#4a4a5a'} fontFamily="JetBrains Mono" fontWeight="600">{day.xp}</text>}
+            <text x={x+BW/2} y={CH+18} textAnchor="middle" fontSize="10" fill={iT?'#9a9aaa':'#3a3a48'} fontFamily="JetBrains Mono">{day.lbl}</text>
+          </g>
+        );
       })}
     </svg>
   );
 }
 
 /* ── WEEK HEATMAP ── */
-function WeekHeatmap({history}){
-  const days=[];
-  for(let i=6;i>=0;i--){const d=new Date(Date.now()-i*86400000);const s=d.toISOString().split('T')[0];const xp=history[s]?.xp||0;const lbl=d.toLocaleDateString('en',{weekday:'short'}).slice(0,1);days.push({s,xp,lbl,isToday:s===today()});}
-  const getColor=(xp)=>{if(xp>=120)return'#22c55e';if(xp>=60)return'#4ade80';if(xp>=20)return'#fbbf24';if(xp>0)return'#f97316';return'#1e1e28';};
-  return(
+function WeekHeatmap({ history }) {
+  const days = [];
+  for (let i=6;i>=0;i--) {
+    const d=new Date(Date.now()-i*86400000);
+    const s=d.toISOString().split('T')[0];
+    const xp=history[s]?.xp||0;
+    const lbl=d.toLocaleDateString('en',{weekday:'short'}).slice(0,1);
+    days.push({s,xp,lbl,isToday:s===today()});
+  }
+  const getColor=(xp)=>xp>=120?'#22c55e':xp>=60?'#4ade80':xp>=20?'#fbbf24':xp>0?'#f97316':'#1e1e28';
+  return (
     <div className="flex items-end gap-2">
       {days.map(d=>(
         <div key={d.s} className="flex flex-col items-center gap-1.5" title={`${d.s}: ${d.xp} XP`}>
@@ -445,8 +505,9 @@ function WeekHeatmap({history}){
 }
 
 /* ── BASE COMPONENTS ── */
-const SL=({children})=><p className="slabel">{children}</p>;
-const Card=({children,className='',glow=false,style={}})=><div className={`lq-card ${glow?'glow-border':''} ${className}`} style={style}>{children}</div>;
+const SL  = ({children}) => <p className="slabel">{children}</p>;
+const Card= ({children,className='',glow=false,style={}}) =>
+  <div className={`lq-card ${glow?'glow-border':''} ${className}`} style={style}>{children}</div>;
 const Empty=({icon,title,sub})=>(
   <div className="empty-state rounded-2xl p-12 flex flex-col items-center justify-center gap-3 text-center">
     <div className="text-3xl opacity-25 mb-1">{icon}</div>
@@ -454,25 +515,26 @@ const Empty=({icon,title,sub})=>(
     {sub&&<p className="text-zinc-600 text-sm leading-relaxed max-w-xs">{sub}</p>}
   </div>
 );
-const XpBar=({xp,max})=>{const p=Math.min(100,(xp/max)*100);return<div className="bar-bg w-full"><div className="bar-fill xp-fill" style={{width:`${p}%`}}/></div>;};
-const StreakBar=({streak,cap=30})=>{const p=Math.min(100,(streak/cap)*100);return<div className="bar-bg w-full"><div className="bar-fill streak-fill" style={{width:`${Math.max(p,streak>0?3:0)}%`}}/></div>;};
-const StatBar=({value,color,debt=false})=>{const p=Math.min(100,((value-10)/40)*100);return<div className="bar-bg flex-1" style={debt?{boxShadow:'0 0 8px rgba(248,113,113,.2)'}:{}}><div className="bar-fill" style={{width:`${Math.max(4,p)}%`,background:color,opacity:debt?.7:1}}/></div>;};
+const XpBar    =({xp,max})=>{const p=Math.min(100,(xp/max)*100);return<div className="bar-bg w-full"><div className="bar-fill xp-fill" style={{width:`${p}%`}}/></div>;};
+const StreakBar =({streak,cap=30})=>{const p=Math.min(100,(streak/cap)*100);return<div className="bar-bg w-full"><div className="bar-fill streak-fill" style={{width:`${Math.max(p,streak>0?3:0)}%`}}/></div>;};
+const StatBar  =({value,color,debt=false})=>{const p=Math.min(100,((value-10)/40)*100);return<div className="bar-bg flex-1" style={debt?{boxShadow:'0 0 8px rgba(248,113,113,.2)'}:{}}><div className="bar-fill" style={{width:`${Math.max(4,p)}%`,background:color,opacity:debt?.7:1}}/></div>;};
 const Trash=()=><svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} style={{color:'#4a4a58',transition:'color .15s'}} onMouseEnter={e=>e.currentTarget.style.color='#f87171'} onMouseLeave={e=>e.currentTarget.style.color='#4a4a58'}><path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/></svg>;
-const Bolt=()=><svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>;
-const Chev=({open})=><svg className="w-3.5 h-3.5 transition-transform duration-200" style={{transform:open?'rotate(180deg)':'none'}} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7"/></svg>;
-const Grip=()=><svg className="w-4 h-4 drag-h flex-shrink-0" fill="currentColor" viewBox="0 0 24 24"><circle cx="9" cy="5" r="1.5"/><circle cx="15" cy="5" r="1.5"/><circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/><circle cx="9" cy="19" r="1.5"/><circle cx="15" cy="19" r="1.5"/></svg>;
-const Spin=()=><svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>;
+const Bolt =()=><svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>;
+const Chev =({open})=><svg className="w-3.5 h-3.5 transition-transform duration-200" style={{transform:open?'rotate(180deg)':'none'}} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7"/></svg>;
+const Grip =()=><svg className="w-4 h-4 drag-h flex-shrink-0" fill="currentColor" viewBox="0 0 24 24"><circle cx="9" cy="5" r="1.5"/><circle cx="15" cy="5" r="1.5"/><circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/><circle cx="9" cy="19" r="1.5"/><circle cx="15" cy="19" r="1.5"/></svg>;
+const Spin =()=><svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>;
 
-/* ══════════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════════
    MAIN APP
-══════════════════════════════════════════════════════════ */
-function App(){
+═══════════════════════════════════════════════════════ */
+function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [dimMode,   setDimMode]   = useState(false);
   const [confetti,  setConfetti]  = useState(false);
   const [lvlModal,  setLvlModal]  = useState(false);
   const [toast,     setToast]     = useState('');
 
+  /* ── CORE STATE ── */
   const [hero, setHero] = useState(()=>{
     const s=localStorage.getItem('lq_hero_adi_v4');
     return s?JSON.parse(s):{name:"Adi",class:"Tech Lead",level:1,xp:0,nextLevelXp:300,gold:0,streak:0,statPoints:0,stats:{strength:10,intelligence:10,willpower:10,stamina:10}};
@@ -483,7 +545,7 @@ function App(){
       {id:1,text:"Perform 8 Hours of meaningful coding",type:"day",completed:false,difficulty:"hard",attribute:"intelligence",xp:80,gold:40,notes:""},
       {id:2,text:"Read book for 30 minutes (Instead of scrolling)",type:"day",completed:false,difficulty:"medium",attribute:"willpower",xp:40,gold:20,notes:""},
       {id:4,text:"Secure 8 Hours of deep sleep",type:"day",completed:false,difficulty:"easy",attribute:"stamina",xp:20,gold:10,notes:""},
-      {id:5,text:"Ship one meaningful side-project feature this week",type:"week",completed:false,difficulty:"hard",attribute:"intelligence",xp:120,gold:60,notes:""}
+      {id:5,text:"Ship one meaningful side-project feature this week",type:"week",completed:false,difficulty:"hard",attribute:"intelligence",xp:120,gold:60,notes:""},
     ];
   });
   const [rewards,     setRewards]     = useState(()=>JSON.parse(localStorage.getItem('lq_rewards_adi_v4'))||[
@@ -495,24 +557,20 @@ function App(){
   const [milestones,  setMilestones]  = useState(()=>JSON.parse(localStorage.getItem('lq_milestones_adi_v4'))||[]);
   const [noteHistory, setNoteHistory] = useState(()=>JSON.parse(localStorage.getItem('lq_notehistory_v4'))||{});
   const [improveLog,  setImproveLog]  = useState(()=>JSON.parse(localStorage.getItem('lq_improve_v4'))||{});
-
-  const [focusToday, setFocusToday] = useState(()=>{
-    try{const s=JSON.parse(localStorage.getItem('lq_focus_v4'));return(s&&s.date===today())?s:{date:today(),minutes:0,sessions:0};}
-    catch{return{date:today(),minutes:0,sessions:0};}
+  const [focusToday,  setFocusToday]  = useState(()=>{
+    try { const s=JSON.parse(localStorage.getItem('lq_focus_v4')); return (s&&s.date===today())?s:{date:today(),minutes:0,sessions:0}; }
+    catch { return {date:today(),minutes:0,sessions:0}; }
   });
-
-  const [sleepLog,  setSleepLog]  = useState(()=>JSON.parse(localStorage.getItem('lq_sleep_v4'))||{});
-  const [sleepInp,  setSleepInp]  = useState('7.5');
-
-  const [reflections,   setReflections]   = useState(()=>JSON.parse(localStorage.getItem('lq_reflections_v4'))||{});
-  const [reflDraft,     setReflDraft]     = useState('');
-  const [failureLog,    setFailureLog]    = useState(()=>JSON.parse(localStorage.getItem('lq_failures_v4'))||{});
-  const [pendingFails,  setPendingFails]  = useState([]); 
-  const [failTags,      setFailTags]      = useState({}); 
-  const [journalDate,   setJournalDate]   = useState(null);
-  const [aiInsightLoad, setAiInsightLoad] = useState(false);
-  const [aiInsight,     setAiInsight]     = useState('');
-
+  const [sleepLog,    setSleepLog]    = useState(()=>JSON.parse(localStorage.getItem('lq_sleep_v4'))||{});
+  const [sleepInp,    setSleepInp]    = useState('7.5');
+  const [reflections, setReflections] = useState(()=>JSON.parse(localStorage.getItem('lq_reflections_v4'))||{});
+  const [reflDraft,   setReflDraft]   = useState('');
+  const [failureLog,  setFailureLog]  = useState(()=>JSON.parse(localStorage.getItem('lq_failures_v4'))||{});
+  const [pendingFails,setPendingFails]= useState([]);
+  const [failTags,    setFailTags]    = useState({});
+  const [journalDate, setJournalDate] = useState(null);
+  const [aiInsightLoad,setAiInsightLoad]=useState(false);
+  const [aiInsight,   setAiInsight]   = useState('');
   const [aiPrompt,    setAiPrompt]    = useState('');
   const [aiGen,       setAiGen]       = useState(false);
   const [nqText, setNqText] = useState('');
@@ -522,243 +580,243 @@ function App(){
   const [expId,  setExpId]  = useState(null);
   const [dragId, setDragId] = useState(null);
   const [overId, setOverId] = useState(null);
-  const [rewName,setRewName]=useState('');
-  const [rewCost,setRewCost]=useState(40);
+  const [rewName,setRewName]= useState('');
+  const [rewCost,setRewCost]= useState(40);
   const [newImprove, setNewImprove] = useState('');
-
-  // Past XP editing states
   const [editXpDate, setEditXpDate] = useState(yesterday());
-  const [editXpVal, setEditXpVal] = useState('');
+  const [editXpVal,  setEditXpVal]  = useState('');
 
-  useEffect(()=>{document.body.classList.toggle('dim',dimMode);},[dimMode]);
+  /* FIX: wrap showToast in useCallback so its reference is stable.
+     This stops FocusTimerWidget's effect from restarting on every render. */
+  const showToast = useCallback((m) => {
+    setToast(m);
+    setTimeout(() => setToast(''), 4500);
+  }, []);
+
+  useEffect(()=>{ document.body.classList.toggle('dim', dimMode); }, [dimMode]);
 
   useEffect(()=>{
     const ids=['dashboard','quests','shop','hero','journal'];
     const fn=(e)=>{
-      if(['INPUT','TEXTAREA','SELECT'].includes(e.target.tagName))return;
-      if(e.key>='1'&&e.key<='5')setActiveTab(ids[+e.key-1]);
-      if(e.key==='Escape'){setLvlModal(false);setConfetti(false);}
-      if(e.key==='d'||e.key==='D')setDimMode(m=>!m);
+      if (['INPUT','TEXTAREA','SELECT'].includes(e.target.tagName)) return;
+      if (e.key>='1'&&e.key<='5') setActiveTab(ids[+e.key-1]);
+      if (e.key==='Escape') { setLvlModal(false); setConfetti(false); }
+      if (e.key==='d'||e.key==='D') setDimMode(m=>!m);
     };
-    window.addEventListener('keydown',fn);
-    return()=>window.removeEventListener('keydown',fn);
-  },[]);
+    window.addEventListener('keydown', fn);
+    return () => window.removeEventListener('keydown', fn);
+  }, []);
 
+  /* ── MIDNIGHT RESET ── */
   useEffect(()=>{
-    const td=today(),yd=yesterday();
+    const td=today(), yd=yesterday();
     const last=localStorage.getItem('lq_last_reset');
-    if(last!==td){
+    if (last !== td) {
       const dqs=quests.filter(q=>q.type==='day');
       const allDone=dqs.length>0&&dqs.every(q=>q.completed);
       const consec=last===yd;
-      setHero(h=>({...h,streak:(consec&&allDone)?h.streak+1:0}));
-      if(last){
+      setHero(h=>({...h, streak:(consec&&allDone)?h.streak+1:0}));
+      if (last) {
         const noted=quests.filter(q=>q.notes?.trim());
-        if(noted.length>0)setNoteHistory(p=>({...p,[last]:noted.map(q=>({questText:q.text,note:q.notes,completed:q.completed,attribute:q.attribute}))}));
+        if (noted.length>0)
+          setNoteHistory(p=>({...p,[last]:noted.map(q=>({questText:q.text,note:q.notes,completed:q.completed,attribute:q.attribute}))}));
         const skipped=dqs.filter(q=>!q.completed);
-        if(skipped.length>0)setPendingFails(skipped.map(q=>({questText:q.text,attribute:q.attribute})));
+        if (skipped.length>0)
+          setPendingFails(skipped.map(q=>({questText:q.text,attribute:q.attribute})));
       }
       const isSun=new Date().getDay()===0;
       const lastWk=localStorage.getItem('lq_last_weekly_reset');
-      if(isSun&&lastWk!==td){
+      if (isSun&&lastWk!==td) {
         setQuests(p=>p.map(q=>({...q,completed:false,notes:''})));
-        localStorage.setItem('lq_last_weekly_reset',td);
-        setTimeout(()=>showToast("🗓️ Weekly reset — all quests refreshed."),800);
+        localStorage.setItem('lq_last_weekly_reset', td);
+        setTimeout(()=>showToast("🗓️ Weekly reset — all quests refreshed."), 800);
       } else {
         setQuests(p=>p.map(q=>q.type==='day'?{...q,completed:false,notes:''}:q));
-        setTimeout(()=>showToast("⚡ New day — daily quests reset."),800);
+        setTimeout(()=>showToast("⚡ New day — daily quests reset."), 800);
       }
       setFocusToday(f=>f.date!==td?{date:td,minutes:0,sessions:0}:f);
-      localStorage.setItem('lq_last_reset',td);
+      localStorage.setItem('lq_last_reset', td);
     }
-  },[]);
+  }, []);
 
-  useEffect(() => { localStorage.setItem('lq_hero_adi_v4', JSON.stringify(hero)); }, [hero]);
-  useEffect(() => { localStorage.setItem('lq_quests_adi_v4', JSON.stringify(quests)); }, [quests]);
-  useEffect(() => { localStorage.setItem('lq_rewards_adi_v4', JSON.stringify(rewards)); }, [rewards]);
-  useEffect(() => { localStorage.setItem('lq_history_adi_v4', JSON.stringify(history)); }, [history]);
-  useEffect(() => { localStorage.setItem('lq_milestones_adi_v4', JSON.stringify(milestones)); }, [milestones]);
-  useEffect(() => { localStorage.setItem('lq_notehistory_v4', JSON.stringify(noteHistory)); }, [noteHistory]);
-  useEffect(() => { localStorage.setItem('lq_improve_v4', JSON.stringify(improveLog)); }, [improveLog]);
-  useEffect(() => { localStorage.setItem('lq_sleep_v4', JSON.stringify(sleepLog)); }, [sleepLog]);
-  useEffect(() => { localStorage.setItem('lq_reflections_v4', JSON.stringify(reflections)); }, [reflections]);
-  useEffect(() => { localStorage.setItem('lq_failures_v4', JSON.stringify(failureLog)); }, [failureLog]);
-  useEffect(() => { localStorage.setItem('lq_focus_v4', JSON.stringify(focusToday)); }, [focusToday]);
+  /* ── PERSIST ── */
+  useEffect(()=>{ localStorage.setItem('lq_hero_adi_v4',      JSON.stringify(hero)); },        [hero]);
+  useEffect(()=>{ localStorage.setItem('lq_quests_adi_v4',    JSON.stringify(quests)); },      [quests]);
+  useEffect(()=>{ localStorage.setItem('lq_rewards_adi_v4',   JSON.stringify(rewards)); },     [rewards]);
+  useEffect(()=>{ localStorage.setItem('lq_history_adi_v4',   JSON.stringify(history)); },     [history]);
+  useEffect(()=>{ localStorage.setItem('lq_milestones_adi_v4',JSON.stringify(milestones)); },  [milestones]);
+  useEffect(()=>{ localStorage.setItem('lq_notehistory_v4',   JSON.stringify(noteHistory)); }, [noteHistory]);
+  useEffect(()=>{ localStorage.setItem('lq_improve_v4',       JSON.stringify(improveLog)); },  [improveLog]);
+  useEffect(()=>{ localStorage.setItem('lq_sleep_v4',         JSON.stringify(sleepLog)); },    [sleepLog]);
+  useEffect(()=>{ localStorage.setItem('lq_reflections_v4',   JSON.stringify(reflections)); }, [reflections]);
+  useEffect(()=>{ localStorage.setItem('lq_failures_v4',      JSON.stringify(failureLog)); },  [failureLog]);
+  useEffect(()=>{ localStorage.setItem('lq_focus_v4',         JSON.stringify(focusToday)); },  [focusToday]);
 
-  const showToast=(m)=>{setToast(m);setTimeout(()=>setToast(''),4500);};
-
-  const toggleQuest=(id)=>{
+  /* ── QUEST TOGGLE ── */
+  const toggleQuest = useCallback((id) => {
     snd('complete');
     setQuests(prev=>prev.map(q=>{
-      if(q.id!==id)return q;
+      if (q.id!==id) return q;
       const completing=!q.completed;
-      if(completing){const td=today();setHistory(h=>({...h,[td]:{xp:(h[td]?.xp||0)+q.xp,gold:(h[td]?.gold||0)+q.gold}}));}
+      if (completing) {
+        const td=today();
+        setHistory(h=>({...h,[td]:{xp:(h[td]?.xp||0)+q.xp, gold:(h[td]?.gold||0)+q.gold}}));
+      }
       setHero(h=>{
-        const xpD=completing?q.xp:-q.xp,gD=completing?q.gold:-q.gold;
-        let nx=h.xp+xpD,ng=Math.max(0,h.gold+gD),nl=h.level,tx=h.nextLevelXp,rl=false;
-        if(nx>=tx){nx-=tx;nl++;tx=nl*300;rl=true;snd('levelup');setLvlModal(true);setConfetti(true);}
-        else if(nx<0)nx=0;
-        const os={...h.stats},ns={...h.stats};
-        if(completing&&q.attribute)ns[q.attribute]=(ns[q.attribute]||10)+(q.difficulty==='hard'?1:.4);
-        if(completing){const ms=getMilestones(os,ns);if(ms.length>0)setMilestones(p=>[...ms,...p].slice(0,50));}
-        return{...h,xp:Math.round(nx),gold:ng,level:nl,nextLevelXp:tx,stats:ns,statPoints:rl?h.statPoints+3:h.statPoints};
+        const xpD=completing?q.xp:-q.xp, gD=completing?q.gold:-q.gold;
+        let nx=h.xp+xpD, ng=Math.max(0,h.gold+gD), nl=h.level, tx=h.nextLevelXp, rl=false, sp=h.statPoints;
+        while (nx>=tx) { nx-=tx; nl++; tx=nl*300; sp+=3; rl=true; }
+        if (nx<0) nx=0;
+        const os={...h.stats}, ns={...h.stats};
+        if (completing&&q.attribute) ns[q.attribute]=(ns[q.attribute]||10)+(q.difficulty==='hard'?1:.4);
+        if (completing) { const ms=getMilestones(os,ns); if(ms.length>0)setMilestones(p=>[...ms,...p].slice(0,50)); }
+        if (rl) { snd('levelup'); setLvlModal(true); setConfetti(true); }
+        return {...h,xp:Math.round(nx),gold:ng,level:nl,nextLevelXp:tx,stats:ns,statPoints:sp};
       });
-      if(completing)showToast(`Quest complete — +${q.xp} XP · +${q.gold}g`);
-      return{...q,completed:completing};
+      if (completing) showToast(`Quest complete — +${q.xp} XP · +${q.gold}g`);
+      return {...q, completed:completing};
     }));
-  };
+  }, [showToast]);
 
-  const onDragStart=(e,id)=>{setDragId(id);e.dataTransfer.effectAllowed='move';};
-  const onDragOver=(e,id)=>{e.preventDefault();setOverId(id);};
-  const onDrop=(e,tid)=>{
+  /* ── DRAG REORDER ── */
+  const onDragStart = (e,id)=>{ setDragId(id); e.dataTransfer.effectAllowed='move'; };
+  const onDragOver  = (e,id)=>{ e.preventDefault(); setOverId(id); };
+  const onDrop      = (e,tid)=>{
     e.preventDefault();
-    if(!dragId||dragId===tid){setDragId(null);setOverId(null);return;}
-    setQuests(p=>{const a=[...p],fi=a.findIndex(q=>q.id===dragId),ti=a.findIndex(q=>q.id===tid);if(fi<0||ti<0)return p;const[m]=a.splice(fi,1);a.splice(ti,0,m);return a;});
-    setDragId(null);setOverId(null);
+    if (!dragId||dragId===tid) { setDragId(null); setOverId(null); return; }
+    setQuests(p=>{ const a=[...p],fi=a.findIndex(q=>q.id===dragId),ti=a.findIndex(q=>q.id===tid); if(fi<0||ti<0)return p; const[m]=a.splice(fi,1); a.splice(ti,0,m); return a; });
+    setDragId(null); setOverId(null);
   };
 
-  const logSleep=()=>{
-    const h=parseFloat(sleepInp);if(isNaN(h)||h<0||h>24)return;
+  /* ── SLEEP ── */
+  const logSleep = () => {
+    const h=parseFloat(sleepInp); if(isNaN(h)||h<0||h>24) return;
     setSleepLog(p=>({...p,[today()]:h}));
     showToast(`Sleep logged: ${h}h — ${h>=7.5?'good recovery':'monitoring debt...'}`);
   };
-  const sleepDebt=useMemo(()=>{
-    let d=0;for(let i=1;i<=7;i++){const dt=new Date(Date.now()-i*86400000).toISOString().split('T')[0];const h=sleepLog[dt];if(h!==undefined)d+=Math.max(0,8-h);}return Math.round(d*10)/10;
+  const sleepDebt = useMemo(()=>{
+    let d=0;
+    for (let i=1;i<=7;i++) { const dt=new Date(Date.now()-i*86400000).toISOString().split('T')[0]; const h=sleepLog[dt]; if(h!==undefined) d+=Math.max(0,8-h); }
+    return Math.round(d*10)/10;
   },[sleepLog]);
-  const last7Sleep=useMemo(()=>{
-    const days=[];for(let i=6;i>=0;i--){const dt=new Date(Date.now()-i*86400000).toISOString().split('T')[0];days.push({date:dt,hours:sleepLog[dt]??null});}return days;
+  const last7Sleep = useMemo(()=>{
+    const days=[];
+    for (let i=6;i>=0;i--) { const dt=new Date(Date.now()-i*86400000).toISOString().split('T')[0]; days.push({date:dt,hours:sleepLog[dt]??null}); }
+    return days;
   },[sleepLog]);
 
-  const submitFailureTags=()=>{
-    if(Object.keys(failTags).length===0){setPendingFails([]);return;}
+  /* ── FAILURE TAGS ── */
+  const submitFailureTags = () => {
+    if (Object.keys(failTags).length===0) { setPendingFails([]); return; }
     const yd=yesterday();
-    setFailureLog(p=>({...p,[yd]:[...Object.entries(failTags).map(([qt,reason])=>({questText:qt,reason}))]}));
-    setPendingFails([]);setFailTags({});
+    setFailureLog(p=>({...p,[yd]:Object.entries(failTags).map(([qt,reason])=>({questText:qt,reason}))}));
+    setPendingFails([]); setFailTags({});
     showToast("Failure reasons saved — feeding into pattern analysis.");
   };
 
-  const saveReflection=()=>{
-    if(!reflDraft.trim())return;
+  /* ── REFLECTION ── */
+  const saveReflection = () => {
+    if (!reflDraft.trim()) return;
     setReflections(p=>({...p,[today()]:{text:reflDraft,timestamp:Date.now()}}));
-    setReflDraft('');showToast("Reflection saved.");
+    setReflDraft(''); showToast("Reflection saved.");
   };
 
-  const addImprove=()=>{
-    if(!newImprove.trim())return;
-    const td=today();setImproveLog(p=>({...p,[td]:[...(p[td]||[]),newImprove.trim()]}));
-    setNewImprove('');showToast("Improvement logged.");
+  /* ── IMPROVEMENT LOG ── */
+  const addImprove = () => {
+    if (!newImprove.trim()) return;
+    const td=today(); setImproveLog(p=>({...p,[td]:[...(p[td]||[]),newImprove.trim()]}));
+    setNewImprove(''); showToast("Improvement logged.");
   };
-  const delImprove=(date,idx)=>{
-    setImproveLog(p=>{const u=[...(p[date]||[])];u.splice(idx,1);if(!u.length){const n={...p};delete n[date];return n;}return{...p,[date]:u};});
+  const delImprove = (date,idx) => {
+    setImproveLog(p=>{
+      const u=[...(p[date]||[])]; u.splice(idx,1);
+      if (!u.length) { const n={...p}; delete n[date]; return n; }
+      return {...p,[date]:u};
+    });
   };
-  
-  const topThemesList = useMemo(()=>{
+
+  const topThemes = useMemo(()=>{
     const stop=new Set(['a','an','the','to','i','my','and','or','for','in','on','at','is','it','be','of','with','that','this','want','need','more','better','less']);
     const freq={};
-    Object.values(improveLog).flat().forEach(e=>e.toLowerCase().replace(/[^a-z\s]/g,'').split(/\s+/).forEach(w=>{if(w.length>2&&!stop.has(w))freq[w]=(freq[w]||0)+1;}));
+    Object.values(improveLog).flat().forEach(e=>e.toLowerCase().replace(/[^a-z\s]/g,'').split(/\s+/).forEach(w=>{ if(w.length>2&&!stop.has(w)) freq[w]=(freq[w]||0)+1; }));
     return Object.entries(freq).sort((a,b)=>b[1]-a[1]).slice(0,12);
-  }, [improveLog]);
+  },[improveLog]);
 
-  const loadKey=()=>{let k=localStorage.getItem("adi_gemini_key");if(!k){k=prompt("Enter your Gemini API key:");if(k)localStorage.setItem("adi_gemini_key",k.trim());}return k?k.trim():null;};
-  const aiDecompose=async()=>{
-    if(!aiPrompt.trim())return;const key=loadKey();if(!key)return;setAiGen(true);
-    try{
-      const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${key}`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({contents:[{parts:[{text:`Decompose this goal into 2-4 specific JSON daily sub-quests for Adi: "${aiPrompt}". Schema: {"quests":[{"text":"Task","type":"day","difficulty":"medium","attribute":"intelligence","xp":30,"gold":12}]}. Raw JSON only.`}]}],generationConfig:{responseMimeType:"application/json"}})});
-      const res=await r.json();const data=JSON.parse(res.candidates[0].content.parts[0].text);
-      if(data.quests){setQuests(p=>[...data.quests.map((q,i)=>({...q,id:Date.now()+i,completed:false,notes:''})),...p]);setAiPrompt('');showToast(`AI decomposed into ${data.quests.length} micro-quests.`);}
-    }catch(e){showToast(`Error: ${e.message}`);}finally{setAiGen(false);}
+  /* ── AI ── */
+  const loadKey = () => {
+    let k=localStorage.getItem("adi_gemini_key");
+    if (!k) { k=prompt("Enter your Gemini API key:"); if(k) localStorage.setItem("adi_gemini_key",k.trim()); }
+    return k?k.trim():null;
   };
 
-  const generateJournalInsight=async()=>{
-    const key=loadKey();if(!key)return;
+  const aiDecompose = async () => {
+    if (!aiPrompt.trim()) return; const key=loadKey(); if(!key) return; setAiGen(true);
+    try {
+      const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${key}`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({contents:[{parts:[{text:`Decompose this goal into 2-4 specific JSON daily sub-quests for Adi: "${aiPrompt}". Schema: {"quests":[{"text":"Task","type":"day","difficulty":"medium","attribute":"intelligence","xp":30,"gold":12}]}. Raw JSON only.`}]}],generationConfig:{responseMimeType:"application/json"}})});
+      const res=await r.json(); const data=JSON.parse(res.candidates[0].content.parts[0].text);
+      if (data.quests) { setQuests(p=>[...data.quests.map((q,i)=>({...q,id:Date.now()+i,completed:false,notes:''})),...p]); setAiPrompt(''); showToast(`AI decomposed into ${data.quests.length} micro-quests.`); }
+    } catch(e) { showToast(`Error: ${e.message}`); } finally { setAiGen(false); }
+  };
+
+  const generateJournalInsight = async () => {
+    const key=loadKey(); if(!key) return;
     const improveEntries=Object.entries(improveLog).map(([d,its])=>`${d}: ${its.join('; ')}`).join('\n');
     const refl=Object.entries(reflections).map(([d,r])=>`${d}: ${r.text}`).join('\n');
-    const fail=Object.entries(failureLog).map(([d,fs])=>`${d} failures: ${fs.map(f=>`${f.questText} (${f.reason})`).join(', ')}`).join('\n');
+    const fail=Object.entries(failureLog).map(([d,fs])=>`${d}: ${fs.map(f=>`${f.questText} (${f.reason})`).join(', ')}`).join('\n');
     const sleep=Object.entries(sleepLog).slice(-7).map(([d,h])=>`${d}: ${h}h`).join(', ');
-    const focusSummary=`Today focus: ${focusToday.minutes} min / 480 min target`;
-    if(!improveEntries&&!refl&&!fail){showToast("No journal data yet — add reflections and improvement entries first.");return;}
-    setAiInsightLoad(true);setAiInsight('');
-    try{
-      const prompt=`You are Adi's personal coach analyzing his LifeQuest OS data. Here's his data:
-IMPROVEMENT LOG:\n${improveEntries||'None'}
-DAILY REFLECTIONS:\n${refl||'None'}
-QUEST FAILURES (with reasons):\n${fail||'None'}
-SLEEP LOG (last 7 days):\n${sleep||'None'}
-FOCUS TIME: ${focusSummary}
-
-Give exactly 3 sharp, personal insights about patterns you see. Each under 30 words. Be specific, not generic.
-Also suggest 1 concrete quest adjustment for tomorrow.
-Format as JSON: {"insights":["...","...","..."],"questAdjustment":"..."}`;
+    if (!improveEntries&&!refl&&!fail) { showToast("No journal data yet — add reflections first."); return; }
+    setAiInsightLoad(true); setAiInsight('');
+    try {
+      const prompt=`You are Adi's personal coach. Data:\nIMPROVEMENT LOG:\n${improveEntries||'None'}\nREFLECTIONS:\n${refl||'None'}\nFAILURES:\n${fail||'None'}\nSLEEP:\n${sleep||'None'}\n\nGive exactly 3 sharp, personal insights under 30 words each. Also suggest 1 concrete quest adjustment.\nJSON only: {"insights":["...","...","..."],"questAdjustment":"..."}`;
       const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${key}`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{responseMimeType:"application/json"}})});
-      const res=await r.json();const data=JSON.parse(res.candidates[0].content.parts[0].text);
-      setAiInsight(data);
-    }catch(e){showToast(`Insight failed: ${e.message}`);}finally{setAiInsightLoad(false);}
+      const res=await r.json(); setAiInsight(JSON.parse(res.candidates[0].content.parts[0].text));
+    } catch(e) { showToast(`Insight failed: ${e.message}`); } finally { setAiInsightLoad(false); }
   };
 
-  const boostStat=(s)=>{if(hero.statPoints<=0)return;setHero(h=>({...h,statPoints:h.statPoints-1,stats:{...h.stats,[s]:h.stats[s]+1}}));};
-  const buyReward=(id,cost,title)=>{if(hero.gold<cost){showToast("Insufficient gold.");return;}setHero(h=>({...h,gold:h.gold-cost}));showToast(`Redeemed: ${title}`);};
-  const addReward=(e)=>{e.preventDefault();if(!rewName.trim())return;setRewards(p=>[{id:Date.now(),text:rewName,cost:+rewCost},...p]);setRewName('');showToast("Reward stocked.");};
-  const addQuest=(e)=>{
-    e.preventDefault();if(!nqText.trim())return;
-    const bx=nqDiff==='easy'?20:nqDiff==='medium'?40:80;const fx=nqType==='week'?bx*2:bx;
-    setQuests(p=>[{id:Date.now(),text:nqText,type:nqType,completed:false,difficulty:nqDiff,attribute:nqAttr,xp:fx,gold:Math.round(fx*.4),notes:''},...p]);
-    setNqText('');showToast(`Quest forged — ${nqType==='week'?'weekly':'daily'} added.`);
-  };
-  const delQuest=(id)=>setQuests(p=>p.filter(q=>q.id!==id));
-  const archive=()=>{setQuests(quests.filter(q=>!q.completed));showToast("Completed quests archived.");};
-  const hardReset=()=>{if(confirm("Nuke all data?")){localStorage.clear();window.location.reload();}};
+  /* ── MISC ── */
+  const boostStat   = (s) => { if(hero.statPoints<=0)return; setHero(h=>({...h,statPoints:h.statPoints-1,stats:{...h.stats,[s]:h.stats[s]+1}})); };
+  const buyReward   = (id,cost,title) => { if(hero.gold<cost){showToast("Insufficient gold.");return;} setHero(h=>({...h,gold:h.gold-cost})); showToast(`Redeemed: ${title}`); };
+  const addReward   = (e) => { e.preventDefault(); if(!rewName.trim())return; setRewards(p=>[{id:Date.now(),text:rewName,cost:+rewCost},...p]); setRewName(''); showToast("Reward stocked."); };
+  const addQuest    = (e) => { e.preventDefault(); if(!nqText.trim())return; const bx=nqDiff==='easy'?20:nqDiff==='medium'?40:80; const fx=nqType==='week'?bx*2:bx; setQuests(p=>[{id:Date.now(),text:nqText,type:nqType,completed:false,difficulty:nqDiff,attribute:nqAttr,xp:fx,gold:Math.round(fx*.4),notes:''},...p]); setNqText(''); showToast("Quest forged."); };
+  const delQuest    = (id) => setQuests(p=>p.filter(q=>q.id!==id));
+  const archive     = () => { setQuests(quests.filter(q=>!q.completed)); showToast("Completed quests archived."); };
+  const hardReset   = () => { if(confirm("Nuke all data?")) { localStorage.clear(); window.location.reload(); } };
 
-  // Past XP Editor Logic
+  /* FIX: handleEditPastXp now correctly handles negative XP diff by adjusting level downward */
   const handleEditPastXp = (e) => {
     e.preventDefault();
-    const newXp = parseInt(editXpVal);
-    if (isNaN(newXp) || !editXpDate) return;
-
-    const oldHistoryData = history[editXpDate] || {};
-    const oldXp = oldHistoryData.xp || 0;
-    const diff = newXp - oldXp;
-
-    setHistory(h => ({
-      ...h,
-      [editXpDate]: { ...h[editXpDate], xp: newXp }
-    }));
-
-    if (diff !== 0) {
-      setHero(h => {
-        let nx = h.xp + diff;
-        let nl = h.level;
-        let tx = h.nextLevelXp;
-        let sp = h.statPoints;
-        let rl = false;
-
-        while (nx >= tx) {
-          nx -= tx;
-          nl++;
-          tx = nl * 300;
-          sp += 3;
-          rl = true;
-        }
-        if (nx < 0) nx = 0; // Prevent negative levels
-
-        if (rl) { snd('levelup'); setLvlModal(true); setConfetti(true); }
-        return { ...h, xp: Math.round(nx), level: nl, nextLevelXp: tx, statPoints: sp };
-      });
-      showToast(`Adjusted ${editXpDate} XP by ${diff>0?'+':''}${diff}. Total XP updated.`);
-    }
+    const newXp=parseInt(editXpVal);
+    if (isNaN(newXp)||!editXpDate) return;
+    const oldXp=(history[editXpDate]?.xp)||0;
+    const diff=newXp-oldXp;
+    if (diff===0) return;
+    setHistory(h=>({...h,[editXpDate]:{...h[editXpDate],xp:newXp}}));
+    setHero(h=>{
+      let nx=h.xp+diff, nl=h.level, tx=h.nextLevelXp, sp=h.statPoints, rl=false;
+      /* handle positive diff — level up */
+      while (nx>=tx) { nx-=tx; nl++; tx=nl*300; sp+=3; rl=true; }
+      /* FIX: handle negative diff — level down correctly */
+      while (nx<0&&nl>1) { nl--; tx=nl*300; nx+=tx; sp=Math.max(0,sp-3); }
+      if (nx<0) nx=0;
+      if (rl) { snd('levelup'); setLvlModal(true); setConfetti(true); }
+      return {...h, xp:Math.round(nx), level:nl, nextLevelXp:tx, statPoints:sp};
+    });
+    showToast(`Adjusted ${editXpDate} XP by ${diff>0?'+':''}${diff}.`);
     setEditXpVal('');
   };
 
-  const codeQ=quests.find(q=>q.text.includes("8 Hours"))||{};
-  const readQ=quests.find(q=>q.text.includes("Read book"))||{};
-  const doneCount=quests.filter(q=>q.completed).length;
-  const xpPct=Math.min(100,Math.round((hero.xp/hero.nextLevelXp)*100));
-  const dailyQs=quests.filter(q=>q.type==='day');
-  const weeklyQs=quests.filter(q=>q.type==='week');
-  const daysLeft=daysUntilSun();
-  const focusPct=Math.min(100,(focusToday.minutes/480)*100);
-  const stampHit=sleepDebt>=5;
+  /* ── DERIVED ── */
+  const codeQ    = quests.find(q=>q.text.includes("8 Hours"))||null;
+  const readQ    = quests.find(q=>q.text.includes("Read book"))||{};
+  const doneCount= quests.filter(q=>q.completed).length;
+  const xpPct    = Math.min(100,Math.round((hero.xp/hero.nextLevelXp)*100));
+  const dailyQs  = quests.filter(q=>q.type==='day');
+  const weeklyQs = quests.filter(q=>q.type==='week');
+  const daysLeft = daysUntilSun();
+  const focusPct = Math.min(100,(focusToday.minutes/480)*100);
+  const stampHit = sleepDebt>=5;
 
-  const tabs=[
+  const TABS=[
     {id:'dashboard',label:'Overview'},
     {id:'quests',   label:'Quests'},
     {id:'shop',     label:'Store'},
@@ -766,10 +824,12 @@ Format as JSON: {"insights":["...","...","..."],"questAdjustment":"..."}`;
     {id:'journal',  label:'Journal'},
   ];
 
-  const QRow=({q,drag=false})=>(
+  const QRow = ({q, drag=false}) => (
     <div className={`rounded-2xl border transition-all duration-200 ${q.completed?'border-zinc-900/30 opacity-40':'border-zinc-800/60'} ${dragId===q.id?'q-drag':''} ${overId===q.id&&dragId!==q.id?'q-over':''}`}
       style={{background:q.completed?'var(--bg-empty)':'var(--bg-card)',transition:'background .35s ease'}}
-      draggable={drag} onDragStart={drag?e=>onDragStart(e,q.id):undefined} onDragOver={drag?e=>onDragOver(e,q.id):undefined} onDrop={drag?e=>onDrop(e,q.id):undefined} onDragEnd={()=>{setDragId(null);setOverId(null);}}>
+      draggable={drag} onDragStart={drag?e=>onDragStart(e,q.id):undefined}
+      onDragOver={drag?e=>onDragOver(e,q.id):undefined} onDrop={drag?e=>onDrop(e,q.id):undefined}
+      onDragEnd={()=>{ setDragId(null); setOverId(null); }}>
       <div className="px-5 py-4 flex items-center gap-3.5">
         {drag&&<Grip/>}
         <input type="checkbox" className="qcheck" checked={q.completed} onChange={()=>toggleQuest(q.id)}/>
@@ -791,7 +851,7 @@ Format as JSON: {"insights":["...","...","..."],"questAdjustment":"..."}`;
     </div>
   );
 
-  return(
+  return (
     <div className="min-h-screen flex flex-col relative" style={{zIndex:1}}>
       <Confetti active={confetti} onDone={()=>setConfetti(false)}/>
 
@@ -812,7 +872,9 @@ Format as JSON: {"insights":["...","...","..."],"questAdjustment":"..."}`;
               {hero.statPoints>0&&<span className="flex items-center gap-1 text-violet-400 font-bold font-mono text-xs animate-pulse ml-1"><Bolt/>{hero.statPoints}</span>}
               <button onClick={()=>setDimMode(m=>!m)} className={`dim-tog ml-1 ${dimMode?'on':''}`}>
                 <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
-                  {dimMode?<path strokeLinecap="round" strokeLinejoin="round" d="M12 3v1m0 16v1m8-9h1M3 12H2m14.95 4.95l.707.707M6.343 6.343l-.707-.707M17.657 6.343l.707-.707M6.343 17.657l-.707.707M12 7a5 5 0 110 10A5 5 0 0112 7z"/>:<path strokeLinecap="round" strokeLinejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9 9 0 008.354-5.646z"/>}
+                  {dimMode
+                    ?<path strokeLinecap="round" strokeLinejoin="round" d="M12 3v1m0 16v1m8-9h1M3 12H2m14.95 4.95l.707.707M6.343 6.343l-.707-.707M17.657 6.343l.707-.707M6.343 17.657l-.707.707M12 7a5 5 0 110 10A5 5 0 0112 7z"/>
+                    :<path strokeLinecap="round" strokeLinejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9 9 0 008.354-5.646z"/>}
                 </svg>
                 {dimMode?'Dim':'Dark'}
               </button>
@@ -823,7 +885,7 @@ Format as JSON: {"insights":["...","...","..."],"questAdjustment":"..."}`;
             <span className="font-mono text-xs text-zinc-500 whitespace-nowrap">{hero.xp} / {hero.nextLevelXp} XP</span>
           </div>
           <div className="flex gap-1.5">
-            {tabs.map((t,i)=>(
+            {TABS.map((t,i)=>(
               <button key={t.id} onClick={()=>setActiveTab(t.id)}
                 className={`px-4 py-2 rounded-xl text-xs font-mono font-medium transition-all duration-150 ${activeTab===t.id?'tab-on':'tab-off'}`} title={`Press ${i+1}`}>
                 {t.label}{t.id==='hero'&&hero.statPoints>0&&<span className="ml-1 text-violet-400">·</span>}
@@ -881,22 +943,13 @@ Format as JSON: {"insights":["...","...","..."],"questAdjustment":"..."}`;
                       </div>
                     </div>
                     <StatBar value={v} color={sc(k)} debt={k==='stamina'&&stampHit}/>
-                    {k==='stamina'&&stampHit&&<p className="font-mono text-[9px] text-red-400/70">Sleep debt affecting recovery</p>}
                   </Card>
                 ))}
               </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <FocusTimerWidget 
-                focusToday={focusToday} 
-                setFocusToday={setFocusToday} 
-                setHistory={setHistory} 
-                showToast={showToast} 
-                focusPct={focusPct} 
-                codeQ={codeQ} 
-                toggleQuest={toggleQuest} 
-              />
+              <FocusTimerWidget focusToday={focusToday} setFocusToday={setFocusToday} setHistory={setHistory} showToast={showToast} focusPct={focusPct} codeQ={codeQ} toggleQuest={toggleQuest}/>
               <Card className="p-5">
                 <div className="flex justify-between items-center mb-4">
                   <SL>Sleep Tracker</SL>
@@ -906,9 +959,10 @@ Format as JSON: {"insights":["...","...","..."],"questAdjustment":"..."}`;
                 </div>
                 <div className="flex items-center gap-2 mb-5">
                   {last7Sleep.map((d,i)=>{
-                    const h=d.hours;const c=h===null?'#1e1e28':h>=8?'#22c55e':h>=7?'#4ade80':h>=6?'#fbbf24':'#f87171';
+                    const h=d.hours;
+                    const c=h===null?'#1e1e28':h>=8?'#22c55e':h>=7?'#4ade80':h>=6?'#fbbf24':'#f87171';
                     return(
-                      <div key={i} className="flex flex-col items-center gap-1.5 flex-1" title={h!==null?`${d.date}: ${h}h sleep`:d.date}>
+                      <div key={i} className="flex flex-col items-center gap-1.5 flex-1" title={h!==null?`${d.date}: ${h}h`:d.date}>
                         <div className="sleep-night-dot mx-auto" style={{background:c,boxShadow:h&&h>0?`0 0 6px ${c}55`:undefined}}/>
                         <span className="font-mono text-[8px] text-zinc-700 text-center">{h!==null?`${h}h`:'—'}</span>
                       </div>
@@ -923,7 +977,7 @@ Format as JSON: {"insights":["...","...","..."],"questAdjustment":"..."}`;
                     <span className="flex items-center font-mono text-sm text-zinc-500">hours</span>
                     <button onClick={logSleep} className="btn-p rounded-xl px-4 font-mono">Log</button>
                   </div>
-                  {sleepDebt>0&&<p className="font-mono text-[10px] text-red-400/70">Tip: {sleepDebt}h debt affects recovery. Aim to sleep {Math.min(10,8+Math.round(sleepDebt/3))}h tonight.</p>}
+                  {sleepDebt>0&&<p className="font-mono text-[10px] text-red-400/70">Tip: {sleepDebt}h debt — aim for {Math.min(10,8+Math.round(sleepDebt/3))}h tonight.</p>}
                 </div>
               </Card>
             </div>
@@ -938,8 +992,6 @@ Format as JSON: {"insights":["...","...","..."],"questAdjustment":"..."}`;
                 <span className="font-mono text-[10px] text-zinc-700">XP earned per day · today highlighted</span>
                 <span className="font-mono text-xs text-zinc-600">{history[today()]?.xp||0} XP today</span>
               </div>
-
-              {/* PAST XP EDITOR TOOL */}
               <div className="mt-5 pt-5 border-t border-zinc-900/60 flex flex-wrap gap-2.5 items-center">
                 <span className="font-mono text-[10px] text-zinc-600 uppercase tracking-widest mr-auto">Missed a day? Edit Past XP</span>
                 <input type="date" max={today()} value={editXpDate} onChange={e=>setEditXpDate(e.target.value)} className="inp rounded-xl px-3 py-1.5 font-mono text-xs"/>
@@ -963,11 +1015,15 @@ Format as JSON: {"insights":["...","...","..."],"questAdjustment":"..."}`;
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <Card className="p-5 flex items-center justify-between">
                 <div className="flex items-center gap-3.5"><span className="text-xl">💻</span><span className="text-sm text-zinc-300">8h Intent Coding</span></div>
-                <span className={`font-mono text-xs font-semibold px-3 py-1.5 rounded-xl ${codeQ.completed?'text-green-400 bg-green-400/8 border border-green-400/18':'text-zinc-600 bg-zinc-900 border border-zinc-800/60'}`}>{codeQ.completed?'✓ Done':`${Math.round(focusPct)}%`}</span>
+                <span className={`font-mono text-xs font-semibold px-3 py-1.5 rounded-xl ${codeQ?.completed?'text-green-400 bg-green-400/8 border border-green-400/18':'text-zinc-600 bg-zinc-900 border border-zinc-800/60'}`}>
+                  {codeQ?.completed?'✓ Done':`${Math.round(focusPct)}%`}
+                </span>
               </Card>
               <Card className="p-5 flex items-center justify-between">
                 <div className="flex items-center gap-3.5"><span className="text-xl">📚</span><span className="text-sm text-zinc-300">Books over Scrolling</span></div>
-                <span className={`font-mono text-xs font-semibold px-3 py-1.5 rounded-xl ${readQ.completed?'text-green-400 bg-green-400/8 border border-green-400/18':'text-zinc-600 bg-zinc-900 border border-zinc-800/60'}`}>{readQ.completed?'✓ Done':'Pending'}</span>
+                <span className={`font-mono text-xs font-semibold px-3 py-1.5 rounded-xl ${readQ.completed?'text-green-400 bg-green-400/8 border border-green-400/18':'text-zinc-600 bg-zinc-900 border border-zinc-800/60'}`}>
+                  {readQ.completed?'✓ Done':'Pending'}
+                </span>
               </Card>
             </div>
 
@@ -1023,7 +1079,7 @@ Format as JSON: {"insights":["...","...","..."],"questAdjustment":"..."}`;
           <div className="tab-section space-y-6">
             <Card className="p-6 flex items-center justify-between" glow>
               <div><p className="slabel" style={{marginBottom:'4px'}}>Gold Balance</p><p className="font-display text-3xl font-bold gold mt-1">{hero.gold}<span className="text-base font-normal text-zinc-600 ml-1.5">g</span></p></div>
-              <div className="text-right"><p className="slabel" style={{marginBottom:'4px'}}>Earned Today</p><p className="font-mono text-sm text-zinc-500 mt-1">{history[today()]?.gold||0}g from quests</p></div>
+              <div className="text-right"><p className="slabel" style={{marginBottom:'4px'}}>Earned Today</p><p className="font-mono text-sm text-zinc-500 mt-1">{history[today()]?.gold||0}g</p></div>
             </Card>
             <Card className="p-6">
               <SL>Stock New Reward</SL>
@@ -1040,7 +1096,7 @@ Format as JSON: {"insights":["...","...","..."],"questAdjustment":"..."}`;
                   <div key={r.id} className="rcard rounded-2xl p-5 flex items-center justify-between gap-4">
                     <span className="text-sm text-zinc-200 leading-relaxed">{r.text}</span>
                     <button onClick={()=>buyReward(r.id,r.cost,r.text)}
-                      className={`flex-shrink-0 rounded-xl px-4 py-2 font-mono text-xs font-semibold transition-all ${hero.gold>=r.cost?'gold bg-yellow-400/8 border border-yellow-400/22 hover:bg-yellow-400/16 cursor-pointer':'text-zinc-700 bg-zinc-900 border border-zinc-800 cursor-not-allowed opacity-50'}`}>
+                      className={`flex-shrink-0 rounded-xl px-4 py-2 font-mono text-xs font-semibold border transition-all ${hero.gold>=r.cost?'gold bg-yellow-400/8 border-yellow-400/22 hover:bg-yellow-400/16 cursor-pointer':'text-zinc-700 bg-zinc-900 border-zinc-800 cursor-not-allowed opacity-50'}`}>
                       {r.cost}g
                     </button>
                   </div>
@@ -1103,7 +1159,18 @@ Format as JSON: {"insights":["...","...","..."],"questAdjustment":"..."}`;
             )}
             {milestones.length===0&&<Empty icon="📈" title="No milestones yet" sub="Complete quests to raise your stats."/>}
             <Card className="p-6 space-y-6">
-              <div><SL>API Configuration</SL><button onClick={()=>{localStorage.removeItem("adi_gemini_key");showToast("API key purged.");}} className="btn-g rounded-xl px-5 py-2.5 font-mono">Purge Cached API Key</button></div>
+              <div>
+                <SL>Keyboard Shortcuts</SL>
+                <div className="flex flex-wrap gap-3">
+                  {[['1-5','Switch tabs'],['D','Toggle dim mode'],['Esc','Close modals']].map(([k,v])=>(
+                    <div key={k} className="flex items-center gap-2"><span className="kbd">{k}</span><span className="font-mono text-xs text-zinc-600">{v}</span></div>
+                  ))}
+                </div>
+              </div>
+              <div className="border-t border-zinc-900/60 pt-5">
+                <SL>API Configuration</SL>
+                <button onClick={()=>{localStorage.removeItem("adi_gemini_key");showToast("API key purged.");}} className="btn-g rounded-xl px-5 py-2.5 font-mono">Purge Cached API Key</button>
+              </div>
               <div className="border-t border-zinc-900/60 pt-5">
                 <p className="font-mono text-[10px] text-red-500/60 uppercase tracking-widest mb-3">Danger Zone</p>
                 <button onClick={hardReset} className="btn-d rounded-xl px-5 py-2.5 font-mono">Hard Reset All Data</button>
@@ -1121,7 +1188,7 @@ Format as JSON: {"insights":["...","...","..."],"questAdjustment":"..."}`;
                   <SL>Tag Yesterday's Skipped Quests</SL>
                   <span className="font-mono text-xs text-zinc-600">{yesterday()}</span>
                 </div>
-                <p className="text-sm text-zinc-400 mb-5 leading-relaxed">Quick reflection — what caused the skip? This feeds into pattern detection.</p>
+                <p className="text-sm text-zinc-400 mb-5 leading-relaxed">Quick reflection — what caused the skip?</p>
                 <div className="space-y-4">
                   {pendingFails.map((f,i)=>(
                     <div key={i} className="space-y-2.5">
@@ -1130,7 +1197,7 @@ Format as JSON: {"insights":["...","...","..."],"questAdjustment":"..."}`;
                         <span className="text-sm text-zinc-300">{f.questText}</span>
                       </div>
                       <div className="flex flex-wrap gap-2">
-                        {FAILURE_REASONS.map((r)=>(
+                        {FAILURE_REASONS.map(r=>(
                           <button key={r} onClick={()=>setFailTags(p=>({...p,[f.questText]:r}))}
                             className={`ftag-btn ${failTags[f.questText]===r?'sel':''}`}>{r}</button>
                         ))}
@@ -1150,7 +1217,7 @@ Format as JSON: {"insights":["...","...","..."],"questAdjustment":"..."}`;
                 <SL>Daily Reflection</SL>
                 <span className="font-mono text-xs text-zinc-600">{today()}</span>
               </div>
-              <p className="text-sm text-zinc-500 mb-4 leading-relaxed">What went well, what didn't, and why? Raw thoughts — Gemini will analyze patterns across entries.</p>
+              <p className="text-sm text-zinc-500 mb-4 leading-relaxed">What went well, what didn't, and why? Gemini will analyze patterns across entries.</p>
               {reflections[today()]?(
                 <div className="rounded-xl p-4 space-y-3" style={{background:'var(--bg-input)',border:'1.5px solid var(--border-base)'}}>
                   <p className="text-sm text-zinc-300 leading-relaxed">{reflections[today()].text}</p>
@@ -1158,7 +1225,9 @@ Format as JSON: {"insights":["...","...","..."],"questAdjustment":"..."}`;
                 </div>
               ):(
                 <div className="space-y-3">
-                  <textarea value={reflDraft} onChange={e=>setReflDraft(e.target.value)} placeholder="What happened today? What did you skip and why? Any insights or frustrations?" className="refl-ta rounded-xl p-4 w-full" style={{background:'var(--bg-input)',border:'1.5px solid var(--border-base)',borderRadius:'12px',minHeight:'100px'}} rows={4}/>
+                  <textarea value={reflDraft} onChange={e=>setReflDraft(e.target.value)}
+                    placeholder="What happened today? What did you skip and why?" rows={4}
+                    className="refl-ta rounded-xl p-4 w-full" style={{background:'var(--bg-input)',border:'1.5px solid var(--border-base)',borderRadius:'12px',minHeight:'100px'}}/>
                   <button onClick={saveReflection} className="btn-p rounded-xl px-5 py-2.5 font-mono w-full">Save Reflection</button>
                 </div>
               )}
@@ -1195,10 +1264,9 @@ Format as JSON: {"insights":["...","...","..."],"questAdjustment":"..."}`;
                   {aiInsightLoad?<><Spin/>Analyzing…</>:'✦ Run AI Analysis'}
                 </button>
               </div>
-
-              {topThemesList.length>0&&(
+              {topThemes.length>0&&(
                 <div className="flex flex-wrap gap-2 mb-5">
-                  {topThemesList.map(([word,count])=>(
+                  {topThemes.map(([word,count])=>(
                     <span key={word} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-mono text-[11px]"
                       style={{background:`rgba(124,58,237,${Math.min(.18,.05+count*.04)})`,border:`1.5px solid rgba(124,58,237,${Math.min(.35,.1+count*.07)})`,color:`rgba(167,139,250,${Math.min(1,.6+count*.1)})`}}>
                       {word}<span className="text-violet-700 text-[9px]">×{count}</span>
@@ -1206,7 +1274,6 @@ Format as JSON: {"insights":["...","...","..."],"questAdjustment":"..."}`;
                   ))}
                 </div>
               )}
-
               {typeof aiInsight==='object'&&aiInsight?.insights&&(
                 <div className="space-y-3 border-t border-zinc-900/60 pt-5">
                   <p className="font-mono text-xs text-violet-500 uppercase tracking-widest mb-4">AI Pattern Insights</p>
@@ -1227,7 +1294,6 @@ Format as JSON: {"insights":["...","...","..."],"questAdjustment":"..."}`;
                   )}
                 </div>
               )}
-
               {Object.keys(failureLog).length>0&&(
                 <div className="border-t border-zinc-900/60 pt-5 mt-5">
                   <p className="font-mono text-[10px] text-zinc-600 uppercase tracking-widest mb-3">Failure Reason History</p>
@@ -1248,19 +1314,25 @@ Format as JSON: {"insights":["...","...","..."],"questAdjustment":"..."}`;
                 <span className="font-mono text-xs text-zinc-600">{Object.keys(noteHistory).length} days archived</span>
               </div>
               {Object.keys(noteHistory).length===0
-                ?<Empty icon="📓" title="No archived notes yet" sub="Add notes to quests via ∨ — they save here at midnight reset."/>
+                ?<Empty icon="📓" title="No archived notes yet" sub="Add notes to quests via ∨ — they save here at midnight."/>
                 :<div className="space-y-3">
                   {Object.entries(noteHistory).sort((a,b)=>b[0].localeCompare(a[0])).slice(0,14).map(([date,entries])=>(
                     <Card key={date} className="overflow-hidden">
                       <button onClick={()=>setJournalDate(journalDate===date?null:date)} className="w-full px-5 py-4 flex items-center justify-between hover:bg-zinc-900/30 transition-colors">
-                        <div className="flex items-center gap-3.5"><span className="font-mono text-sm font-semibold text-zinc-300">{date}</span><span className="font-mono text-xs text-zinc-600">{entries.length} note{entries.length!==1?'s':''}</span></div>
+                        <div className="flex items-center gap-3.5">
+                          <span className="font-mono text-sm font-semibold text-zinc-300">{date}</span>
+                          <span className="font-mono text-xs text-zinc-600">{entries.length} note{entries.length!==1?'s':''}</span>
+                        </div>
                         <Chev open={journalDate===date}/>
                       </button>
                       {journalDate===date&&(
                         <div className="border-t border-zinc-900/60 px-5 pb-5 space-y-4 pt-4">
                           {entries.map((e,i)=>(
                             <div key={i} className="space-y-1.5">
-                              <div className="flex items-center gap-2.5"><span className={`font-mono text-[10px] font-bold px-2 py-0.5 rounded-lg ${ac(e.attribute)}`}>{al(e.attribute)}</span><span className={`text-sm ${e.completed?'text-green-400':'text-zinc-500'}`}>{e.completed?'✓ ':''}{e.questText}</span></div>
+                              <div className="flex items-center gap-2.5">
+                                <span className={`font-mono text-[10px] font-bold px-2 py-0.5 rounded-lg ${ac(e.attribute)}`}>{al(e.attribute)}</span>
+                                <span className={`text-sm ${e.completed?'text-green-400':'text-zinc-500'}`}>{e.completed?'✓ ':''}{e.questText}</span>
+                              </div>
                               <p className="font-mono text-xs text-zinc-500 leading-relaxed pl-14 italic">"{e.note}"</p>
                             </div>
                           ))}
@@ -1293,7 +1365,7 @@ Format as JSON: {"insights":["...","...","..."],"questAdjustment":"..."}`;
       {lvlModal&&(
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{background:'rgba(10,10,13,.92)',backdropFilter:'blur(18px)'}}>
           <div className="max-w-sm w-full rounded-3xl p-8 text-center space-y-6 glow-border" style={{background:'var(--bg-card)',animation:'scaleIn .25s ease-out both'}}>
-            <div className="mx-auto flex items-center justify-center mb-2" style={{width:'72px',height:'72px',background:'radial-gradient(circle, rgba(124,58,237,.2) 0%, transparent 70%)',border:'1.5px solid rgba(124,58,237,.3)',borderRadius:'50%'}}>
+            <div className="mx-auto flex items-center justify-center" style={{width:'72px',height:'72px',background:'radial-gradient(circle, rgba(124,58,237,.2) 0%, transparent 70%)',border:'1.5px solid rgba(124,58,237,.3)',borderRadius:'50%'}}>
               <span className="text-3xl">⚡</span>
             </div>
             <div>
